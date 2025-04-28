@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug my_c_program",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/less01_prog",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/local/bin/gdb",
+        "preLaunchTask": "CMake Build"
+      }
+    ]
+  }
