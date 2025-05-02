@@ -1,0 +1,10 @@
+{
+    "window.zoomLevel": 0.6,
+    "editor.fontSize": 15,
+    "terminal.integrated.fontSize": 14,
+    "cmake.sourceDirectory": "/Users/a2141/Documents/C_projects",
+    "terminal.integrated.fontLigatures.enabled": true,
+    "code-runner.runInTerminal": true,
+    "code-runner.clearPreviousOutput": true,
+    "window.autoDetectColorScheme": true,
+}

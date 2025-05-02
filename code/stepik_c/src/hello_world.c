@@ -6,3 +6,4 @@ int main(void)
     printf("Hello, World!\n"); // Однострочный комментарий
     return 0;
 }
+
