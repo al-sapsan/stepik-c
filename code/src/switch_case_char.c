@@ -22,6 +22,8 @@ int main(void)
     case 'C':
         printf("Symbol C\n");
         break;
+    default:
+        printf("Incorrect symbol\n");
     }
  
     return 0;
