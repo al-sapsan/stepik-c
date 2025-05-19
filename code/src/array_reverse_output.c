@@ -1,15 +1,17 @@
 #include <stdio.h>
 
-// Внешний массив pows объявлен вне main (например: float pows[] = {...};)
-extern float pows[];
-extern int pows_size; // Внешняя переменная с размером массива
-
 int main(void)
 {
-    // Перебираем элементы массива pows в обратном порядке
-    for (int i = pows_size - 1; i >= 0; --i) {
-        printf("%.1f ", pows[i]); // Выводим элемент с точностью до десятых
-    }
+    const int total = 5;      // Константная переменная total
+    int marks[100];           // Массив для хранения чисел
+
+    // Считываем total целых чисел
+    for (int i = 0; i < total; ++i)
+        scanf("%d", &marks[i]);
+
+    // Выводим числа в обратном порядке
+    for (int i = total - 1; i >= 0; --i)
+        printf("%d ", marks[i]);
 
     return 0;
 }
