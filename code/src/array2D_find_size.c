@@ -12,8 +12,8 @@ int main() {
     int row_bytes = sizeof(array[0]);
     int element_bytes = sizeof(array[0][0]);
     int total_elements = all_bytes / element_bytes;
-    int rows = sizeof(array) / sizeof(array[0]);
-    int cols = sizeof(array[0]) / sizeof(array[0][0]);
+    int rows = sizeof(array) / sizeof(array[0]); // sizeof(array) / (sizeof(*array) // для строк
+    int cols = sizeof(array[0]) / sizeof(array[0][0]); // sizeof(*ar_2D) / (sizeof(**ar_2D) // для столбцов
 
     printf("Total bytes: %d\n", all_bytes);
     printf("Bytes per row: %d\n", row_bytes);
