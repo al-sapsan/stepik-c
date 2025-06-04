@@ -1,5 +1,9 @@
 #include <stdio.h>
-
+/**
+ * @brief 
+ * 
+ * @return int 
+ */
 int main() {
     int distance, minutes, seconds;
 
