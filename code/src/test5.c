@@ -1,17 +1,33 @@
 #include <stdio.h>
-#define PI 3.14159265358979323846
 
-int main() {
-    double r1, r2, r3;
-    scanf("%lf %lf %lf", &r1, &r2, &r3);
+int main(void)
+{
+    int digit;
+    if (scanf("%d", &digit) != 1 || digit < 10 || digit > 15) {
+        printf("Неверное число\n");
+        return 0;
+    }
 
-    double l1 = 2 * PI * r1;
-    double l2 = 2 * PI * r2;
-    double l3 = 2 * PI * r3;
-
-    printf("%7.2f\n", l1);
-    printf("%7.2f\n", l2);
-    printf("%7.2f\n", l3);
-
-    return 0;
-}
+    switch (digit) {
+        case 10:
+            printf("десять\n");
+            break;
+        case 11:
+            printf("одиннадцать\n");
+            break;
+        case 12:
+            printf("двенадцать\n");
+            break;
+        case 13:
+            printf("тринадцать\n");
+            break;
+        case 14:
+            printf("четырнадцать\n");
+            break;
+        case 15:
+            printf("пятнадцать\n");
+            break;
+        default:
+            printf("Неверное число\n");
+            return 0;
+    }

@@ -1,26 +1,32 @@
 #include <stdio.h>
 
-int main() {
-    int h1, m1, s1, h2, m2, s2;
-    scanf("%d-%d-%d %d-%d-%d", &h1, &m1, &s1, &h2, &m2, &s2);
+/**
+ * @brief Находит и выводит наименьшее из пяти введённых целых чисел.
+ *
+ * Ввод: пять целых чисел через пробел.
+ * Вывод: минимальное из них.
+ *
+ * @return 0 при успешном завершении
+ */
+int main(void)
+{
+    int a, b, c, d, e;
 
-    // Переводим оба времени в секунды
-    int t1 = h1 * 3600 + m1 * 60 + s1;
-    int t2 = h2 * 3600 + m2 * 60 + s2;
+    // Ввод пяти целых чисел с проверкой корректности
+    if (scanf("%d %d %d %d %d", &a, &b, &c, &d, &e) != 5) {
+        printf("Input error.\n");
+        return 0;
+    }
 
-    // Если разговор закончился после полуночи
-    if (t2 < t1)
-        t2 += 24 * 3600;
+    // Определяем наименьшее число
+    int min = a;
+    if (b < min) min = b;
+    if (c < min) min = c;
+    if (d < min) min = d;
+    if (e < min) min = e;
 
-    int duration = t2 - t1;
-
-    // Количество полных (или неполных) минут
-    int minutes = duration / 60;
-    if (duration % 60 != 0)
-        minutes += 1;
-
-    double cost = minutes * 0.07;
-    printf("%.2f\n", cost);
+    // Выводим наименьшее число
+    printf("%d\n", min);
 
     return 0;
 }
