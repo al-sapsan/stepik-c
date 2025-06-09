@@ -1,36 +1,36 @@
 #include <stdio.h>
+#define SIZE 6
 
 /**
- * @brief Checks if the entered number is prime.
+ * @brief Counts zeros and sums elements at odd indices in an array.
  *
- * The user enters a natural number. If it is prime, the program prints "YES", otherwise "NO".
- * A prime number is a number greater than 1 that is divisible only by 1 and itself.
+ * The user enters SIZE integers. The program counts how many zeros are in the array
+ * and calculates the sum of elements at odd indices (1, 3, 5...).
  *
  * @return 0 on successful completion
  */
-int main() {
-    int digit, is_prime = 1;
-    if (scanf("%d", &digit) != 1 || digit < 1) {
-        printf("Invalid input\n");
-        return 0;
+int main(void) {
+    int array[SIZE];
+    int zero_counter = 0;
+    int sum = 0;
+
+    // Read array elements from user input
+    for(int i = 0; i < SIZE; i++) {
+        scanf("%d", &array[i]);
     }
-    if (digit == 1) {
-        printf("NO\n");
-        return 0;
-    }
-    /**
-     * @brief Checks divisors from 2 up to sqrt(n).
-     *
-     * The loop continues while the square of the divisor does not exceed the number itself.
-     * This is an optimization: if a number has a divisor greater than its square root,
-     * it must also have a smaller one.
-     */
-    for (int i = 2; i * i <= digit; i++) {
-        if (digit % i == 0) {
-            is_prime = 0;
-            break;
+
+    // Count zeros in the array
+    for(int i = 0; i < SIZE; i++) {
+        if (array[i] == 0) {
+            zero_counter++;
         }
     }
-    printf("%s\n", is_prime ? "YES" : "NO");
+
+    // Sum elements at odd indices
+    for(int i = 1; i < SIZE; i += 2) {
+        sum += array[i];
+    }
+
+    printf("%d %d\n", zero_counter, sum);
     return 0;
 }

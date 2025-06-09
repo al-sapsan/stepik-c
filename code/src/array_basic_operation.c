@@ -45,4 +45,19 @@ int main(void) {
     }
     printf("Max: %d\n", max);
     printf("Min: %d\n", min);
+    // Finding the index of the maximum and minimum elements
+    int max_index = 0;
+    int min_index = 0;
+    for (int i = 1; i < SIZE; i++) {
+        if (array[i] > max) {
+            max = array[i];
+            max_index = i;
+        }
+        if (array[i] < min) {
+            min = array[i];
+            min_index = i;
+        }
+    }
+    printf("Index of max: %d\n", max_index);
+    printf("Index of min: %d\n", min_index);
 }

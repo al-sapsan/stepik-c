@@ -1,27 +1,33 @@
 #include <stdio.h>
+#define SIZE 10 ///< Constant for array size
 
 /**
- * @brief Counts how many elements in the sequence are equal to its maximum.
+ * @brief Calculates the average of SIZE integers and counts how many elements are less than the average.
  *
- * The user enters non-negative integers, ending the sequence with 0.
- * If the first entered number is 0, the answer is 0.
+ * The user enters SIZE integers. The program prints the average (with one decimal place)
+ * and the count of elements less than the average.
  *
  * @return 0 on successful completion
  */
-int main() {
-    int num, max = 0, count = 0;
+int main(void) {
+    int array[SIZE];
+    int count = 0;
+    double sum = 0, avg;
 
-    for (;;) {
-        scanf("%d", &num);
-        if (num == 0)
-            break;
-        if (num > max) {
-            max = num;
-            count = 1;
-        } else if (num == max) {
-            count++;
-        }
+    // Read SIZE integers from user input
+    for (int i = 0; i < SIZE; i++) {
+        scanf("%d", &array[i]);
+        sum += array[i];
     }
-    printf("%d\n", count);
+
+    avg = sum / SIZE;
+
+    // Count elements less than the average
+    for (int i = 0; i < SIZE; i++) {
+        if (array[i] < avg)
+            count++;
+    }
+
+    printf("%.1f %d\n", avg, count);
     return 0;
 }

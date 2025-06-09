@@ -1,43 +1,33 @@
 #include <stdio.h>
+#define SIZE 7
 
 /**
- * @brief Simulates the process of chasing flies out of a room.
- *
- * The user enters n (initial number of flies) and k (minutes passed).
- * Each minute, 1 fly is chased out. Every 5 minutes, 1 new fly enters.
- * When the number of flies becomes <= 10% of the initial, 2 flies are chased out per minute.
- * The program outputs: flies left after k minutes, and the minute when Ivan Ivanovich is alone.
+ * @brief Reads an array of SIZE integers, replaces the first minimum element with zero, and prints the array.
  *
  * @return 0 on successful completion
  */
-int main(void) {
-    int n, k;
-    scanf("%d %d", &n, &k);
+int main() {
+    int digits[SIZE];
+    int min, imin = 0;
 
-    int flies = n;
-    int alone_minute = 0;
-    int initial = n;
-    int minute = 1;
-
-    // Simulate until all flies are gone to find alone_minute
-    while (flies > 0) {
-        int out = (flies <= initial / 10) ? 2 : 1;
-        flies -= out;
-        if (flies < 0) flies = 0;
-        if (minute % 5 == 0) flies++;
-        if (flies == 0 && alone_minute == 0) alone_minute = minute;
-        minute++;
+    // Read array and find the first minimum
+    for (int i = 0; i < SIZE; i++) {
+        scanf("%d", &digits[i]);
+        if (i == 0 || digits[i] < min) {
+            min = digits[i];
+            imin = i;
+        }
     }
 
-    // Simulate again to find flies after k minutes
-    flies = n;
-    for (int i = 1; i <= k; i++) {
-        int out = (flies <= initial / 10) ? 2 : 1;
-        flies -= out;
-        if (flies < 0) flies = 0;
-        if (i % 5 == 0) flies++;
-    }
+    // Replace the first minimum with zero
+    digits[imin] = 0;
 
-    printf("%d %d\n", flies, alone_minute);
+    // Print the modified array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d", digits[i]);
+        if (i < SIZE - 1)
+            printf(" ");
+    }
+    printf("\n");
     return 0;
 }

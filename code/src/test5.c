@@ -1,25 +1,42 @@
 #include <stdio.h>
+#define SIZE 6
 
 /**
- * @brief Prints an 8x8 chessboard with given cell size.
+ * @brief Reads an array of SIZE integers, swaps the first minimum and last maximum elements, and prints the array.
  *
- * White cells are printed as '-', black cells as '*'.
+ * The user enters SIZE integers. The program finds the first minimum and last maximum,
+ * swaps them, and prints the modified array with elements separated by spaces.
  *
  * @return 0 on successful completion
  */
-int main(void) {
-    int size;
-    scanf("%d", &size);
+int main() {
+    int digits[SIZE];
+    int min, max, imin = 0, imax = 0;
 
-    for (int row = 0; row < 8 * size; row++) {
-        for (int col = 0; col < 8 * size; col++) {
-            // Determine the color of the cell
-            if (((row / size) + (col / size)) % 2 == 0)
-                printf("-");
-            else
-                printf("*");
+    // Read array and find the first minimum and last maximum
+    for (int i = 0; i < SIZE; i++) {
+        scanf("%d", &digits[i]);
+        if (i == 0 || digits[i] < min) {
+            min = digits[i];
+            imin = i;
         }
-        printf("\n");
+        if (i == 0 || digits[i] >= max) {
+            max = digits[i];
+            imax = i;
+        }
     }
+
+    // Swap the first minimum and last maximum
+    int temp = digits[imin];
+    digits[imin] = digits[imax];
+    digits[imax] = temp;
+
+    // Print the modified array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d", digits[i]);
+        if (i < SIZE - 1)
+            printf(" ");
+    }
+    printf("\n");
     return 0;
 }
