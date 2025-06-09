@@ -1,35 +1,22 @@
 #include <stdio.h>
 
 /**
- * @brief Определяет действие по знаку операции.
+ * @brief Finds and prints all perfect numbers from 1 to 10000.
  *
- * Пользователь вводит символ операции (+, -, *, /).
- * Программа выводит название действия или "Неизвестная операция" для других символов.
+ * A perfect number is equal to the sum of its proper divisors (excluding itself).
+ * Numbers are separated by spaces.
  *
- * @return 0 при успешном завершении
+ * @return 0 on successful completion
  */
-int main() {
-    char op;
-    if (scanf(" %c", &op) != 1) {
-        printf("Неизвестная операция\n");
-        return 0;
-    }
-
-    switch (op) {
-        case '+':
-            printf("Сложение\n");
-            break;
-        case '-':
-            printf("Вычитание\n");
-            break;
-        case '*':
-            printf("Умножение\n");
-            break;
-        case '/':
-            printf("Деление\n");
-            break;
-        default:
-            printf("Неизвестная операция\n");
+int main(void) {
+    for (int n = 1; n <= 10000; n++) {
+        int sum = 0;
+        for (int d = 1; d < n; d++) {
+            if (n % d == 0)
+                sum += d;
+        }
+        if (sum == n)
+            printf("%d ", n);
     }
     return 0;
 }

@@ -1,29 +1,43 @@
 #include <stdio.h>
 
 /**
- * @brief Проверяет, состоят ли все цифры трехзначного числа из одинаковых цифр.
+ * @brief Simulates the process of chasing flies out of a room.
  *
- * Пользователь вводит целое неотрицательное трехзначное число.
- * Если число состоит из одинаковых цифр, выводится "YES", иначе "NO".
- * Если число не трехзначное, выводится "ERROR".
+ * The user enters n (initial number of flies) and k (minutes passed).
+ * Each minute, 1 fly is chased out. Every 5 minutes, 1 new fly enters.
+ * When the number of flies becomes <= 10% of the initial, 2 flies are chased out per minute.
+ * The program outputs: flies left after k minutes, and the minute when Ivan Ivanovich is alone.
  *
- * @return 0 при успешном завершении
+ * @return 0 on successful completion
  */
 int main(void) {
-    int n;
-    if (scanf("%d", &n) != 1 || n < 100 || n > 999) {
-        printf("ERROR\n");
-        return 0;
+    int n, k;
+    scanf("%d %d", &n, &k);
+
+    int flies = n;
+    int alone_minute = 0;
+    int initial = n;
+    int minute = 1;
+
+    // Simulate until all flies are gone to find alone_minute
+    while (flies > 0) {
+        int out = (flies <= initial / 10) ? 2 : 1;
+        flies -= out;
+        if (flies < 0) flies = 0;
+        if (minute % 5 == 0) flies++;
+        if (flies == 0 && alone_minute == 0) alone_minute = minute;
+        minute++;
     }
 
-    int d1 = n / 100;
-    int d2 = (n / 10) % 10;
-    int d3 = n % 10;
+    // Simulate again to find flies after k minutes
+    flies = n;
+    for (int i = 1; i <= k; i++) {
+        int out = (flies <= initial / 10) ? 2 : 1;
+        flies -= out;
+        if (flies < 0) flies = 0;
+        if (i % 5 == 0) flies++;
+    }
 
-    if (d1 == d2 && d2 == d3)
-        printf("YES\n");
-    else
-        printf("NO\n");
-
+    printf("%d %d\n", flies, alone_minute);
     return 0;
 }

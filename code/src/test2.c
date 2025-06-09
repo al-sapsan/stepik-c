@@ -1,32 +1,33 @@
 #include <stdio.h>
-
+#include <math.h>
 /**
- * @brief Находит и выводит наименьшее из пяти введённых целых чисел.
+ * @brief Sums the numbers in the sequence whose positions are prime numbers.
  *
- * Ввод: пять целых чисел через пробел.
- * Вывод: минимальное из них.
+ * The user enters a sequence of integers ending with 0.
+ * The program sums only those numbers whose positions (starting from 1) are prime.
  *
- * @return 0 при успешном завершении
+ * @return 0 on successful completion
  */
-int main(void)
-{
-    int a, b, c, d, e;
+int main() {
+    int num, pos = 1, sum = 0;
 
-    // Ввод пяти целых чисел с проверкой корректности
-    if (scanf("%d %d %d %d %d", &a, &b, &c, &d, &e) != 5) {
-        printf("Input error.\n");
-        return 0;
+    while (scanf("%d", &num) == 1 && num != 0) {
+        // Check if pos is a prime number
+        int is_prime = 1;
+        if (pos == 1) is_prime = 0;
+        if (pos == 2) is_prime = 1;
+        if (pos % 2 == 0 && pos > 2) is_prime = 0;
+        // Check for factors from 3 to sqrt(pos)
+        for (int i = 3; i <= sqrt(pos); i+= 2) {
+            if (pos % i == 0) {
+                is_prime = 0;
+                break;
+            }
+        }
+        if (is_prime)
+            sum += num;
+        pos++;
     }
-
-    // Определяем наименьшее число
-    int min = a;
-    if (b < min) min = b;
-    if (c < min) min = c;
-    if (d < min) min = d;
-    if (e < min) min = e;
-
-    // Выводим наименьшее число
-    printf("%d\n", min);
-
+    printf("%d\n", sum);
     return 0;
 }

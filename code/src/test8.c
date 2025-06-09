@@ -1,42 +1,27 @@
 #include <stdio.h>
 
 /**
- * @brief Находит произведение всех целых нечетных чисел в заданном диапазоне.
+ * @brief Counts how many elements in the sequence are equal to its maximum.
  *
- * @return 0 при успешном завершении
+ * The user enters non-negative integers, ending the sequence with 0.
+ * If the first entered number is 0, the answer is 0.
+ *
+ * @return 0 on successful completion
  */
 int main() {
-    int a, b;
-    if (scanf("%d %d", &a, &b) != 2) {
-        printf("Input error.\n");
-        return 0;
-    }
+    int num, max = 0, count = 0;
 
-    // Если оба числа одинаковые и четные — ответ 0
-    if (a == b && a % 2 == 0) {
-        printf("0\n");
-        return 0;
-    }
-
-    // Если оба числа одинаковые и нечетные — ответ это число
-    if (a == b && a % 2 != 0) {
-        printf("%d\n", a);
-        return 0;
-    }
-
-    // Определяем границы диапазона
-    int from = (a < b) ? a : b;
-    int to = (a > b) ? a : b;
-
-    double prod = 1;
-    int i = from;
-    while (i <= to) {
-        if (i % 2 != 0) {
-            prod *= i;
+    for (;;) {
+        scanf("%d", &num);
+        if (num == 0)
+            break;
+        if (num > max) {
+            max = num;
+            count = 1;
+        } else if (num == max) {
+            count++;
         }
-        i++;
     }
-
-    printf("%g\n", prod);
+    printf("%d\n", count);
     return 0;
 }

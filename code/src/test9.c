@@ -1,32 +1,36 @@
 #include <stdio.h>
 
 /**
- * @brief Находит максимум из последовательности целых чисел, введённых с клавиатуры.
+ * @brief Checks if the entered number is prime.
  *
- * Сначала вводится количество чисел, затем сами числа через пробел.
- * Программа выводит максимальное из введённых чисел.
+ * The user enters a natural number. If it is prime, the program prints "YES", otherwise "NO".
+ * A prime number is a number greater than 1 that is divisible only by 1 and itself.
  *
- * @return 0 при успешном завершении
+ * @return 0 on successful completion
  */
 int main() {
-    int n, num, max;
-    if (scanf("%d", &n) != 1 || n < 2) {
-        printf("Input error.\n");
+    int digit, is_prime = 1;
+    if (scanf("%d", &digit) != 1 || digit < 1) {
+        printf("Invalid input\n");
         return 0;
     }
-    // Ввод первого числа и инициализация максимума
-    if (scanf("%d", &max) != 1) {
-        printf("Input error.\n");
+    if (digit == 1) {
+        printf("NO\n");
         return 0;
     }
-    for (int i = 1; i < n; i++) {
-        if (scanf("%d", &num) != 1) {
-            printf("Input error.\n");
-            return 0;
+    /**
+     * @brief Checks divisors from 2 up to sqrt(n).
+     *
+     * The loop continues while the square of the divisor does not exceed the number itself.
+     * This is an optimization: if a number has a divisor greater than its square root,
+     * it must also have a smaller one.
+     */
+    for (int i = 2; i * i <= digit; i++) {
+        if (digit % i == 0) {
+            is_prime = 0;
+            break;
         }
-        if (num > max)
-            max = num;
     }
-    printf("%d\n", max);
+    printf("%s\n", is_prime ? "YES" : "NO");
     return 0;
 }
