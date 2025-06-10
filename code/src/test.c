@@ -1,54 +1,49 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+#define ROWS 3
+#define COLS 4
 
 /**
- * @main_task: Нужно вывести на экран числа от 100 до 999. 
- * Пользователь вводит шаг и количество столбиков. Числа 
- * отделяются пробелами (в конце каждой строки пробелов нет, 
- * сразу перевод курсора).
- * 
- * @first_clarification:
- * Инициализировать переменные
- * ввести шаг и количество столбиков 
- * вывести на экран числа в соответствии с заданными параметрами 
- * 
-     * @second_clarification:Инициализировать переменные 
-     * переменая для шага
-     * переменная для количества столбиков
-     *  
-     * @second_clarification:ввести шаг и количество столбиков
-     * Ввести переменные
-     * проверить корректность ввода
-     * Если шаг меньше 1 или больше 899, вывести сообщение об ошибке
-     * 
-     *@second_clarification: вывести на экран числа в соответствии с заданными параметрами 
-     * Инициализировать счетчик
-     * Инициализировать переменную для текущего числа
-     * Цикл для текущего числа от 100 до 999
-     *   Счетчик увеличивается на число шага
-     * Цикл для столбиков с переменной от 0 до количества столбиков
-     * Функция вывода на экран текущего числа 
-     * 
-     * 
-         * @third_clarification: Присвоить переменной average сумму, деленную на счетчик 
-         * Проверить деление на ноль
-         * 
- * @return 0 при успешном завершении
+ * @brief Initializes a 2D array with random values, sets the second row to zero, and prints the array.
+ *
+ * The program fills a 3x4 array with random integers from 10 to 30, prints it,
+ * then sets the second row to zero and prints the modified array.
+ *
+ * @return 0 on successful completion
  */
 int main() {
-    int step, cols;
-    scanf("%d %d", &step, &cols);
 
-    int count = 0;
-    for (int num = 100; num <= 999; num += step) {
-        printf("%d", num);
-        count++;
-        if (count % cols == 0)
-            printf("\n");
-        else if (num + step <= 999)
-            printf(" ");
+    int array2D[ROWS][COLS];
+    int key;
+
+    // Read the key for random number generation
+    if(scanf("%d", &key) != 1) {
+        printf("Input error.\n");
+        return 1; // Exit if input is invalid
     }
-    // If the last line is not complete, print a newline
-    if ((count % cols) != 0)
+    srand(key); // Seed the random number generator with the provided key
+
+    // Initialize the 2D array with random values and print it
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            array2D[i][j] = rand() % 21 + 10; // Random values between 10 and 30
+            printf("%d\t", array2D[i][j]);
+        }
         printf("\n");
+    }
+
+    // Initialise second row with 0
+    for (int j = 0; j < COLS; j++) {
+        array2D[1][j] = 0;
+    }
+
+    // Print the 2D array after modification
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            printf("%d\t", array2D[i][j]);
+        }
+        printf("\n");
+    }
     return 0;
 }

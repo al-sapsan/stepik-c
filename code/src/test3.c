@@ -1,46 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 10
 
-/**
- * @brief Fills an array with random numbers from 0 to 50, prints it, prints the average (2 decimals), and prints elements less than the average.
- *
- * The user enters the seed for the random number generator.
- * The program prints the array (with a space after each element, including the last),
- * then prints the average (rounded to two decimals),
- * then prints all elements less than the average (separated by spaces, with a space after the last).
- *
- * @return 0 on successful completion
- */
+#define ROWS 4
+#define COLS 3
+
 int main() {
-    int irand;
-    int array[SIZE];
-    double sum = 0, avg;
+    int array2D[ROWS][COLS];
+    int key;
 
-    if (scanf("%d", &irand) != 1) {
-        printf("Error reading input.\n");
+    if (scanf("%d", &key) != 1) {
+        printf("Error reading key\n");
         return 0;
     }
+    srand(key);
 
-    srand(irand);
-
-    // Fill and print array, calculate sum
-    for (int i = 0; i < SIZE; i++) {
-        array[i] = rand() % 51; // from 0 to 50 inclusive
-        printf("%d ", array[i]);
-        sum += array[i];
+    // Fill and print the array
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            array2D[i][j] = rand() % 11 - 5; // Random numbers between -5 and 5
+            printf("%d\t", array2D[i][j]);
+        }
+        printf("\n");
     }
-    printf("\n");
 
-    avg = sum / SIZE;
-    printf("%.2f\n", avg);
-
-    // Print elements less than average
-    for (int i = 0; i < SIZE; i++) {
-        if (array[i] < avg)
-            printf("%d ", array[i]);
+    // Count rows without any zero element
+    int count = 0;
+    for (int i = 0; i < ROWS; i++) {
+        int has_zero = 0;
+        for (int j = 0; j < COLS; j++) {
+            if (array2D[i][j] == 0) {
+                has_zero = 1;
+                break;
+            }
+        }
+        if (!has_zero)
+            count++;
     }
-    printf("\n");
+    printf("%d\n", count);
 
     return 0;
 }
