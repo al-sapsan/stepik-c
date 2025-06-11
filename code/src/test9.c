@@ -1,36 +1,55 @@
 #include <stdio.h>
-#define SIZE 6
+#include <stdlib.h>
+
+#define SIZE 10
 
 /**
- * @brief Counts zeros and sums elements at odd indices in an array.
+ * @brief Generates an array of SIZE random integers, sorts it in ascending order, and prints the result.
  *
- * The user enters SIZE integers. The program counts how many zeros are in the array
- * and calculates the sum of elements at odd indices (1, 3, 5...).
+ * The user enters the seed for the random number generator.
+ * The program fills the array with random numbers from 1 to 20, sorts it using selection sort,
+ * and prints the sorted array (elements separated by spaces, including after the last element).
  *
  * @return 0 on successful completion
  */
-int main(void) {
-    int array[SIZE];
-    int zero_counter = 0;
-    int sum = 0;
+int main() {
 
-    // Read array elements from user input
+    int array[SIZE];
+    int key;
+
+    // Read the key for random number generation
+    if(scanf("%d", &key) != 1) {
+        puts("Error reading input\n");
+        return 0;
+    }
+    srand(key);
+
+    // Fill the array with random numbers from 1 to 20
     for(int i = 0; i < SIZE; i++) {
-        scanf("%d", &array[i]);
+        array[i] = rand() % 20 + 1;
     }
 
-    // Count zeros in the array
-    for(int i = 0; i < SIZE; i++) {
-        if (array[i] == 0) {
-            zero_counter++;
+    // Selection sort
+    int max_index;
+    for (int i = 0; i < SIZE - 1; i++) {
+        max_index = i;
+        for (int j = i + 1; j < SIZE; j++) {
+            if (array[j] > array[max_index]) {
+                max_index = j;
+            }
+        }
+        if (max_index != i) {
+            int temp = array[i];
+            array[i] = array[max_index];
+            array[max_index] = temp;
         }
     }
 
-    // Sum elements at odd indices
-    for(int i = 1; i < SIZE; i += 2) {
-        sum += array[i];
+    // Print the sorted array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", array[i]);
     }
-
-    printf("%d %d\n", zero_counter, sum);
+    printf("\n");
     return 0;
 }
+
