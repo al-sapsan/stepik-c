@@ -1,42 +1,40 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-#define ROWS 4
-#define COLS 3
+#define SIZE 6
 
 int main() {
-    int array2D[ROWS][COLS];
-    int key;
+    int array[SIZE];
+    int user_input, sum = 0, count = 0;
 
-    if (scanf("%d", &key) != 1) {
-        printf("Error reading key\n");
-        return 0;
-    }
-    srand(key);
-
-    // Fill and print the array
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            array2D[i][j] = rand() % 11 - 5; // Random numbers between -5 and 5
-            printf("%d\t", array2D[i][j]);
-        }
-        printf("\n");
+    // Input array
+    for (int i = 0; i < SIZE; i++) {
+        scanf("%d", &array[i]);
     }
 
-    // Count rows without any zero element
-    int count = 0;
-    for (int i = 0; i < ROWS; i++) {
-        int has_zero = 0;
-        for (int j = 0; j < COLS; j++) {
-            if (array2D[i][j] == 0) {
-                has_zero = 1;
-                break;
-            }
-        }
-        if (!has_zero)
+    // Input number
+    scanf("%d", &user_input);
+
+    // Calculate sum and count of elements less than user_input
+    for (int i = 0; i < SIZE; i++) {
+        if (array[i] < user_input) {
+            sum += array[i];
             count++;
+        }
     }
-    printf("%d\n", count);
+    printf("%d %d\n", sum, count);
+
+    // Replace elements at even positions (1,3,5 for user, i=0,2,4) with user_input
+    for (int i = 0; i < SIZE; i++) {
+        if (i % 2 == 0) {
+            array[i] = user_input;
+        }
+    }
+
+    // Print modified array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
 
     return 0;
 }

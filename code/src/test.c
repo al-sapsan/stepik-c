@@ -1,49 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ROWS 3
-#define COLS 4
+#define SIZE 10
 
 /**
- * @brief Initializes a 2D array with random values, sets the second row to zero, and prints the array.
+ * @brief Fills an array with random numbers from -3 to 3, prints it, counts zeros, and sums elements between first and last zero.
  *
- * The program fills a 3x4 array with random integers from 10 to 30, prints it,
- * then sets the second row to zero and prints the modified array.
+ * The user enters the seed for the random number generator.
+ * The program prints the array (elements separated by spaces, including after the last element),
+ * prints the number of zeros,
+ * and prints the sum of elements between the first and last zero (exclusive).
+ * If there are no zeros, prints ERROR. If only one zero, prints 0.
  *
  * @return 0 on successful completion
  */
 int main() {
-
-    int array2D[ROWS][COLS];
-    int key;
+    int array[SIZE];
+    int key_random;
 
     // Read the key for random number generation
-    if(scanf("%d", &key) != 1) {
-        printf("Input error.\n");
-        return 1; // Exit if input is invalid
+    if (scanf("%d", &key_random) != 1) {
+        puts("Error reading input");
+        return 0;
     }
-    srand(key); // Seed the random number generator with the provided key
+    srand(key_random);
 
-    // Initialize the 2D array with random values and print it
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            array2D[i][j] = rand() % 21 + 10; // Random values between 10 and 30
-            printf("%d\t", array2D[i][j]);
+    // Fill the array with random numbers from -3 to 3 and print it
+    for (int i = 0; i < SIZE; i++) {
+        array[i] = rand() % 7 - 3;
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+
+    // Count the number of zeros in the array
+    int zero_count = 0;
+    int first_zero_index = -1, last_zero_index = -1;
+    for (int i = 0; i < SIZE; i++) {
+        if (array[i] == 0) {
+            zero_count++;
+            if (first_zero_index == -1)
+                first_zero_index = i;
+            last_zero_index = i;
         }
-        printf("\n");
+    }
+    printf("%d\n", zero_count);
+
+    if (zero_count == 0) {
+        printf("ERROR\n");
+        return 0;
     }
 
-    // Initialise second row with 0
-    for (int j = 0; j < COLS; j++) {
-        array2D[1][j] = 0;
+    // If only one zero or zeros are adjacent, sum is 0
+    if (first_zero_index == last_zero_index || last_zero_index - first_zero_index == 1) {
+        printf("0\n");
+        return 0;
     }
 
-    // Print the 2D array after modification
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            printf("%d\t", array2D[i][j]);
-        }
-        printf("\n");
+    // Calculate the sum of elements between the first and last zero
+    int sum = 0;
+    for (int i = first_zero_index + 1; i < last_zero_index; i++) {
+        sum += array[i];
     }
+    printf("%d\n", sum);
+
     return 0;
 }

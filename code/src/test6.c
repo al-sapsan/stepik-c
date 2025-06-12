@@ -1,33 +1,39 @@
 #include <stdio.h>
-#define SIZE 7
+#include <stdlib.h>
+#define SIZE 10
 
-/**
- * @brief Reads an array of SIZE integers, replaces the first minimum element with zero, and prints the array.
- *
- * @return 0 on successful completion
- */
 int main() {
-    int digits[SIZE];
-    int min, imin = 0;
+    int array[SIZE];
+    int user_input;
 
-    // Read array and find the first minimum
+    // Input number
+    scanf("%d", &user_input);
+
+    srand(user_input);
+    // Fill array with random numbers and print
     for (int i = 0; i < SIZE; i++) {
-        scanf("%d", &digits[i]);
-        if (i == 0 || digits[i] < min) {
-            min = digits[i];
-            imin = i;
-        }
-    }
-
-    // Replace the first minimum with zero
-    digits[imin] = 0;
-
-    // Print the modified array
-    for (int i = 0; i < SIZE; i++) {
-        printf("%d", digits[i]);
-        if (i < SIZE - 1)
-            printf(" ");
+        array[i] = rand() % 6; // 0 to 5
+        printf("%d ", array[i]);
     }
     printf("\n");
+
+    // Compact the array: move non-zeros to the front, zeros to the end
+    int pos = 0;
+    for (int i = 0; i < SIZE; i++) {
+        if (array[i] != 0) {
+            array[pos++] = array[i];
+        }
+    }
+    // Fill the rest with zeros
+    for (int i = pos; i < SIZE; i++) {
+        array[i] = 0;
+    }
+
+    // Print the compacted array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+
     return 0;
 }

@@ -1,55 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SIZE 10
+#define ROWS 4
+#define COLS 6
 
-/**
- * @brief Generates an array of SIZE random integers, sorts it in ascending order, and prints the result.
- *
- * The user enters the seed for the random number generator.
- * The program fills the array with random numbers from 1 to 20, sorts it using selection sort,
- * and prints the sorted array (elements separated by spaces, including after the last element).
- *
- * @return 0 on successful completion
- */
-int main() {
+int main () {
+    int array2D[ROWS][COLS];
+    int user_input;
 
-    int array[SIZE];
-    int key;
+    // Read seed and initialize random generator
+    scanf("%d", &user_input);
+    srand(user_input);
 
-    // Read the key for random number generation
-    if(scanf("%d", &key) != 1) {
-        puts("Error reading input\n");
-        return 0;
-    }
-    srand(key);
-
-    // Fill the array with random numbers from 1 to 20
-    for(int i = 0; i < SIZE; i++) {
-        array[i] = rand() % 20 + 1;
+    // Fill and print the original array
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            array2D[i][j] = rand() % 7 - 3; // -3 to 3 inclusive
+            printf("%d\t", array2D[i][j]);
+        }
+        printf("\n");
     }
 
-    // Selection sort
-    int max_index;
-    for (int i = 0; i < SIZE - 1; i++) {
-        max_index = i;
-        for (int j = i + 1; j < SIZE; j++) {
-            if (array[j] > array[max_index]) {
-                max_index = j;
+    printf("\n");
+
+    // Count zeros in each column and print in one line
+    for (int j = 0; j < COLS; j++) {
+        int zero_count = 0;
+        for (int i = 0; i < ROWS; i++) {
+            if (array2D[i][j] == 0) {
+                zero_count++;
             }
         }
-        if (max_index != i) {
-            int temp = array[i];
-            array[i] = array[max_index];
-            array[max_index] = temp;
-        }
-    }
-
-    // Print the sorted array
-    for (int i = 0; i < SIZE; i++) {
-        printf("%d ", array[i]);
+        printf("%d\t", zero_count);
     }
     printf("\n");
+
     return 0;
 }
-

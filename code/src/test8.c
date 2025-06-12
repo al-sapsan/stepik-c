@@ -1,33 +1,42 @@
 #include <stdio.h>
-#define SIZE 10 ///< Constant for array size
+#include <stdlib.h>
 
-/**
- * @brief Calculates the average of SIZE integers and counts how many elements are less than the average.
- *
- * The user enters SIZE integers. The program prints the average (with one decimal place)
- * and the count of elements less than the average.
- *
- * @return 0 on successful completion
- */
-int main(void) {
-    int array[SIZE];
-    int count = 0;
-    double sum = 0, avg;
+#define ROWS 5
+#define COLS 4
 
-    // Read SIZE integers from user input
-    for (int i = 0; i < SIZE; i++) {
-        scanf("%d", &array[i]);
-        sum += array[i];
+int main() {
+    int array2D[ROWS][COLS];
+    int user_input;
+
+    // Read seed and initialize random generator
+    scanf("%d", &user_input);
+    srand(user_input);
+
+    // Fill and print the original array
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            array2D[i][j] = rand() % 29 + 2; // 2 to 30 inclusive
+            printf("%d\t", array2D[i][j]);
+        }
+        printf("\n");
     }
 
-    avg = sum / SIZE;
+    printf("\n");
 
-    // Count elements less than the average
-    for (int i = 0; i < SIZE; i++) {
-        if (array[i] < avg)
-            count++;
+    // Swap first and last rows
+    for (int j = 0; j < COLS; j++) {
+        int temp = array2D[0][j];
+        array2D[0][j] = array2D[ROWS - 1][j];
+        array2D[ROWS - 1][j] = temp;
     }
 
-    printf("%.1f %d\n", avg, count);
+    // Print the modified array
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            printf("%d\t", array2D[i][j]);
+        }
+        printf("\n");
+    }
+
     return 0;
 }
