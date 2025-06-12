@@ -17,8 +17,10 @@ int main() {
 
     // Fill the array with random numbers from 1 to 20
     for(int i = 0; i < SIZE; i++) {
-        array[i] = rand() % 51;
+        array[i] = rand() % 21;
+        printf("%d ", array[i]);
     }
+    printf("\n");
 
     // Bubble sort
     int right_side;// The right side of the array that is already sorted
@@ -32,6 +34,10 @@ int main() {
             }
         }
     }
-
+    // Print the final sorted array
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
     return 0;
 }
