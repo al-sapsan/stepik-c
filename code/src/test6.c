@@ -1,33 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 5
+#define ROWS 4
+#define COLS 5
+#define MIN -10
+#define MAX 10
+#define RANGE (MAX - MIN + 1)
 
 int main() {
-    int arr[N][N];
+    int array2D[ROWS][COLS];
+    int *row_ptrs[ROWS];
     int seed;
+
+    // Get seed for random number generator
     scanf("%d", &seed);
     srand(seed);
 
-    // Fill and print the array
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            arr[i][j] = rand() % 11 - 5; // -5 to 5 inclusive
-            printf("%d\t", arr[i][j]);
+    // Fill array2D with random numbers and initialize row pointers
+    for (int i = 0; i < ROWS; i++) {
+        row_ptrs[i] = array2D[i];
+        for (int j = 0; j < COLS; j++) {
+            array2D[i][j] = rand() % RANGE + MIN;
+        }
+    }
+
+    // Print original array2D
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            printf("%d\t", row_ptrs[i][j]);
         }
         printf("\n");
     }
- 
-    // Sum elements in the right triangle between diagonals (including diagonals)
-    int sum = 0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (j >= i && j >= N - 1 - i) {
-                sum += arr[i][j];
+
+    printf("\n");
+
+    // Sort row pointers by first element of each row
+    for (int i = 0; i < ROWS - 1; i++) {
+        for (int j = i + 1; j < ROWS; j++) {
+            if (row_ptrs[i][0] > row_ptrs[j][0]) {
+                int *temp = row_ptrs[i];
+                row_ptrs[i] = row_ptrs[j];
+                row_ptrs[j] = temp;
             }
         }
     }
-    printf("%d\n", sum);
+
+    // Print array2D rows using sorted pointers
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            printf("%d\t", row_ptrs[i][j]);
+        }
+        printf("\n");
+    }
 
     return 0;
 }

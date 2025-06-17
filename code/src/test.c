@@ -1,38 +1,33 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-#define SIZE 7
 
 int main() {
-    int array[SIZE];
-    int *ptr = array;          // Pointer to array start
-    int *end_ptr = array + SIZE; // Pointer to end of array
+    const char* names[] = {
+        "Анна",
+        "Андрей",
+        "Степан",
+        "Мария",
+        "Сергей"};
 
-    // Input array elements
-    for (; ptr < end_ptr; ptr++) {
-        scanf("%d", ptr);  // Direct pointer input
+    // Array of pointers to pointers for female names
+    const char** female_names[] = { &names[0], &names[3] };
+
+    // Array of pointers to pointers for male names
+    const char** male_names[] = { &names[1], &names[2], &names[4] };
+
+    // Pointer to array of pointers to pointers
+    const char ***pp;
+
+    // Print female names using the pointer
+    pp = female_names;
+    for (int i = 0; i < sizeof(female_names) / sizeof(female_names[0]); i++, pp++) {
+        printf("%s ", **pp);
     }
+    printf("\n");
 
-    // Reset pointer to start
-    ptr = array;
-
-    // Swap even and odd indices (stop before last element if SIZE is odd)
-    int *swap_end = (SIZE % 2 == 0) ? end_ptr : end_ptr - 1;
-    while (ptr < swap_end) {
-        // Swap current and next element
-        int temp = *ptr;
-        *ptr = *(ptr + 1);
-        *(ptr + 1) = temp;
-        
-        // Move pointer 2 positions ahead
-        ptr += 2;
-    }
-
-    // Print the modified array
-    ptr = array;
-    while (ptr < end_ptr) {
-        printf("%d ", *ptr);
-        ptr++;
+    // Reuse pp to print male names
+    pp = male_names;
+    for (int i = 0; i < sizeof(male_names) / sizeof(male_names[0]); i++, pp++) {
+        printf("%s ", **pp);
     }
     printf("\n");
 
