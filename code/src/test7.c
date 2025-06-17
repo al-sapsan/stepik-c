@@ -1,34 +1,21 @@
 #include <stdio.h>
 
-#define N 4
+/**
+ * @brief Заменяет значения обеих переменных на большее из них.
+ * 
+ * @param x Указатель на первую переменную
+ * @param y Указатель на вторую переменную
+ */
+void largerOf(double *x, double *y) {
+    double max = (*x > *y) ? *x : *y;
+    *x = max;
+    *y = max;
+}
 
 int main() {
-    int matrix[N][N];
-    // Input matrix
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            scanf("%d", &matrix[i][j]);
-        }
-    }
-
-    // Find the first row with no positive elements
-    int found = 0;
-    for (int i = 0; i < N; i++) {
-        int has_positive = 0;
-        for (int j = 0; j < N; j++) {
-            if (matrix[i][j] > 0) {
-                has_positive = 1;
-                break;
-            }
-        }
-        if (!has_positive) {
-            printf("%d\n", i + 1); // User numbering starts from 1
-            found = 1;
-            break;
-        }
-    }
-    if (!found) {
-        printf("NO\n");
-    }
+    double x, y;
+    scanf("%lf %lf", &x, &y);
+    largerOf(&x, &y);
+    printf("%.2lf %.2lf\n", x, y);
     return 0;
 }
