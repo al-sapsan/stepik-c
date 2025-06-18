@@ -1,81 +1,77 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#define SIZE 6
-#define MAX_VALUE 9
-#define MIN_VALUE -9
-#define RANGE (MAX_VALUE - MIN_VALUE + 1)
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+#define N 4
+#define M 5
 
 /**
- * @brief Initializes an array with random integers in the range [MIN_VALUE, MAX_VALUE].
- * 
- * @param arr Pointer to the array to initialize
- * @param n Number of elements in the array
+ * @brief Initializes a 2D array with random integers in [-3, 9].
+ * @param mas 2D array to initialize
+ * @param n Number of rows
  */
-void init_array(int *arr, int n);
+void initArray(int mas[][M], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            mas[i][j] = rand() % 13 - 3; // -3 to 9 inclusive
+        }
+    }
+}
 
 /**
- * @brief Prints the elements of the array separated by spaces, followed by a newline.
- * 
- * @param arr Pointer to the array to print
- * @param n Number of elements in the array
+ * @brief Prints a 2D array as a table, elements separated by tabs.
+ * @param mas 2D array to print
+ * @param n Number of rows
  */
-void print_array(int *arr, int n);
+void printArray(int mas[][M], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            cout << mas[i][j] << '\t';
+        }
+        cout << endl;
+    }
+}
 
-void find_neg(arr, SIZE);
-
-void find_pos(arr, SIZE);
-
-void swap(int *a, int *b);
+/**
+ * @brief Returns the minimum element in a 1D array.
+ * @param m Array
+ * @param n Number of elements
+ * @return Minimum value
+ */
+int minArray(int m[], int n)
+{
+    int min = m[0];
+    for (int i = 1; i < n; i++)
+    {
+        if (m[i] < min)
+            min = m[i];
+    }
+    return min;
+}
 
 int main()
 {
-    int seed;
-    scanf("%d", &seed);
-    srand(seed);
-    int arr[SIZE];
-    
-    init_array(arr, SIZE);
-    print_array(arr, SIZE);
-    int *first_negative = find_neg(arr, SIZE);
-    int *last_positive = find_pos(arr, SIZE);
-    if (first_negative == NULL || last_positive == NULL)
+    int n;
+    cin >> n;
+    srand(n);
+    int a[N][M];
+    initArray(a, N);
+    printArray(a, N);
+
+    // Print minimum in each row
+    for (int i = 0; i < N; i++)
     {
-        puts("Error");
-        return 0;
+        cout << minArray(a[i], M) << " ";
     }
-    swap (first_negative, last_positive);
-    print_array(arr, SIZE);
+    cout << endl;
+
+    // Find minimum in the whole 2D array (as 1D)
+    cout << minArray(&a[0][0], N * M) << endl;
+
     return 0;
-}
-
-void init_array(int *arr, int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        arr[i] = rand() % RANGE + MIN_VALUE;
-    }
-}
-
-void print_array(int *arr, int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
-}
-
-int find_neg (int *arr, int n)
-{
-    int *neg_ptr = NULL;
-    for (int i = 0; i < n; i++)
-    {
-        if (i < 0)
-        {
-            neg_ptr = &arr[i];
-            break;
-        }
-    }
-    return neg_ptr;
 }
