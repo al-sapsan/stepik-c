@@ -1,61 +1,61 @@
 #include <iostream>
-#include <iomanip>
 using namespace std;
 
-const int ROWS = 4;
-const int COLS = 5;
+#define SIZE 10
 
 /**
- * @brief Reads a 2D array of doubles from standard input.
- * @param arr 2D array to fill.
- * @param rows Number of rows.
- * @param cols Number of columns.
+ * @brief Рекурсивная функция быстрой сортировки по убыванию
+ * @param arr Сортируемый массив
+ * @param left Левая граница сортировки
+ * @param right Правая граница сортировки
  */
-void readArray(double arr[ROWS][COLS], int rows, int cols)
+void mySort(int arr[], int left, int right)
 {
-    for (int i = 0; i < rows; ++i)
-        for (int j = 0; j < cols; ++j)
-            cin >> arr[i][j];
-}
-
-/**
- * @brief Prints a 2D array of doubles as a table with two decimal places.
- * @param arr 2D array to print.
- * @param rows Number of rows.
- * @param cols Number of columns.
- */
-void printArray(const double arr[ROWS][COLS], int rows, int cols)
-{
-    for (int i = 0; i < rows; ++i)
-    {
-        for (int j = 0; j < cols; ++j)
-            cout << fixed << setprecision(2) << arr[i][j] << "\t";
-        cout << "\n";
-    }
-}
-
-/**
- * @brief Changes the sign of all elements in the specified column (user index, 1-based).
- * @param arr 2D array to modify.
- * @param rows Number of rows.
- * @param cols Number of columns.
- * @param user_col User column number (1-based).
- */
-void changeColumnSign(double arr[ROWS][COLS], int rows, int cols, int user_col)
-{
-    int col = user_col - 1;
-    if (col < 0 || col >= cols)
+    if (left >= right)
         return;
-    for (int i = 0; i < rows; ++i)
-        arr[i][col] = -arr[i][col];
+
+    int pivot = arr[(left + right) / 2];
+    int i = left;
+    int j = right;
+
+    while (i <= j)
+    {
+        while (arr[i] > pivot)
+            i++; // Ищем элементы меньше опорного слева
+        while (arr[j] < pivot)
+            j--; // Ищем элементы больше опорного справа
+
+        if (i <= j)
+        {
+            swap(arr[i], arr[j]);
+            i++;
+            j--;
+        }
+    }
+
+    mySort(arr, left, j);
+    mySort(arr, i, right);
 }
 
 int main()
 {
-    double arr[ROWS][COLS];
-    readArray(arr, ROWS, COLS);
-    int user_col;
-    cin >> user_col;
-    changeColumnSign(arr, ROWS, COLS, user_col);
-    printArray(arr, ROWS, COLS);
+    int arr[SIZE];
+
+    // Ввод массива с консоли
+    for (int i = 0; i < SIZE; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+
+    // Сортировка массива
+    mySort(arr, 0, SIZE - 1);
+
+    // Вывод отсортированного массива
+    for (int i = 0; i < SIZE; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    return 0;
 }
