@@ -21,16 +21,16 @@ extern "C"
 #include <stdint.h>
 #include <stdbool.h>
 
-    typedef uint8_t u8_t;
-    typedef int8_t i8_t;
-    typedef uint16_t u16_t;
-    typedef int16_t i16_t;
-    typedef uint32_t u32_t;
-    typedef int32_t i32_t;
-    typedef float f32_t;
-    typedef double f64_t;
-    typedef bool b_t;
-    typedef char ch_t;
+    typedef uint8_t u8_t;   /**< Unsigned 8-bit integer  */
+    typedef int8_t i8_t;    /**< Signed 8-bit integer    */
+    typedef uint16_t u16_t; /**< Unsigned 16-bit integer */
+    typedef int16_t i16_t;  /**< Signed 16-bit integer   */
+    typedef uint32_t u32_t; /**< Unsigned 32-bit integer */
+    typedef int32_t i32_t;  /**< Signed 32-bit integer   */
+    typedef float f32_t;    /**< 32-bit floating point   */
+    typedef double f64_t;   /**< 64-bit floating point   */
+    typedef bool b_t;       /**< Boolean type            */
+    typedef char ch_t;      /**< Character type          */
 
     //==============================================================================
     // 🔠 Константы (в SCREAMING_SNAKE_CASE)
