@@ -1,125 +1,191 @@
-#include "emb_style_cpp.h"
+/***
+ * @file test2.cpp
+ * @brief Динамический двумерный массив: заполнение, поиск строки с максимумом, дублирование строки
+ * @version 1.4
+ * @date 2025-07-07
+ */
+
+// === Core ===
 #include <iostream>
 #include <cstdlib>
+#include <cstdint>
+
+/*** Типы данных ***/
+typedef int16_t i16_t;
+typedef uint16_t u16_t;
+typedef uint32_t u32_t;
+
+/*** Макросы безопасности ***/
+#define CHECK_NULL(ptr) \
+    do { \
+        if (!(ptr)) { \
+            std::cerr << "Ошибка выделения памяти!" << std::endl; \
+            std::exit(1); \
+        } \
+    } while (0)
+
+/*** 🧩 Прототипы функций ***/
 
 /**
- * @brief Инициализация двумерного массива случайными числами 1..10
- * @param[out] l_arr_ptr_ptr Указатель на массив указателей
- * @param[in] l_cnt_rows_i16 Количество строк
- * @param[in] l_cnt_cols_i16 Количество столбцов
- * @param[in] l_seed_i16 Начальное значение генератора
+ * @brief Создаёт динамический двумерный массив
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ * @return Указатель на массив указателей
  */
-void arr2d_init_rand_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16, i16_t l_seed_i16)
+i16_t** create_2d_array(i16_t rows, i16_t cols);
+
+/**
+ * @brief Освобождает память, занятую двумерным массивом
+ * @param arr Указатель на массив указателей
+ * @param rows Количество строк
+ */
+void free_2d_array(i16_t** arr, i16_t rows);
+
+/**
+ * @brief Заполняет двумерный массив случайными числами от 1 до 10
+ * @param arr Указатель на массив указателей
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ * @param seed Начальное значение генератора случайных чисел
+ */
+void fill_2d_array_random(i16_t** arr, i16_t rows, i16_t cols, i16_t seed);
+
+/**
+ * @brief Печатает двумерный массив в виде таблицы с табуляцией
+ * @param arr Указатель на массив указателей
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ */
+void print_2d_array(i16_t** arr, i16_t rows, i16_t cols);
+
+/**
+ * @brief Находит индекс строки, содержащей первый максимальный элемент массива
+ * @param arr Указатель на массив указателей
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ * @return Индекс строки с первым максимальным элементом
+ */
+i16_t find_row_of_first_max(i16_t** arr, i16_t rows, i16_t cols);
+
+/**
+ * @brief Дублирует строку массива (вставляет копию после неё)
+ * @param arr Указатель на массив указателей (старый массив будет удалён)
+ * @param rows [in,out] Количество строк (будет увеличено)
+ * @param cols Количество столбцов
+ * @param row_to_duplicate Индекс строки для дублирования
+ * @return Новый указатель на массив указателей
+ */
+i16_t** duplicate_row(i16_t** arr, i16_t& rows, i16_t cols, i16_t row_to_duplicate);
+
+/***
+ * @brief Точка входа. Формирует, обрабатывает и выводит двумерный массив по заданию
+ * @return 0 при успешном завершении
+ */
+int main(void)
 {
-    std::srand(static_cast<unsigned int>(l_seed_i16));
-    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
+    i16_t rows = 0, cols = 0, seed = 0;
+    std::cin >> rows >> cols >> seed;
+    i16_t** arr = create_2d_array(rows, cols);
+    CHECK_NULL(arr);
+    fill_2d_array_random(arr, rows, cols, seed);
+    print_2d_array(arr, rows, cols);
+    std::cout << std::endl;
+    i16_t row_max = find_row_of_first_max(arr, rows, cols);
+    i16_t** arr2 = duplicate_row(arr, rows, cols, row_max);
+    CHECK_NULL(arr2);
+    arr = arr2;
+    print_2d_array(arr, rows, cols);
+    free_2d_array(arr, rows);
+    return 0;
+}
+
+/*** 🧩 Реализация функций ***/
+i16_t** create_2d_array(i16_t rows, i16_t cols)
+{
+    i16_t** arr = new (std::nothrow) i16_t*[rows];
+    CHECK_NULL(arr);
+    for (i16_t i = 0; i < rows; ++i)
     {
-        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
+        arr[i] = new (std::nothrow) i16_t[cols];
+        CHECK_NULL(arr[i]);
+    }
+    return arr;
+}
+
+void free_2d_array(i16_t** arr, i16_t rows)
+{
+    if (!arr) return;
+    for (i16_t i = 0; i < rows; ++i)
+    {
+        delete[] arr[i];
+    }
+    delete[] arr;
+}
+
+void fill_2d_array_random(i16_t** arr, i16_t rows, i16_t cols, i16_t seed)
+{
+    std::srand(static_cast<u32_t>(seed));
+    for (i16_t i = 0; i < rows; ++i)
+    {
+        for (i16_t j = 0; j < cols; ++j)
         {
-            l_arr_ptr_ptr[i][j] = static_cast<i16_t>(std::rand() % 10 + 1);
+            arr[i][j] = static_cast<i16_t>(std::rand() % 10 + 1);
         }
     }
 }
 
-/**
- * @brief Печать двумерного массива
- * @param[in] l_arr_ptr_ptr Указатель на массив указателей
- * @param[in] l_cnt_rows_i16 Количество строк
- * @param[in] l_cnt_cols_i16 Количество столбцов
- */
-void arr2d_print_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16)
+void print_2d_array(i16_t** arr, i16_t rows, i16_t cols)
 {
-    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
+    for (i16_t i = 0; i < rows; ++i)
     {
-        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
+        for (i16_t j = 0; j < cols; ++j)
         {
-            std::cout << l_arr_ptr_ptr[i][j] << '\t';
+            std::cout << arr[i][j] << '\t';
         }
         std::cout << '\n';
     }
 }
 
-/**
- * @brief Поиск индекса строки с первым максимальным элементом
- * @param[in] l_arr_ptr_ptr Указатель на массив указателей
- * @param[in] l_cnt_rows_i16 Количество строк
- * @param[in] l_cnt_cols_i16 Количество столбцов
- * @return Индекс строки
- */
-i16_t arr2d_find_row_first_max_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16)
+i16_t find_row_of_first_max(i16_t** arr, i16_t rows, i16_t cols)
 {
-    i16_t l_max_i16 = l_arr_ptr_ptr[0][0];
-    i16_t l_idx_row_max_i16 = 0;
-    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
+    i16_t max_val = arr[0][0];
+    i16_t max_row = 0;
+    for (i16_t i = 0; i < rows; ++i)
     {
-        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
+        for (i16_t j = 0; j < cols; ++j)
         {
-            if (l_arr_ptr_ptr[i][j] > l_max_i16)
+            if (arr[i][j] > max_val)
             {
-                l_max_i16 = l_arr_ptr_ptr[i][j];
-                l_idx_row_max_i16 = i;
+                max_val = arr[i][j];
+                max_row = i;
             }
         }
     }
-    return l_idx_row_max_i16;
+    return max_row;
 }
 
-/**
- * @brief Дублирует строку массива (вставляет копию после неё)
- * @param[in,out] l_arr_ptr_ptr Указатель на массив указателей (будет изменён)
- * @param[in,out] l_cnt_rows_ptr_i16 Указатель на количество строк (будет увеличено)
- * @param[in] l_cnt_cols_i16 Количество столбцов
- * @param[in] l_idx_row_dup_i16 Индекс строки для дублирования
- */
-void arr2d_duplicate_row_i16(i16_t ***l_arr_ptr_ptr_ptr, i16_t *l_cnt_rows_ptr_i16, i16_t l_cnt_cols_i16, i16_t l_idx_row_dup_i16)
+i16_t** duplicate_row(i16_t** arr, i16_t& rows, i16_t cols, i16_t row_to_duplicate)
 {
-    i16_t l_cnt_rows_i16 = *l_cnt_rows_ptr_i16;
-    i16_t **l_old_arr_ptr_ptr = *l_arr_ptr_ptr_ptr;
-    i16_t **l_new_arr_ptr_ptr = (i16_t **)malloc((l_cnt_rows_i16 + 1) * sizeof(i16_t *));
-    CHECK_NULL(l_new_arr_ptr_ptr);
-    for (i16_t i = 0, k = 0; i < l_cnt_rows_i16 + 1; ++i)
+    i16_t** new_arr = new (std::nothrow) i16_t*[rows + 1];
+    CHECK_NULL(new_arr);
+    i16_t k = 0;
+    for (i16_t i = 0; i < rows + 1; ++i)
     {
-        if (i == l_idx_row_dup_i16 + 1)
+        if (i == row_to_duplicate + 1)
         {
-            l_new_arr_ptr_ptr[i] = (i16_t *)malloc(l_cnt_cols_i16 * sizeof(i16_t));
-            CHECK_NULL(l_new_arr_ptr_ptr[i]);
-            for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
+            new_arr[i] = new (std::nothrow) i16_t[cols];
+            CHECK_NULL(new_arr[i]);
+            for (i16_t j = 0; j < cols; ++j)
             {
-                l_new_arr_ptr_ptr[i][j] = l_old_arr_ptr_ptr[l_idx_row_dup_i16][j];
+                new_arr[i][j] = arr[row_to_duplicate][j];
             }
         }
         else
         {
-            l_new_arr_ptr_ptr[i] = l_old_arr_ptr_ptr[k++];
+            new_arr[i] = arr[k++];
         }
     }
-    free(l_old_arr_ptr_ptr);
-    *l_arr_ptr_ptr_ptr = l_new_arr_ptr_ptr;
-    *l_cnt_rows_ptr_i16 = l_cnt_rows_i16 + 1;
-}
-
-int main(void)
-{
-    i16_t l_cnt_rows_i16 = 0, l_cnt_cols_i16 = 0, l_seed_i16 = 0;
-    std::cin >> l_cnt_rows_i16 >> l_cnt_cols_i16 >> l_seed_i16;
-    i16_t **l_arr_ptr_ptr = (i16_t **)malloc(l_cnt_rows_i16 * sizeof(i16_t *));
-    CHECK_NULL(l_arr_ptr_ptr);
-    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
-    {
-        l_arr_ptr_ptr[i] = (i16_t *)malloc(l_cnt_cols_i16 * sizeof(i16_t));
-        CHECK_NULL(l_arr_ptr_ptr[i]);
-    }
-    arr2d_init_rand_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16, l_seed_i16);
-    arr2d_print_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
-    std::cout << '\n';
-    i16_t l_idx_row_max_i16 = arr2d_find_row_first_max_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
-    arr2d_duplicate_row_i16(&l_arr_ptr_ptr, &l_cnt_rows_i16, l_cnt_cols_i16, l_idx_row_max_i16);
-    arr2d_print_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
-    // Очистка памяти
-    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
-    {
-        free(l_arr_ptr_ptr[i]);
-    }
-    free(l_arr_ptr_ptr);
-    return 0;
+    delete[] arr;
+    ++rows;
+    return new_arr;
 }
