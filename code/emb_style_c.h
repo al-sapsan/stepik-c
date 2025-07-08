@@ -77,15 +77,15 @@ extern "C"
 #include <stdatomic.h>
 
     // Базовые типы
-    typedef uint8_t u8_t;   ///< Unsigned 8-bit integer
-    typedef int8_t i8_t;    ///< Signed 8-bit integer
-    typedef uint16_t u16_t; ///< Unsigned 16-bit integer
-    typedef int16_t i16_t;  ///< Signed 16-bit integer
-    typedef uint32_t u32_t; ///< Unsigned 32-bit integer
-    typedef int32_t i32_t;  ///< Signed 32-bit integer
-    typedef float f32_t;    ///< 32-bit float
-    typedef double f64_t;   ///< 64-bit double
-    typedef bool b_t;       ///< Boolean
+    typedef uint8_t u8_t;   ///< Unsigned 8-bit integer   [0, 255]
+    typedef int8_t i8_t;    ///< Signed 8-bit integer     [-128, 127]
+    typedef uint16_t u16_t; ///< Unsigned 16-bit integer  [0, 65_535]
+    typedef int16_t i16_t;  ///< Signed 16-bit integer    [-32_768, 32_767]
+    typedef uint32_t u32_t; ///< Unsigned 32-bit integer  [0, 4_294_967_295]
+    typedef int32_t i32_t;  ///< Signed 32-bit integer    [-2_147_483_648, 2_147_483_647]
+    typedef float f32_t;    ///< 32-bit float             [~±1.18e−38, ±3.4e+38] (approx)
+    typedef double f64_t;   ///< 64-bit double            [~±2.23e−308, ±1.79e+308] (approx)
+    typedef bool b_t;       ///< Boolean                  [false, true]
 
     // Периферия и регистры
     typedef volatile u8_t vu8_t;   ///< Volatile 8-bit
