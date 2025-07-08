@@ -1,40 +1,39 @@
 #include "emb_style_cpp.h"
 #include <iostream>
+#include <cstdlib>
 
 /**
  * @brief Инициализация двумерного массива случайными числами 1..10
- * @param[out] l_arr_ptr_i32 Указатель на массив
- * @param[in] l_cnt_rows_i32 Количество строк
- * @param[in] l_cnt_cols_i32 Количество столбцов
- * @param[in] l_seed_i32 Начальное значение генератора
+ * @param[out] l_arr_ptr_ptr Указатель на массив указателей
+ * @param[in] l_cnt_rows_i16 Количество строк
+ * @param[in] l_cnt_cols_i16 Количество столбцов
+ * @param[in] l_seed_i16 Начальное значение генератора
  */
-void arr2d_init_rand_i32(i32_t **l_arr_ptr_i32, i32_t l_cnt_rows_i32, i32_t l_cnt_cols_i32, i32_t l_seed_i32)
+void arr2d_init_rand_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16, i16_t l_seed_i16)
 {
-    u32_t l_rand_u32 = static_cast<u32_t>(l_seed_i32);
-    for (i32_t l_idx_row_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32; ++l_idx_row_i32)
+    std::srand(static_cast<unsigned int>(l_seed_i16));
+    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
     {
-        for (i32_t l_idx_col_i32 = 0; l_idx_col_i32 < l_cnt_cols_i32; ++l_idx_col_i32)
+        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
         {
-            // Линейный конгруэнтный генератор
-            l_rand_u32 = 1664525U * l_rand_u32 + 1013904223U;
-            l_arr_ptr_i32[l_idx_row_i32][l_idx_col_i32] = (l_rand_u32 % 10) + 1;
+            l_arr_ptr_ptr[i][j] = static_cast<i16_t>(std::rand() % 10 + 1);
         }
     }
 }
 
 /**
  * @brief Печать двумерного массива
- * @param[in] l_arr_ptr_i32 Указатель на массив
- * @param[in] l_cnt_rows_i32 Количество строк
- * @param[in] l_cnt_cols_i32 Количество столбцов
+ * @param[in] l_arr_ptr_ptr Указатель на массив указателей
+ * @param[in] l_cnt_rows_i16 Количество строк
+ * @param[in] l_cnt_cols_i16 Количество столбцов
  */
-void arr2d_print_i32(i32_t **l_arr_ptr_i32, i32_t l_cnt_rows_i32, i32_t l_cnt_cols_i32)
+void arr2d_print_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16)
 {
-    for (i32_t l_idx_row_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32; ++l_idx_row_i32)
+    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
     {
-        for (i32_t l_idx_col_i32 = 0; l_idx_col_i32 < l_cnt_cols_i32; ++l_idx_col_i32)
+        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
         {
-            std::cout << l_arr_ptr_i32[l_idx_row_i32][l_idx_col_i32] << '\t';
+            std::cout << l_arr_ptr_ptr[i][j] << '\t';
         }
         std::cout << '\n';
     }
@@ -42,81 +41,85 @@ void arr2d_print_i32(i32_t **l_arr_ptr_i32, i32_t l_cnt_rows_i32, i32_t l_cnt_co
 
 /**
  * @brief Поиск индекса строки с первым максимальным элементом
- * @param[in] l_arr_ptr_i32 Указатель на массив
- * @param[in] l_cnt_rows_i32 Количество строк
- * @param[in] l_cnt_cols_i32 Количество столбцов
+ * @param[in] l_arr_ptr_ptr Указатель на массив указателей
+ * @param[in] l_cnt_rows_i16 Количество строк
+ * @param[in] l_cnt_cols_i16 Количество столбцов
  * @return Индекс строки
  */
-i32_t arr2d_find_row_first_max_i32(i32_t **l_arr_ptr_i32, i32_t l_cnt_rows_i32, i32_t l_cnt_cols_i32)
+i16_t arr2d_find_row_first_max_i16(i16_t **l_arr_ptr_ptr, i16_t l_cnt_rows_i16, i16_t l_cnt_cols_i16)
 {
-    i32_t l_max_i32 = l_arr_ptr_i32[0][0];
-    i32_t l_idx_row_max_i32 = 0;
-    for (i32_t l_idx_row_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32; ++l_idx_row_i32)
+    i16_t l_max_i16 = l_arr_ptr_ptr[0][0];
+    i16_t l_idx_row_max_i16 = 0;
+    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
     {
-        for (i32_t l_idx_col_i32 = 0; l_idx_col_i32 < l_cnt_cols_i32; ++l_idx_col_i32)
+        for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
         {
-            if (l_arr_ptr_i32[l_idx_row_i32][l_idx_col_i32] > l_max_i32)
+            if (l_arr_ptr_ptr[i][j] > l_max_i16)
             {
-                l_max_i32 = l_arr_ptr_i32[l_idx_row_i32][l_idx_col_i32];
-                l_idx_row_max_i32 = l_idx_row_i32;
+                l_max_i16 = l_arr_ptr_ptr[i][j];
+                l_idx_row_max_i16 = i;
             }
         }
     }
-    return l_idx_row_max_i32;
+    return l_idx_row_max_i16;
 }
 
 /**
  * @brief Дублирует строку массива (вставляет копию после неё)
- * @param[in,out] l_arr_ptr_i32 Указатель на массив (массив указателей)
- * @param[in] l_cnt_rows_i32 Количество строк ДО вставки
- * @param[in] l_cnt_cols_i32 Количество столбцов
- * @param[in] l_idx_row_dup_i32 Индекс строки для дублирования
+ * @param[in,out] l_arr_ptr_ptr Указатель на массив указателей (будет изменён)
+ * @param[in,out] l_cnt_rows_ptr_i16 Указатель на количество строк (будет увеличено)
+ * @param[in] l_cnt_cols_i16 Количество столбцов
+ * @param[in] l_idx_row_dup_i16 Индекс строки для дублирования
  */
-void arr2d_duplicate_row_i32(i32_t **&l_arr_ptr_i32, i32_t &l_cnt_rows_i32, i32_t l_cnt_cols_i32, i32_t l_idx_row_dup_i32)
+void arr2d_duplicate_row_i16(i16_t ***l_arr_ptr_ptr_ptr, i16_t *l_cnt_rows_ptr_i16, i16_t l_cnt_cols_i16, i16_t l_idx_row_dup_i16)
 {
-    // Новый массив указателей
-    i32_t **l_new_arr_ptr_i32 = new i32_t *[l_cnt_rows_i32 + 1];
-    for (i32_t l_idx_row_i32 = 0, l_idx_new_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32 + 1; ++l_idx_row_i32)
+    i16_t l_cnt_rows_i16 = *l_cnt_rows_ptr_i16;
+    i16_t **l_old_arr_ptr_ptr = *l_arr_ptr_ptr_ptr;
+    i16_t **l_new_arr_ptr_ptr = (i16_t **)malloc((l_cnt_rows_i16 + 1) * sizeof(i16_t *));
+    CHECK_NULL(l_new_arr_ptr_ptr);
+    for (i16_t i = 0, k = 0; i < l_cnt_rows_i16 + 1; ++i)
     {
-        if (l_idx_row_i32 == l_idx_row_dup_i32 + 1)
+        if (i == l_idx_row_dup_i16 + 1)
         {
-            // Вставляем копию
-            l_new_arr_ptr_i32[l_idx_row_i32] = new i32_t[l_cnt_cols_i32];
-            for (i32_t l_idx_col_i32 = 0; l_idx_col_i32 < l_cnt_cols_i32; ++l_idx_col_i32)
+            l_new_arr_ptr_ptr[i] = (i16_t *)malloc(l_cnt_cols_i16 * sizeof(i16_t));
+            CHECK_NULL(l_new_arr_ptr_ptr[i]);
+            for (i16_t j = 0; j < l_cnt_cols_i16; ++j)
             {
-                l_new_arr_ptr_i32[l_idx_row_i32][l_idx_col_i32] = l_arr_ptr_i32[l_idx_row_dup_i32][l_idx_col_i32];
+                l_new_arr_ptr_ptr[i][j] = l_old_arr_ptr_ptr[l_idx_row_dup_i16][j];
             }
         }
         else
         {
-            l_new_arr_ptr_i32[l_idx_row_i32] = l_arr_ptr_i32[l_idx_new_i32++];
+            l_new_arr_ptr_ptr[i] = l_old_arr_ptr_ptr[k++];
         }
     }
-    ++l_cnt_rows_i32;
-    delete[] l_arr_ptr_i32;
-    l_arr_ptr_i32 = l_new_arr_ptr_i32;
+    free(l_old_arr_ptr_ptr);
+    *l_arr_ptr_ptr_ptr = l_new_arr_ptr_ptr;
+    *l_cnt_rows_ptr_i16 = l_cnt_rows_i16 + 1;
 }
 
-int main()
+int main(void)
 {
-    i32_t l_cnt_rows_i32 = 0, l_cnt_cols_i32 = 0, l_seed_i32 = 0;
-    std::cin >> l_cnt_rows_i32 >> l_cnt_cols_i32 >> l_seed_i32;
-    i32_t **l_arr_ptr_i32 = new i32_t *[l_cnt_rows_i32];
-    for (i32_t l_idx_row_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32; ++l_idx_row_i32)
+    i16_t l_cnt_rows_i16 = 0, l_cnt_cols_i16 = 0, l_seed_i16 = 0;
+    std::cin >> l_cnt_rows_i16 >> l_cnt_cols_i16 >> l_seed_i16;
+    i16_t **l_arr_ptr_ptr = (i16_t **)malloc(l_cnt_rows_i16 * sizeof(i16_t *));
+    CHECK_NULL(l_arr_ptr_ptr);
+    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
     {
-        l_arr_ptr_i32[l_idx_row_i32] = new i32_t[l_cnt_cols_i32];
+        l_arr_ptr_ptr[i] = (i16_t *)malloc(l_cnt_cols_i16 * sizeof(i16_t));
+        CHECK_NULL(l_arr_ptr_ptr[i]);
     }
-    arr2d_init_rand_i32(l_arr_ptr_i32, l_cnt_rows_i32, l_cnt_cols_i32, l_seed_i32);
-    arr2d_print_i32(l_arr_ptr_i32, l_cnt_rows_i32, l_cnt_cols_i32);
+    arr2d_init_rand_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16, l_seed_i16);
+    arr2d_print_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
     std::cout << '\n';
-    i32_t l_idx_row_max_i32 = arr2d_find_row_first_max_i32(l_arr_ptr_i32, l_cnt_rows_i32, l_cnt_cols_i32);
-    arr2d_duplicate_row_i32(l_arr_ptr_i32, l_cnt_rows_i32, l_cnt_cols_i32, l_idx_row_max_i32);
-    arr2d_print_i32(l_arr_ptr_i32, l_cnt_rows_i32, l_cnt_cols_i32);
+    i16_t l_idx_row_max_i16 = arr2d_find_row_first_max_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
+    arr2d_duplicate_row_i16(&l_arr_ptr_ptr, &l_cnt_rows_i16, l_cnt_cols_i16, l_idx_row_max_i16);
+    arr2d_print_i16(l_arr_ptr_ptr, l_cnt_rows_i16, l_cnt_cols_i16);
     // Очистка памяти
-    for (i32_t l_idx_row_i32 = 0; l_idx_row_i32 < l_cnt_rows_i32; ++l_idx_row_i32)
+    for (i16_t i = 0; i < l_cnt_rows_i16; ++i)
     {
-        delete[] l_arr_ptr_i32[l_idx_row_i32];
+        free(l_arr_ptr_ptr[i]);
     }
-    delete[] l_arr_ptr_i32;
+    free(l_arr_ptr_ptr);
     return 0;
 }
