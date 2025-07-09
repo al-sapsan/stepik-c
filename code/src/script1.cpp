@@ -10,9 +10,6 @@
 #include <cstdlib>
 #include <cstdint>
 
-using std::cin;
-using std::cout;
-
 typedef int32_t i32_t;
 typedef int16_t i16_t;
 
@@ -54,75 +51,85 @@ void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16);
 
 void matrix_init_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
 {
-    for (i16_t row = 0; row < rows_i16; ++row)
+    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
     {
-        for (i16_t col = 0; col < cols_i16; ++col)
+        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
         {
-            arr_ptr[row][col] = std::rand() % 26 - 10;
+            arr_ptr[l_row_i16][l_col_i16] = std::rand() % 26 - 10;
         }
     }
 }
 
 void matrix_print_i32(const i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
 {
-    for (i16_t row = 0; row < rows_i16; ++row)
+    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
     {
-        for (i16_t col = 0; col < cols_i16; ++col)
+        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
         {
-            cout << arr_ptr[row][col] << "\t";
+            std::cout << arr_ptr[l_row_i16][l_col_i16] << "\t";
         }
-        cout << "\n";
+        std::cout << "\n";
     }
 }
 
 i32_t **matrix_transpose_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
 {
-    i32_t **tr_ptr = new i32_t *[cols_i16];
-    for (i16_t col = 0; col < cols_i16; ++col)
+    i32_t **l_tr_ptr = new i32_t *[cols_i16];
+
+    for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
     {
-        tr_ptr[col] = new i32_t[rows_i16];
+        l_tr_ptr[l_col_i16] = new i32_t[rows_i16];
     }
-    for (i16_t row = 0; row < rows_i16; ++row)
+
+    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
     {
-        for (i16_t col = 0; col < cols_i16; ++col)
+        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
         {
-            tr_ptr[col][row] = arr_ptr[row][col];
+            l_tr_ptr[l_col_i16][l_row_i16] = arr_ptr[l_row_i16][l_col_i16];
         }
     }
-    return tr_ptr;
+
+    return l_tr_ptr;
 }
 
 void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16)
 {
-    for (i16_t row = 0; row < rows_i16; ++row)
+    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
     {
-        delete[] arr_ptr[row];
+        delete[] arr_ptr[l_row_i16];
     }
+
     delete[] arr_ptr;
 }
 
 /*** 🏁 Главная функция ***/
+
 int main(void)
 {
-    i16_t rows_i16, cols_i16, seed_i16;
-    cin >> rows_i16 >> cols_i16 >> seed_i16;
-    std::srand(seed_i16);
+    i16_t l_rows_i16 = 0;
+    i16_t l_cols_i16 = 0;
+    i16_t l_seed_i16 = 0;
 
-    i32_t **arr_ptr = new i32_t *[rows_i16];
-    for (i16_t row = 0; row < rows_i16; ++row)
+    std::cin >> l_rows_i16 >> l_cols_i16 >> l_seed_i16;
+    std::srand(l_seed_i16);
+
+    i32_t **l_arr_ptr = new i32_t *[l_rows_i16];
+    for (i16_t l_row_i16 = 0; l_row_i16 < l_rows_i16; ++l_row_i16)
     {
-        arr_ptr[row] = new i32_t[cols_i16];
+        l_arr_ptr[l_row_i16] = new i32_t[l_cols_i16];
     }
-    matrix_init_i32(arr_ptr, rows_i16, cols_i16);
 
-    matrix_print_i32(const_cast<const i32_t **>(arr_ptr), rows_i16, cols_i16);
-    cout << "\n";
+    matrix_init_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
 
-    i32_t **tr_ptr = matrix_transpose_i32(arr_ptr, rows_i16, cols_i16);
-    matrix_print_i32(const_cast<const i32_t **>(tr_ptr), cols_i16, rows_i16);
+    matrix_print_i32(const_cast<const i32_t **>(l_arr_ptr), l_rows_i16, l_cols_i16);
+    std::cout << "\n";
 
-    matrix_free_i32(arr_ptr, rows_i16);
-    matrix_free_i32(tr_ptr, cols_i16);
+    i32_t **l_tr_ptr = matrix_transpose_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
+
+    matrix_print_i32(const_cast<const i32_t **>(l_tr_ptr), l_cols_i16, l_rows_i16);
+
+    matrix_free_i32(l_arr_ptr, l_rows_i16);
+    matrix_free_i32(l_tr_ptr, l_cols_i16);
 
     return 0;
 }
