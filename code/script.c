@@ -1,19 +1,16 @@
-#include <stdint.h>
-#include <inttypes.h>
 #include <stdio.h>
-#include <stdbool.h>
 
 int main()
 {
+    char str[31];                   // 30 символов + '\0'
+    fgets(str, sizeof(str), stdin); // Чтение строки с пробелами
 
-    return 0;
-}
-printf("%" PRIu16, arg);
+    // Удаление символа новой строки (если он есть)
+    if (str[strlen(str) - 1] == '\n')
+    {
+        str[strlen(str) - 1] = '\0';
+    }
 
-scanf("%" PRIu32, &ddc);
-
-u32_t get_ass(void)
-{
-    // TODO: implement
+    printf("%s", str);
     return 0;
 }

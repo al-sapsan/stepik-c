@@ -1,5 +1,4 @@
 /**
- * @file test1.cpp
  * @brief Транспонирование матрицы с инициализацией и выводом (emb_style_cpp.h)
  * @version 1.0
  * @date 2025-07-08
@@ -13,7 +12,7 @@
 typedef int32_t i32_t;
 typedef int16_t i16_t;
 
-/*** 🧩 Прототипы функций ***/
+/*** Прототипы функций ***/
 
 /**
  * @brief Инициализирует двумерный массив случайными числами от -10 до 15
@@ -47,7 +46,38 @@ i32_t **matrix_transpose_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16);
  */
 void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16);
 
-/*** 🧩 Реализация функций ***/
+/*** Главная функция ***/
+int main(void)
+{
+    i16_t l_rows_i16 = 0;
+    i16_t l_cols_i16 = 0;
+    i16_t l_seed_i16 = 0;
+
+    std::cin >> l_rows_i16 >> l_cols_i16 >> l_seed_i16;
+    std::srand(l_seed_i16);
+
+    i32_t **l_arr_ptr = new i32_t *[l_rows_i16];
+    for (i16_t l_row_i16 = 0; l_row_i16 < l_rows_i16; ++l_row_i16)
+    {
+        l_arr_ptr[l_row_i16] = new i32_t[l_cols_i16];
+    }
+
+    matrix_init_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
+
+    matrix_print_i32(const_cast<const i32_t **>(l_arr_ptr), l_rows_i16, l_cols_i16);
+    std::cout << "\n";
+
+    i32_t **l_tr_ptr = matrix_transpose_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
+
+    matrix_print_i32(const_cast<const i32_t **>(l_tr_ptr), l_cols_i16, l_rows_i16);
+
+    matrix_free_i32(l_arr_ptr, l_rows_i16);
+    matrix_free_i32(l_tr_ptr, l_cols_i16);
+
+    return 0;
+}
+
+/*** Реализация функций ***/
 
 void matrix_init_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
 {
@@ -100,36 +130,4 @@ void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16)
     }
 
     delete[] arr_ptr;
-}
-
-/*** 🏁 Главная функция ***/
-
-int main(void)
-{
-    i16_t l_rows_i16 = 0;
-    i16_t l_cols_i16 = 0;
-    i16_t l_seed_i16 = 0;
-
-    std::cin >> l_rows_i16 >> l_cols_i16 >> l_seed_i16;
-    std::srand(l_seed_i16);
-
-    i32_t **l_arr_ptr = new i32_t *[l_rows_i16];
-    for (i16_t l_row_i16 = 0; l_row_i16 < l_rows_i16; ++l_row_i16)
-    {
-        l_arr_ptr[l_row_i16] = new i32_t[l_cols_i16];
-    }
-
-    matrix_init_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
-
-    matrix_print_i32(const_cast<const i32_t **>(l_arr_ptr), l_rows_i16, l_cols_i16);
-    std::cout << "\n";
-
-    i32_t **l_tr_ptr = matrix_transpose_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
-
-    matrix_print_i32(const_cast<const i32_t **>(l_tr_ptr), l_cols_i16, l_rows_i16);
-
-    matrix_free_i32(l_arr_ptr, l_rows_i16);
-    matrix_free_i32(l_tr_ptr, l_cols_i16);
-
-    return 0;
 }
