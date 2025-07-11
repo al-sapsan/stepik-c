@@ -46,9 +46,9 @@ int main()
 
 // === Function Definitions ===
 
-void extract_part(const char *s_str, char *s_result)
+void extract_part(const char *str, char *result)
 {
-    const char *l_start = strchr(s_str, ';');
+    const char *l_start = strchr(str, ';');
 
     if (l_start != nullptr)
     {

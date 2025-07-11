@@ -17,23 +17,24 @@
 extern "C"
 {
 #endif
+
     //==============================================================================
-    // 📘 Структура кода
+    // 📘 Code Structure
     //==============================================================================
 
     /**
-     * 1. Общие сведения (имя файла, назначение, платформа, версия, дата)
-     Пример:
-        * @file motor_control.c
-        * @brief Драйвер управления двигателями (ПИД-регулятор)
+     * 1. General information (filename, purpose, platform, version, date)
+     * Example:
+        * @file motor_control.cpp
+        * @brief Motor control driver (PID controller)
         * @version 1.1 (STM32F4xx HAL)
-         * @date 2023-08-15
+        * @date 2023-08-15
         *
-        * @warning Не использовать с DMA без проверки буферов!
-        * @note Максимальная частота обновления - 1 кГц
+        * @warning Do not use with DMA without buffer checks!
+        * @note Maximum update rate: 1 kHz
 
-     * 2. Используемые библиотеки (группировать по назначению)
-    Пример:
+     * 2. Libraries used (grouped by purpose)
+     * Example:
         // === Core ===
         #include <stdint.h>
         #include "stm32f4xx_hal.h"
@@ -46,49 +47,49 @@ extern "C"
         #include "FreeRTOS.h"
         #include "task.h"
 
-     * 3. Типы данных
-    Пример:
+     * 3. Data types
+     * Example:
         * typedef int16_t i16_t;
         * typedef uint32_t u32_t;
-     * 4. Константы
-    Пример:
+     * 4. Constants
+     * Example:
         * constexpr u16_t MAX_BUFFER_SIZE = 128;
         * constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
         * constexpr f32_t PI_CONST = 3.1415926f;
-     * 5. Прототипы функций с doxygen комментариями
-    Пример:
-        * @brief Инициализация ПИД-регулятора
-        * @param pid Указатель на структуру (должен быть валидным)
-        * @param kp Коэффициент пропорциональный [0.0 - 5.0]
-        * @return HAL_StatusTypeDef Статус инициализации
+     * 5. Function prototypes with Doxygen comments
+     * Example:
+        * @brief Initialize PID controller
+        * @param pid Pointer to structure (must be valid)
+        * @param kp Proportional coefficient [0.0 - 5.0]
+        * @return HAL_StatusTypeDef Initialization status
         HAL_StatusTypeDef pid_init(pid_controller_t* pid, float kp);
 
-     * 6. Главная функция
-     * 7. Реализация функций
+     * 6. Main function
+     * 7. Function implementations
      *
-     * Указанные заголовки выводятся в следующей нотации
-     * Пример:
-     * /*** Текст заголовка ***/
+     * Section headers use the following notation:
+     * Example:
+     * /*** Header Text ***/
 
     //==============================================================================
-    // 📚 Doxygen документация
+    // 📚 Doxygen Documentation
     //==============================================================================
 
     /**
-     * @brief Краткое описание модуля/функции
+     * @brief Brief module/function description
      *
-     * Подробное описание функциональности. Пример:
+     * Detailed functionality description. Example:
      * @code
      * sensor_init(&sensor_cfg);
      * @endcode
      *
-     * @param[in] param1 Описание входного параметра
-     * @param[out] param2 Описание выходного параметра
-     * @return err_code_t Код ошибки (см. err_code_t)
+     * @param[in] param1 Input parameter description
+     * @param[out] param2 Output parameter description
+     * @return err_code_t Error code (see err_code_t)
      *
-     * @note Важные замечания по использованию
-     * @warning Предупреждения о безопасности
-     * @see Другие связанные функции
+     * @note Important usage notes
+     * @warning Safety warnings
+     * @see Related functions
      */
 
     //==============================================================================
@@ -155,14 +156,14 @@ extern "C"
     }
 
     //==============================================================================
-    // 🧩 Типы данных
+    // 🧩 Data Types
     //==============================================================================
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 
-    // Базовые типы
+    // Base types
     typedef uint8_t u8_t;   ///< Unsigned 8-bit integer   [0, 255]
     typedef int8_t i8_t;    ///< Signed 8-bit integer     [-128, 127]
     typedef uint16_t u16_t; ///< Unsigned 16-bit integer  [0, 65_535]
@@ -173,33 +174,33 @@ extern "C"
     typedef double f64_t;   ///< 64-bit double            [~±2.23e−308, ±1.79e+308] (approx)
     typedef bool b_t;       ///< Boolean                  [false, true]
 
-    // Volatile версии для работы с регистрами
+    // Volatile versions for register access
     typedef volatile uint8_t vu8_t;
     typedef volatile uint16_t vu16_t;
     typedef volatile uint32_t vu32_t;
     typedef volatile int32_t vi32_t;
 
     //==============================================================================
-    // 🔠 Константы (предпочтительно constexpr)
+    // 🔠 Constants (prefer constexpr)
     //==============================================================================
 
-    constexpr u16_t MAX_BUFFER_SIZE = 128; // вместо #define
+    constexpr u16_t MAX_BUFFER_SIZE = 128; // Instead of #define
     constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
     constexpr f32_t PI_CONST = 3.1415926f;
     constexpr f32_t DEG_TO_RAD = 0.0174533f;
 
     //==============================================================================
-    // 🤖 Робототехника: специализированные типы
+    // 🤖 Robotics: Specialized Types
     //==============================================================================
 
-    /// 2D координаты (мм)
+    /// 2D coordinates (mm)
     typedef struct
     {
         f32_t x_mm;
         f32_t y_mm;
     } coord_2d_t;
 
-    /// 3D координаты (мм)
+    /// 3D coordinates (mm)
     typedef struct
     {
         f32_t x_mm;
@@ -207,7 +208,7 @@ extern "C"
         f32_t z_mm;
     } coord_3d_t;
 
-    /// Углы (градусы и радианы)
+    /// Euler angles (degrees and radians)
     typedef struct
     {
         f32_t roll_deg;
@@ -215,7 +216,7 @@ extern "C"
         f32_t yaw_deg;
     } euler_angles_t;
 
-    /// Параметры двигателя
+    /// Motor parameters
     typedef struct
     {
         f32_t rpm_target;
@@ -224,10 +225,10 @@ extern "C"
     } motor_params_t;
 
 //==============================================================================
-// 🛠 Безопасность: проверки
+// 🛠 Safety: Checks
 //==============================================================================
 
-// Проверка указателя
+// Null pointer check
 #define CHECK_NULL(ptr)    \
     do                     \
     {                      \
@@ -237,7 +238,7 @@ extern "C"
         }                  \
     } while (0)
 
-// Проверка диапазона
+// Range check
 #define CHECK_RANGE(val, min, max)          \
     do                                      \
     {                                       \
@@ -247,7 +248,7 @@ extern "C"
         }                                   \
     } while (0)
 
-// Проверка с возвратом ошибки
+// Range check with error return
 #define CHECK_RANGE_ERR(val, min, max, err) \
     do                                      \
     {                                       \
@@ -258,37 +259,37 @@ extern "C"
     } while (0)
 
     //==============================================================================
-    // ⏱ RTOS: задачи и синхронизация
+    // ⏱ RTOS: Tasks and Synchronization
     //==============================================================================
 
-    // Рекомендуемые размеры стэков (в словах)
-    constexpr u16_t TASK_STACK_MINIMAL = 128; // Минимальный (простой обработчик)
-    constexpr u16_t TASK_STACK_SMALL = 256;   // Датчики, простые алгоритмы
-    constexpr u16_t TASK_STACK_MEDIUM = 512;  // Умеренная логика
-    constexpr u16_t TASK_STACK_LARGE = 1024;  // Сложные алгоритмы/протоколы
-    constexpr u16_t TASK_STACK_HUGE = 2048;   // Машинное зрение и т.п.
+    // Recommended stack sizes (in words)
+    constexpr u16_t TASK_STACK_MINIMAL = 128; // Minimal (simple handler)
+    constexpr u16_t TASK_STACK_SMALL = 256;   // Sensors, simple algorithms
+    constexpr u16_t TASK_STACK_MEDIUM = 512;  // Moderate logic
+    constexpr u16_t TASK_STACK_LARGE = 1024;  // Complex algorithms/protocols
+    constexpr u16_t TASK_STACK_HUGE = 2048;   // Computer vision, etc.
 
-    /// Шаблон задачи RTOS
+    /// RTOS task template
     void task_template(void *pvParameters)
     {
-        // Инициализация
-        (void)pvParameters; // Явное подавление предупреждения
+        // Initialization
+        (void)pvParameters; // Explicit unused warning suppression
 
-        // Основной цикл задачи
-        for (;;) // Предпочтительнее while(1)
+        // Main task loop
+        for (;;) // Prefer over while(1)
         {
-            // Основная логика задачи
+            // Main task logic
 
-            // Задержка или ожидание события
+            // Delay or wait for event
             vTaskDelay(pdMS_TO_TICKS(10));
         }
 
-        // В нормальных условиях сюда не попадаем
+        // Should never reach here
         vTaskDelete(NULL);
     }
 
     //==============================================================================
-    // 📘 Примеры структур (дополненные)
+    // 📘 Example Structures (Extended)
     //==============================================================================
 
     typedef struct
@@ -299,7 +300,7 @@ extern "C"
         u32_t m_update_time_ms;
     } robot_state_t;
 
-    /// @brief Конфигурация UART
+    /// @brief UART configuration
     typedef struct
     {
         u32_t m_baud_rate_u32;
@@ -308,7 +309,7 @@ extern "C"
         b_t m_parity_enable_b;
     } uart_cfg_t;
 
-    /// @brief Пример структуры датчика
+    /// @brief Example sensor structure
     typedef struct
     {
         f32_t m_temperature_f32_C;
@@ -316,38 +317,38 @@ extern "C"
         b_t m_active_b;
     } sensor_t;
 
-    /// @brief Пример глобальных переменных
+    /// @brief Example global variables
     extern u8_t g_device_id_u8;
     extern b_t g_data_ready_b;
 
-    /// @brief Пример статической переменной
+    /// @brief Example static variable
     static u8_t s_rx_buffer_u8[MAX_BUFFER_SIZE];
 
     //==============================================================================
-    // 🧠 Прерывания (ISR)
+    // 🧠 Interrupts (ISR)
     //==============================================================================
     /*
-     * - Использовать префикс _isr
-     * - Минимум логики
-     * - Никакой динамической памяти
-     * - Только volatile переменные или флаги
-     * - Можно использовать __attribute__((interrupt)) при необходимости
+     * - Use _isr prefix
+     * - Minimal logic
+     * - No dynamic memory
+     * - Only volatile variables or flags
+     * - May use __attribute__((interrupt)) if needed
      */
 
-    // Пример:
+    // Example:
     void exti0_isr(void);
 
     //==============================================================================
-    // ⏱ RTOS соглашения
+    // ⏱ RTOS Conventions
     //==============================================================================
     /*
-     * - enum class State_t : u8_t {} для FSM
-     * - Префиксы: task_, sem_, evt_, msg_, etc.
-     * - volatile и atomic для синхронизации
+     * - enum class State_t : u8_t {} for FSMs
+     * - Prefixes: task_, sem_, evt_, msg_, etc.
+     * - volatile and atomic for synchronization
      */
 
     //==============================================================================
-    // 🧮 Пространства имён
+    // 🧮 Namespaces
     //==============================================================================
 
     namespace hal
@@ -371,18 +372,18 @@ extern "C"
     }
 
 //==============================================================================
-// ⚠ Исключено из соглашения (не использовать в embedded C++)
+// ⚠ Banned in Embedded C++ (Do Not Use)
 //==============================================================================
 /*
  * - std::shared_ptr, std::unique_ptr
  * - std::vector, std::string
  * - new/delete
- * - Исключения (try/catch)
+ * - Exceptions (try/catch)
  * - RTTI (Run-Time Type Info)
  */
 
 //==============================================================================
-// 🛠 Пример безопасного макроса
+// 🛠 Example Safety Macro
 //==============================================================================
 #define CHECK_NULL(ptr)    \
     do                     \
