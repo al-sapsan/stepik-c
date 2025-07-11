@@ -1,65 +1,61 @@
 /**
- * @file    replace_dot_comma.cpp
- * @brief   Замена последовательности ".," на символ ';' в строке
+ * @file    extract_codeword.cpp
+ * @brief   Извлекает части кодового слова из строк по разделителям
  * @version 1.0
- * @date    2025-07-08
  */
 
 #include <cstdio>
 #include <cstring>
 
-/**
- * @brief   Удаляет символ по указанному адресу в строке
- * @param[in,out] ptr  Указатель на удаляемый символ
+/** @brief Извлекает подстроку между двумя символами ';' и добавляет в результат
+ *  @param[in]  str     Входная строка
+ *  @param[out] result  Буфер для результата (накопительный)
  */
-void strdel(char *ptr);
+void extract_part(const char *str, char *result);
 
-/**
- * @brief   Точка входа в программу
- * @return  0 при успешном завершении
- */
+// === main ===
+
 int main()
 {
-    constexpr int MAXLEN = 101; // 100 символов + '\0'
-    char mystring[MAXLEN];
+    constexpr int MAXLEN = 256;
+    char l_str1[MAXLEN] = {};
+    char l_str2[MAXLEN] = {};
+    char l_str3[MAXLEN] = {};
+    char l_code_word[MAXLEN] = {}; // Пустая строка
 
-    std::fgets(mystring, MAXLEN, stdin);
+    // Ввод трёх строк
+    fgets(l_str1, MAXLEN, stdin);
+    fgets(l_str2, MAXLEN, stdin);
+    fgets(l_str3, MAXLEN, stdin);
 
-    // Удаляем символ новой строки, если он есть
-    std::size_t len = std::strlen(mystring);
-    if (len > 0 && mystring[len - 1] == '\n')
-    {
-        mystring[len - 1] = '\0';
-    }
+    // Удаление символов новой строки
+    l_str1[strcspn(l_str1, "\n")] = '\0';
+    l_str2[strcspn(l_str2, "\n")] = '\0';
+    l_str3[strcspn(l_str3, "\n")] = '\0';
 
-    char *ptr = mystring;
+    // Извлечение частей кодового слова
+    extract_part(l_str1, l_code_word);
+    extract_part(l_str2, l_code_word);
+    extract_part(l_str3, l_code_word);
 
-    while (*ptr != '\0' && *(ptr + 1) != '\0')
-    {
-        if (*ptr == '.' && *(ptr + 1) == ',')
-        {
-            *ptr = ';';
-            strdel(ptr + 1);
-        }
-        else
-        {
-            ptr++;
-        }
-    }
+    // Вывод результата
+    puts(l_code_word);
 
-    std::puts(mystring);
     return 0;
 }
 
-/**
- * @brief   Сдвигает строку влево начиная с позиции ptr, удаляя один символ
- * @param[in,out] ptr  Указатель на позицию удаления
- */
-void strdel(char *ptr)
+// === Function Definitions ===
+
+void extract_part(const char *s_str, char *s_result)
 {
-    while (*ptr != '\0')
+    const char *l_start = strchr(s_str, ';');
+
+    if (l_start != nullptr)
     {
-        *ptr = *(ptr + 1);
-        ptr++;
+        const char *l_end = strchr(l_start + 1, ';');
+        if (l_end != nullptr)
+        {
+            strncat(s_result, l_start + 1, l_end - l_start - 1);
+        }
     }
 }

@@ -1,133 +1,80 @@
 /**
- * @brief Транспонирование матрицы с инициализацией и выводом (emb_style_cpp.h)
+ * @brief Проверка, заканчивается ли строка s на подстроку t
  * @version 1.0
- * @date 2025-07-08
  */
 
-#include "emb_style_cpp.h"
-#include <iostream>
-#include <cstdlib>
-#include <cstdint>
+#include <cstdio>
+#include <cstring>
 
-typedef int32_t i32_t;
-typedef int16_t i16_t;
-
-/*** Прототипы функций ***/
+//=== Прототипы функций ===
 
 /**
- * @brief Инициализирует двумерный массив случайными числами от -10 до 15
- * @param arr_ptr Указатель на массив указателей
- * @param rows_i16 Количество строк
- * @param cols_i16 Количество столбцов
+ * @brief Проверяет, заканчивается ли строка на подстроку
+ * @param[in,out] s Строка
+ * @param[in,out] t Суффикс
+ * @return true Если s заканчивается на t
+ * @return false В противном случае
  */
-void matrix_init_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16);
+bool findend(char *s, char *t);
+
+//=== main ===
 
 /**
- * @brief Печатает двумерный массив в виде таблицы с табуляцией
- * @param arr_ptr Указатель на массив указателей
- * @param rows_i16 Количество строк
- * @param cols_i16 Количество столбцов
+ * @brief Точка входа
+ * @return int Код завершения
  */
-void matrix_print_i32(const i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16);
-
-/**
- * @brief Транспонирует двумерный массив (создаёт новый массив и копирует элементы)
- * @param arr_ptr Указатель на исходный массив
- * @param rows_i16 Количество строк исходного массива
- * @param cols_i16 Количество столбцов исходного массива
- * @return Новый транспонированный массив
- */
-i32_t **matrix_transpose_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16);
-
-/**
- * @brief Освобождает память, занятую двумерным массивом
- * @param arr_ptr Указатель на массив указателей
- * @param rows_i16 Количество строк
- */
-void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16);
-
-/*** Главная функция ***/
-int main(void)
+int main()
 {
-    i16_t l_rows_i16 = 0;
-    i16_t l_cols_i16 = 0;
-    i16_t l_seed_i16 = 0;
+    constexpr int MAXLEN = 128;
+    char l_str_s[MAXLEN];
+    char l_str_t[MAXLEN];
 
-    std::cin >> l_rows_i16 >> l_cols_i16 >> l_seed_i16;
-    std::srand(l_seed_i16);
+    std::fgets(l_str_s, MAXLEN, stdin);
+    std::fgets(l_str_t, MAXLEN, stdin);
 
-    i32_t **l_arr_ptr = new i32_t *[l_rows_i16];
-    for (i16_t l_row_i16 = 0; l_row_i16 < l_rows_i16; ++l_row_i16)
+    if (findend(l_str_s, l_str_t))
     {
-        l_arr_ptr[l_row_i16] = new i32_t[l_cols_i16];
+        std::puts("Yes");
     }
-
-    matrix_init_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
-
-    matrix_print_i32(const_cast<const i32_t **>(l_arr_ptr), l_rows_i16, l_cols_i16);
-    std::cout << "\n";
-
-    i32_t **l_tr_ptr = matrix_transpose_i32(l_arr_ptr, l_rows_i16, l_cols_i16);
-
-    matrix_print_i32(const_cast<const i32_t **>(l_tr_ptr), l_cols_i16, l_rows_i16);
-
-    matrix_free_i32(l_arr_ptr, l_rows_i16);
-    matrix_free_i32(l_tr_ptr, l_cols_i16);
+    else
+    {
+        std::puts("No");
+    }
 
     return 0;
 }
 
-/*** Реализация функций ***/
+//=== Реализация функций ===
 
-void matrix_init_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
+bool findend(char *s, char *t)
 {
-    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
-    {
-        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
-        {
-            arr_ptr[l_row_i16][l_col_i16] = std::rand() % 26 - 10;
-        }
-    }
-}
+    int l_len_s = std::strlen(s);
+    int l_len_t = std::strlen(t);
 
-void matrix_print_i32(const i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
-{
-    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
+    if (l_len_s > 0 && s[l_len_s - 1] == '\n')
     {
-        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
-        {
-            std::cout << arr_ptr[l_row_i16][l_col_i16] << "\t";
-        }
-        std::cout << "\n";
-    }
-}
-
-i32_t **matrix_transpose_i32(i32_t **arr_ptr, i16_t rows_i16, i16_t cols_i16)
-{
-    i32_t **l_tr_ptr = new i32_t *[cols_i16];
-
-    for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
-    {
-        l_tr_ptr[l_col_i16] = new i32_t[rows_i16];
+        s[l_len_s - 1] = '\0';
+        l_len_s--;
     }
 
-    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
+    if (l_len_t > 0 && t[l_len_t - 1] == '\n')
     {
-        for (i16_t l_col_i16 = 0; l_col_i16 < cols_i16; ++l_col_i16)
+        t[l_len_t - 1] = '\0';
+        l_len_t--;
+    }
+
+    if (l_len_t > l_len_s)
+    {
+        return false;
+    }
+
+    for (int l_i = 0; l_i < l_len_t; l_i++)
+    {
+        if (s[l_len_s - l_len_t + l_i] != t[l_i])
         {
-            l_tr_ptr[l_col_i16][l_row_i16] = arr_ptr[l_row_i16][l_col_i16];
+            return false;
         }
     }
 
-    return l_tr_ptr;
-}
-
-void matrix_free_i32(i32_t **arr_ptr, i16_t rows_i16)
-{
-    for (i16_t l_row_i16 = 0; l_row_i16 < rows_i16; ++l_row_i16)
-    {
-        delete[] arr_ptr[l_row_i16];
-    }
-
-    delete[] arr_ptr;
+    return true;
 }

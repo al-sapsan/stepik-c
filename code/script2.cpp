@@ -1,68 +1,70 @@
 /**
- * @file semicolon_replace.cpp
- * @brief Replaces all semicolons in a string with `.` and inserts `,` after each
- * @version 1.1
- * @date 2025-07-08
+ * @file    string_copy.c
+ * @brief   Копирование одной строки в другую вручную
+ * @version 1.0
  */
 
-#include <iostream>
-#include <cstring>
-#include <cstdio>
+/* -------------------- Core -------------------- */
+#include <stdio.h>
 
-/*** Прототипы функций ***/
+/* -------------------- Constants -------------------- */
+static const int MAX_LEN = 128;
 
+/* -------------------- Function Prototypes -------------------- */
 /**
- * @brief Вставляет символ в строку по указанной позиции
- * @param[in,out] str Строка, в которую вставляется символ
- * @param[in] c Символ, который нужно вставить
- * @param[in] ptr Указатель на позицию вставки
+ * @brief Копирует строку source в dest
+ * @param[out] dest  Указатель на строку назначения
+ * @param[in]  source Указатель на исходную строку
  */
-void insert(char *str, char c, char *ptr);
+void my_strcpy(char *dest, char *source);
 
-/*** Главная функция ***/
-
-int main()
+/* -------------------- Main -------------------- */
+int main(void)
 {
-    constexpr int MAXLEN = 101; // 100 символов + '\0'
-    char mystring[MAXLEN];
+    char l_s[MAX_LEN];
+    char l_t[MAX_LEN];
 
-    std::fgets(mystring, MAXLEN, stdin); // Ввод строки с пробелами
+    /* Ввод строк */
+    fgets(l_s, MAX_LEN, stdin);
+    fgets(l_t, MAX_LEN, stdin);
 
-    // Удаляем символ новой строки, если он есть
-    std::size_t len = std::strlen(mystring);
-    if (len > 0 && mystring[len - 1] == '\n')
+    /* Удаление символов новой строки */
+    for (int l_i = 0; l_s[l_i] != '\0'; l_i++)
     {
-        mystring[len - 1] = '\0';
-    }
-
-    char *ptr = mystring; // Указатель на начало строки
-
-    while (*ptr != '\0')
-    {
-        if (*ptr == ';')
+        if (l_s[l_i] == '\n')
         {
-            *ptr = '.';                     // Заменяем ';' на '.'
-            insert(mystring, ',', ptr + 1); // Вставляем ',' после '.'
-            ptr++;                          // Пропускаем вставленную запятую
+            l_s[l_i] = '\0';
+            break;
         }
-        ptr++; // Следующий символ
     }
 
-    puts(mystring);
+    for (int l_i = 0; l_t[l_i] != '\0'; l_i++)
+    {
+        if (l_t[l_i] == '\n')
+        {
+            l_t[l_i] = '\0';
+            break;
+        }
+    }
+
+    /* Копирование строки */
+    my_strcpy(l_s, l_t);
+
+    /* Вывод результата */
+    puts(l_s);
+    puts(l_t);
+
     return 0;
 }
 
-/*** Реализация функций ***/
-
-void insert(char *str, char c, char *ptr)
+/* -------------------- Function Definitions -------------------- */
+void my_strcpy(char *dest, char *source)
 {
-    char *q = str + std::strlen(str); // Указатель на '\0'
-
-    while (q >= ptr)
+    int l_i = 0;
+    while (source[l_i] != '\0')
     {
-        *(q + 1) = *q; // Сдвигаем символы вправо
-        q--;
+        dest[l_i] = source[l_i];
+        l_i++;
     }
-
-    *ptr = c; // Вставляем символ
+    dest[l_i] = '\0';
 }
