@@ -1,0 +1,6 @@
+Refract the code according to the code convention
+Rewrite code according to the task
+Rewrite Doxygen comments in Russian, but don't fix the headlines
+Explain the code step by step
+Replace a function ... with a function ...
+Test output with the next data

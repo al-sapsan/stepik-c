@@ -39,7 +39,12 @@ int main(void)
     if (len > 0 && input[len - 1] == '\n')
         input[len - 1] = '\0';
 
-    print_palindromes(input);
+    // Создать копию строки в нижнем регистре
+    char lower[MAX_STR_LEN];
+    for (size_t i = 0; i <= len; ++i)
+        lower[i] = (char)tolower((unsigned char)input[i]);
+
+    print_palindromes(lower);
     return 0;
 }
 

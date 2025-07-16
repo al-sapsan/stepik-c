@@ -1,125 +1,53 @@
 /**
- * @file magic_square_check.cpp
- * @brief Проверка, является ли квадрат магическим
+ * @file    operator_counter.cpp
+ * @brief   Подсчет количества арифметических знаков в строке
+ * @version 1.0
+ * @date    2025-07-15
  */
 
 #include <iostream>
-#include <cstdlib>
-#include <stdint.h>
+#include <cstring>
+#include <cstdint>
 
-/*** Типы данных ***/
-typedef int16_t i16_t;
-typedef bool b_t;
+/*** Constants ***/
+static constexpr size_t MAX_STR_LEN = 21;
 
-/*** Прототипы функций ***/
+/*** Function Prototypes ***/
 
 /**
- * @brief Проверяет, является ли квадрат магическим
- * @param l_matrix_i16 Указатель на квадратную матрицу
- * @param l_n_i16 Размерность матрицы (n x n)
- * @return true, если магический, иначе false
+ * @brief Подсчитывает количество арифметических операторов в строке
+ * @param[in] str Строка (максимум 20 символов + '\0')
+ * @return Количество знаков +, -, *, /, %
  */
-b_t is_magic_square(i16_t **l_matrix_i16, i16_t l_n_i16);
+size_t count_operators(const char *str);
 
-/*** Главная функция ***/
-
+/*** Main Function ***/
 int main()
 {
-    i16_t l_n_i16 = 0;
-    std::cin >> l_n_i16;
-
-    i16_t **l_matrix_i16 = new i16_t *[l_n_i16];
-    for (i16_t l_idx_i16 = 0; l_idx_i16 < l_n_i16; ++l_idx_i16)
-    {
-        l_matrix_i16[l_idx_i16] = new i16_t[l_n_i16];
-    }
-
-    for (i16_t l_i_i16 = 0; l_i_i16 < l_n_i16; ++l_i_i16)
-    {
-        for (i16_t l_j_i16 = 0; l_j_i16 < l_n_i16; ++l_j_i16)
-        {
-            std::cin >> l_matrix_i16[l_i_i16][l_j_i16];
-        }
-    }
-
-    if (is_magic_square(l_matrix_i16, l_n_i16))
-    {
-        std::cout << "YES\n";
-    }
-    else
-    {
-        std::cout << "NO\n";
-    }
-
-    for (i16_t l_idx_i16 = 0; l_idx_i16 < l_n_i16; ++l_idx_i16)
-    {
-        delete[] l_matrix_i16[l_idx_i16];
-    }
-    delete[] l_matrix_i16;
-
+    char input[MAX_STR_LEN];
+    std::cin.getline(input, MAX_STR_LEN);
+    std::cout << count_operators(input) << "\n";
     return 0;
 }
 
-/*** Реализация функции проверки ***/
-
-b_t is_magic_square(i16_t **l_matrix_i16, i16_t l_n_i16)
+/*** Function Definitions ***/
+size_t count_operators(const char *str)
 {
-    i16_t l_sum_ref_i16 = 0;
-
-    for (i16_t l_j_i16 = 0; l_j_i16 < l_n_i16; ++l_j_i16)
+    size_t count = 0;
+    for (size_t i = 0; str[i] != '\0'; ++i)
     {
-        l_sum_ref_i16 += l_matrix_i16[0][l_j_i16];
-    }
-
-    // Проверка строк
-    for (i16_t l_i_i16 = 1; l_i_i16 < l_n_i16; ++l_i_i16)
-    {
-        i16_t l_sum_row_i16 = 0;
-        for (i16_t l_j_i16 = 0; l_j_i16 < l_n_i16; ++l_j_i16)
+        switch (str[i])
         {
-            l_sum_row_i16 += l_matrix_i16[l_i_i16][l_j_i16];
-        }
-        if (l_sum_row_i16 != l_sum_ref_i16)
-        {
-            return false;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '%':
+            ++count;
+            break;
+        default:
+            break;
         }
     }
-
-    // Проверка столбцов
-    for (i16_t l_j_i16 = 0; l_j_i16 < l_n_i16; ++l_j_i16)
-    {
-        i16_t l_sum_col_i16 = 0;
-        for (i16_t l_i_i16 = 0; l_i_i16 < l_n_i16; ++l_i_i16)
-        {
-            l_sum_col_i16 += l_matrix_i16[l_i_i16][l_j_i16];
-        }
-        if (l_sum_col_i16 != l_sum_ref_i16)
-        {
-            return false;
-        }
-    }
-
-    // Главная диагональ
-    i16_t l_sum_diag_main_i16 = 0;
-    for (i16_t l_i_i16 = 0; l_i_i16 < l_n_i16; ++l_i_i16)
-    {
-        l_sum_diag_main_i16 += l_matrix_i16[l_i_i16][l_i_i16];
-    }
-    if (l_sum_diag_main_i16 != l_sum_ref_i16)
-    {
-        return false;
-    }
-
-    // Побочная диагональ
-    i16_t l_sum_diag_sec_i16 = 0;
-    for (i16_t l_i_i16 = 0; l_i_i16 < l_n_i16; ++l_i_i16)
-    {
-        l_sum_diag_sec_i16 += l_matrix_i16[l_i_i16][l_n_i16 - 1 - l_i_i16];
-    }
-    if (l_sum_diag_sec_i16 != l_sum_ref_i16)
-    {
-        return false;
-    }
-
-    return true;
+    return count;
 }
