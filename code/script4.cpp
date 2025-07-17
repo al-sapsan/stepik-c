@@ -1,79 +1,54 @@
-
 /**
- * @file    print_palindromes.cpp
- * @brief   Выводит все слова-палиндромы из строки
+ * @file    script4.cpp
+ * @brief   Выводит автомобили заданного цвета и лучший по объему двигателя
  * @version 1.0
- * @date    2025-07-16
+ * @date    2025-07-17
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdint.h>
+#include <iostream>
+#include <iomanip>
+#include <string>
 
-/*** Constants ***/
-static const size_t MAX_STR_LEN = 129;
-
-/*** Function Prototypes ***/
-
-/**
- * @brief Проверяет, является ли слово палиндромом (регистр не учитывается)
- * @param[in] word Слово
- * @param[in] len Длина слова
- * @return 1 если палиндром, 0 иначе
- */
-int is_palindrome(const char *word, size_t len);
-
-/**
- * @brief Выводит все слова-палиндромы из строки
- * @param[in] str Входная строка
- */
-void print_palindromes(const char *str);
+/*** Types ***/
+struct Avto
+{
+    std::string number;
+    std::string brand;
+    double engine;
+    std::string color;
+};
 
 /*** Main Function ***/
-int main(void)
+int main()
 {
-    char input[MAX_STR_LEN];
-    fgets(input, MAX_STR_LEN, stdin);
-    size_t len = strlen(input);
-    if (len > 0 && input[len - 1] == '\n')
-        input[len - 1] = '\0';
-
-    print_palindromes(input);
-    return 0;
-}
-
-/*** Function Definitions ***/
-int is_palindrome(const char *word, size_t len)
-{
-    for (size_t i = 0, j = len ? len - 1 : 0; i < j; ++i, --j)
+    const int N = 5;
+    Avto arr[N];
+    for (int i = 0; i < N; ++i)
     {
-        if (tolower((unsigned char)word[i]) != tolower((unsigned char)word[j]))
-            return 0;
+        std::cin >> arr[i].number >> arr[i].brand >> arr[i].engine >> arr[i].color;
     }
-    return 1;
-}
-
-void print_palindromes(const char *str)
-{
-    size_t i = 0, n = strlen(str);
-    while (i < n)
+    std::string search_color;
+    std::cin >> search_color;
+    int found = 0;
+    int best_idx = -1;
+    for (int i = 0; i < N; ++i)
     {
-        // Пропустить пробелы
-        while (i < n && str[i] == ' ')
-            ++i;
-        if (i == n)
-            break;
-        size_t start = i;
-        while (i < n && str[i] != ' ')
-            ++i;
-        size_t end = i;
-        if (end > start)
+        if (arr[i].color == search_color)
         {
-            if (is_palindrome(str + start, end - start))
-            {
-                printf("%.*s\n", (int)(end - start), str + start);
-            }
+            std::cout << arr[i].number << " " << arr[i].brand << std::endl;
+            if (best_idx == -1 || arr[i].engine > arr[best_idx].engine)
+                best_idx = i;
+            ++found;
         }
     }
+    if (found > 0)
+    {
+        std::cout << "The best: " << arr[best_idx].number << " " << arr[best_idx].brand << " "
+                  << std::fixed << std::setprecision(1) << arr[best_idx].engine << " " << arr[best_idx].color << std::endl;
+    }
+    else
+    {
+        std::cout << "Error" << std::endl;
+    }
+    return 0;
 }

@@ -1,60 +1,54 @@
 /**
  * @file    script7.cpp
- * @brief   Prints the longest word from a user input string (words separated by spaces)
+ * @brief   Выводит отличников заданной группы и их средний возраст
  * @version 1.0
- * @date    2025-07-16
+ * @date    2025-07-17
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdint.h>
+#include <iostream>
+#include <iomanip>
+#include <string>
 
-/*** Constants ***/
-static const size_t MAX_STR_LEN = 129;
-
-/*** Function Prototypes ***/
-/**
- * @brief Finds and prints the longest word in a string
- * @param[in] str Input string
- */
-void print_longest_word(const char *str);
+/*** Types ***/
+struct Student
+{
+    std::string surname;
+    std::string name;
+    std::string group;
+    int age;
+    double avg;
+};
 
 /*** Main Function ***/
-int main(void)
+int main()
 {
-    char input[MAX_STR_LEN];
-    if (fgets(input, MAX_STR_LEN, stdin) == NULL)
-        return 1;
-    size_t len = strlen(input);
-    if (len > 0 && input[len - 1] == '\n')
-        input[len - 1] = '\0';
-    print_longest_word(input);
-    return 0;
-}
-
-/*** Function Definitions ***/
-void print_longest_word(const char *str)
-{
-    size_t i = 0, n = strlen(str);
-    size_t max_start = 0, max_len = 0;
-    while (i < n)
+    const int N = 8;
+    Student arr[N];
+    for (int i = 0; i < N; ++i)
     {
-        // Skip spaces
-        while (i < n && str[i] == ' ')
-            ++i;
-        if (i == n)
-            break;
-        size_t start = i;
-        while (i < n && str[i] != ' ')
-            ++i;
-        size_t word_len = i - start;
-        if (word_len > max_len)
+        std::cin >> arr[i].surname >> arr[i].name >> arr[i].group >> arr[i].age >> arr[i].avg;
+    }
+    std::string search_group;
+    std::cin >> search_group;
+    int sum_age = 0;
+    int count = 0;
+    for (int i = 0; i < N; ++i)
+    {
+        if (arr[i].group == search_group && arr[i].avg > 8.0)
         {
-            max_len = word_len;
-            max_start = start;
+            std::cout << arr[i].surname << " " << arr[i].name << " " << arr[i].group << " " << arr[i].age << " " << arr[i].avg << std::endl;
+            sum_age += arr[i].age;
+            ++count;
         }
     }
-    if (max_len > 0)
-        printf("%.*s\n", (int)max_len, str + max_start);
+    if (count > 0)
+    {
+        double avg_age = static_cast<double>(sum_age) / count;
+        std::cout << std::fixed << std::setprecision(1) << avg_age << std::endl;
+    }
+    else
+    {
+        std::cout << "Error" << std::endl;
+    }
+    return 0;
 }

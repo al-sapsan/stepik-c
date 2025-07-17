@@ -1,53 +1,41 @@
-/**
- * @file    operator_counter.cpp
- * @brief   Подсчет количества арифметических знаков в строке
- * @version 1.0
- * @date    2025-07-15
- */
-
 #include <iostream>
-#include <cstring>
-#include <cstdint>
-
-/*** Constants ***/
-static constexpr size_t MAX_STR_LEN = 21;
-
-/*** Function Prototypes ***/
-
-/**
- * @brief Подсчитывает количество арифметических операторов в строке
- * @param[in] str Строка (максимум 20 символов + '\0')
- * @return Количество знаков +, -, *, /, %
- */
-size_t count_operators(const char *str);
-
-/*** Main Function ***/
+using namespace std;
+struct Weather
+{
+    unsigned int windRate : 7;
+    unsigned int humidity : 7;
+    unsigned int pressure : 11;
+    signed int temperature : 7;
+};
 int main()
 {
-    char input[MAX_STR_LEN];
-    std::cin.getline(input, MAX_STR_LEN);
-    std::cout << count_operators(input) << "\n";
+    cout << "Размер структуры: " << sizeof(Weather) << endl;
+    Weather data;
+    input(data);
+    print(data);
     return 0;
 }
 
-/*** Function Definitions ***/
-size_t count_operators(const char *str)
+void input(Weather &a)
 {
-    size_t count = 0;
-    for (size_t i = 0; str[i] != '\0'; ++i)
-    {
-        switch (str[i])
-        {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        case '%':
-            ++count;
-            break;
-        default:
-            break;
-        }
-    }
-    return count;
+    int temp;
+    cout << "Введите скорость ветра (м/с): ";
+    cin >> temp;
+    a.windRate = temp;
+    cout << "Введите влажность воздуха  (%): ";
+    cin >> temp;
+    a.humidity = temp;
+    cout << "Введите атмосферное давление (мм рт. столба): ";
+    cin >> temp;
+    a.pressure = temp;
+    cout << "Введите температуру воздуха (С): ";
+    cin >> temp;
+    a.temperature = temp;
+}
+void print(Weather a)
+{
+    cout << "Скорость ветра: " << a.windRate << " м/с\n";
+    cout << "Влажность воздуха " << a.humidity << "%\n";
+    cout << "Атмосферное давление: " << a.pressure << " мм. рт. ст\n";
+    cout << "Температура воздуха: " << a.temperature << " С\n";
 }

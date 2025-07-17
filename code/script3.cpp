@@ -1,65 +1,72 @@
-
 /**
- * @file    remove_second_word.cpp
- * @brief   Удаляет второе слово из строки, все пробелы сохраняются
+ * @file    script3.cpp
+ * @brief   Выводит книги заданного года и их среднюю цену
  * @version 1.0
- * @date    2025-07-16
+ * @date    2025-07-17
  */
 
-#include <iostream>
-#include <string>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-/*** Constants ***/
-static const size_t MAX_STR_LEN = 256;
+#define MAX_BOOKS 6
+#define MAX_STR 128
 
-/*** Function Prototypes ***/
+typedef struct
+{
+    char title[MAX_STR];
+    char author[MAX_STR];
+    int year;
+    double price;
+} Book;
 
-/**
- * @brief Удаляет второе слово из строки, все пробелы сохраняются
- * @param[in] str Входная строка
- * @return std::string Преобразованная строка
- */
-std::string remove_second_word(const std::string &str);
-
-/*** Main Function ***/
 int main(void)
 {
-    std::string input;
-    std::getline(std::cin, input);
-    std::cout << remove_second_word(input) << std::endl;
-    return 0;
-}
-
-/*** Function Definitions ***/
-std::string remove_second_word(const std::string &str)
-{
-    size_t i = 0, n = str.size();
-    size_t word_count = 0;
-    size_t start2 = std::string::npos, end2 = std::string::npos;
-    while (i < n)
+    Book arr[MAX_BOOKS];
+    char buf[MAX_STR * 4];
+    for (int i = 0; i < MAX_BOOKS; ++i)
     {
-        // Пропустить пробелы
-        while (i < n && str[i] == ' ')
-            ++i;
-        if (i == n)
-            break;
-        ++word_count;
-        if (word_count == 2)
-            start2 = i;
-        // Пройти по слову
-        while (i < n && str[i] != ' ')
-            ++i;
-        if (word_count == 2)
+        if (!fgets(buf, sizeof(buf), stdin))
+            return 1;
+        char *p = strtok(buf, ";");
+        if (!p)
+            return 1;
+        strncpy(arr[i].title, p, MAX_STR - 1);
+        arr[i].title[MAX_STR - 1] = '\0';
+        p = strtok(NULL, ";");
+        if (!p)
+            return 1;
+        strncpy(arr[i].author, p, MAX_STR - 1);
+        arr[i].author[MAX_STR - 1] = '\0';
+        p = strtok(NULL, ";");
+        if (!p)
+            return 1;
+        arr[i].year = atoi(p);
+        p = strtok(NULL, ";\n");
+        if (!p)
+            return 1;
+        arr[i].price = atof(p);
+    }
+    int search_year;
+    scanf("%d", &search_year);
+    int found = 0;
+    double sum = 0.0;
+    for (int i = 0; i < MAX_BOOKS; ++i)
+    {
+        if (arr[i].year == search_year)
         {
-            end2 = i;
-            break;
+            printf("%s/%s/%d/%.2f\n", arr[i].title, arr[i].author, arr[i].year, arr[i].price);
+            sum += arr[i].price;
+            ++found;
         }
     }
-    if (start2 != std::string::npos && end2 != std::string::npos)
+    if (found > 0)
     {
-        std::string res = str;
-        res.erase(start2, end2 - start2);
-        return res;
+        printf("%.2f\n", sum / found);
     }
-    return str;
+    else
+    {
+        printf("ERROR\n");
+    }
+    return 0;
 }

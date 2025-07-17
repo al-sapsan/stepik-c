@@ -1,5 +1,5 @@
 /**
- * @file    script6.cpp
+ * @file    struct_union_hex.cpp
  * @brief   Выводит внутреннее представление double по байтам (hex)
  * @version 1.0
  * @date    2025-07-17
