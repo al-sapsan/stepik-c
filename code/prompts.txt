@@ -1,6 +1,7 @@
 Refract the code according to the code convention
+Remove `l_` prefix from the code
 Rewrite code according to the task
-Rewrite Doxygen comments in Russian, but don't fix the headlines
-Explain the code step by step
+Rewrite Doxygen comments in Russian, but the headlines in English
 Replace a function ... with a function ...
+Explain the code step by step
 Test output with the next data
