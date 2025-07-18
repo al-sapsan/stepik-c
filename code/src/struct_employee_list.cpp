@@ -1,7 +1,7 @@
 /**
  * @file    employee_manager.cpp
  * @brief   Управление списком сотрудников с добавлением и удалением по позиции
- * @version 1.1
+ * @version 1.2
  * @date    2025-07-17
  *
  * @note    Формат строки ввода: ФИО#Пол#Возраст#Стаж
@@ -69,9 +69,10 @@ int main()
     std::cin >> size;
 
     employee_t *employees = new employee_t[size];
+    std::cin.ignore(); // очистка буфера после чтения size
     read_initial_employees(&employees, size);
 
-    while (true)
+    for (;;)
     {
         int action = 0;
         std::cin >> action;
@@ -107,20 +108,19 @@ void read_initial_employees(employee_t **employees, std::size_t size)
     for (std::size_t i = 0; i < size; ++i)
     {
         char line[256];
-        std::cin.ignore();
-        std::cin.getline(line, 256);
+        std::cin.getline(line, sizeof(line));
 
-        char *token = std::strtok(line, "#");
-        std::strcpy((*employees)[i].full_name, token);
+        char *word = std::strtok(line, "#");
+        std::strcpy((*employees)[i].full_name, word);
 
-        token = std::strtok(NULL, "#");
-        std::strcpy((*employees)[i].gender, token);
+        word = std::strtok(NULL, "#");
+        std::strcpy((*employees)[i].gender, word);
 
-        token = std::strtok(NULL, "#");
-        (*employees)[i].age = std::atoi(token);
+        word = std::strtok(NULL, "#");
+        (*employees)[i].age = std::atoi(word);
 
-        token = std::strtok(NULL, "#");
-        (*employees)[i].experience = std::atoi(token);
+        word = std::strtok(NULL, "#");
+        (*employees)[i].experience = std::atoi(word);
     }
 }
 
@@ -150,20 +150,20 @@ void add_employee(employee_t **employees, std::size_t *size, std::size_t positio
         if (i == position - 1)
         {
             char line[256];
-            std::cin.ignore();
-            std::cin.getline(line, 256);
+            std::cin.ignore(); // очистка перед getline
+            std::cin.getline(line, sizeof(line));
 
-            char *token = std::strtok(line, "#");
-            std::strcpy(new_employees[i].full_name, token);
+            char *word = std::strtok(line, "#");
+            std::strcpy(new_employees[i].full_name, word);
 
-            token = std::strtok(NULL, "#");
-            std::strcpy(new_employees[i].gender, token);
+            word = std::strtok(NULL, "#");
+            std::strcpy(new_employees[i].gender, word);
 
-            token = std::strtok(NULL, "#");
-            new_employees[i].age = std::atoi(token);
+            word = std::strtok(NULL, "#");
+            new_employees[i].age = std::atoi(word);
 
-            token = std::strtok(NULL, "#");
-            new_employees[i].experience = std::atoi(token);
+            word = std::strtok(NULL, "#");
+            new_employees[i].experience = std::atoi(word);
         }
         else
         {
