@@ -1,9 +1,14 @@
+/**
+ * @file queue.cpp
+ * @brief Пример реализации очереди (queue) на односвязном списке
+ * @version 1.0
+ * @date 2025-07-18
+ */
+
 #include <iostream>
 #include <cstddef>
 
-/**
- * @brief Узел очереди
- */
+/*** Types ***/
 typedef struct Node_t
 {
     int data;
