@@ -1,8 +1,8 @@
 Complete the code according to the task
-Refract the code according to the code conventions
+Refract the code according to the code conventions with embedded systems implementation
 Remove `l_` prefix from the code
 Rewrite code according to the task
-Rewrite Doxygen comments in Russian, but leave the headlines in English
+Rewrite Doxygen comments in Russian, but leave the section header in English
 Replace a function ... with a function ...
 Use `for(;;)` instead of `while (true)`
 Use `size_t` type for the loops and counters

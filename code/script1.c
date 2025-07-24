@@ -1,53 +1,50 @@
 /*******************************************************************************
  * @file script1.c
- * @brief Рекурсивное преобразование таблицы массивов в один массив
+ * @brief Вариадическая функция для квадратичной нормы вектора
  * @version 1.0
  * @date 2025-07-23
  ******************************************************************************/
 #include <stdio.h>
-#define MAX_LENGTH 20
+#include <stdarg.h>
+#include <string.h>
 
 /*** Function Prototype ***/
 /**
- * @brief Flatten table of arrays into one array recursively
- * @param v Массив, в который заносятся значения
- * @param max_len_v Максимальная длина массива v
- * @param table Массив указателей на массивы
- * @param len Длина массива table
- * @param count_v Число записанных в массив v значений
- * @param indx_t Индекс по первой размерности (table)
- * @param indx Индекс по второй размерности (элементы массива)
- * @return Количество записанных значений
- * @details Рекурсивно заносит значения из table в v, не используя циклы
+ * @brief Quadratic norm of vector (variadic)
+ * @param ptr_type Строка с типом вектора
+ * @return Квадратичная норма
+ * @details Вычисляет норму для vector2, vector3, vector4, иначе 0.0
  */
-size_t to_flat(short *v, size_t max_len_v, short *table[], size_t len, size_t count_v, size_t indx_t, size_t indx);
+double v_norm2(const char *ptr_type, ...);
 
 /*** Main Function ***/
 int main(void)
 {
-    short ar_1[] = {-4, 2, 3, 7, 0};
-    short ar_2[] = {11, 6, 10, 8, 13, 98, -5, 0};
-    short ar_3[] = {-47, 0};
-    short ar_4[] = {8, 11, 56, -3, -2, 0};
-
-    short *table[] = {ar_1, ar_4, ar_3, ar_2};
-    short flat[MAX_LENGTH] = {0};
-
-    size_t cnt = to_flat(flat, MAX_LENGTH, table, sizeof(table) / sizeof(*table), 0, 0, 0);
-
-    for (size_t i = 0; i < cnt; ++i)
-        printf("%d ", flat[i]);
-    printf("\n");
+    double res = v_norm2("vector2", 1.0, 2.0);
+    printf("%.1f\n", res);
     return 0;
 }
 
 /*** Function Implementation ***/
-size_t to_flat(short *v, size_t max_len_v, short *table[], size_t len, size_t count_v, size_t indx_t, size_t indx)
+double v_norm2(const char *ptr_type, ...)
 {
-    if (count_v >= max_len_v || indx_t >= len)
-        return count_v;
-    if (table[indx_t][indx] == 0)
-        return to_flat(v, max_len_v, table, len, count_v, indx_t + 1, 0);
-    v[count_v] = table[indx_t][indx];
-    return to_flat(v, max_len_v, table, len, count_v + 1, indx_t, indx + 1);
+    int n = 0;
+    if (strcmp(ptr_type, "vector2") == 0)
+        n = 2;
+    else if (strcmp(ptr_type, "vector3") == 0)
+        n = 3;
+    else if (strcmp(ptr_type, "vector4") == 0)
+        n = 4;
+    else
+        return 0.0;
+    double norm2 = 0.0;
+    va_list args;
+    va_start(args, ptr_type);
+    for (int i = 0; i < n; ++i)
+    {
+        double val = va_arg(args, double);
+        norm2 += val * val;
+    }
+    va_end(args);
+    return norm2;
 }

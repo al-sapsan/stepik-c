@@ -1,40 +1,51 @@
 /*******************************************************************************
  * @file script9.c
- * @brief Рекурсивная сумма элементов массива short
+ * @brief Arithmetic mean of int arguments
  * @version 1.0
- * @date 2025-07-23
+ * @date 2025-07-21
  ******************************************************************************/
-#include <stdio.h>
-#define MAX_LENGTH 20
 
-/*** Function Prototype ***/
+#include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h>
+
+/*** Function Prototypes ***/
+
 /**
- * @brief Recursive sum of array
- * @param ar Указатель на массив short
- * @param len Количество элементов
- * @param indx Текущий индекс
- * @return Сумма элементов
- * @details Рекурсивно вычисляет сумму элементов массива
+ * @brief Среднее арифметическое набора целых аргументов
+ * @param[in] total Общее количество аргументов
+ * @param[in] ... Список аргументов типа int
+ * @return Среднее значение типа double
+ * @details Использует переменное количество аргументов для расчёта среднего значения
  */
-int sum_ar(const short *ar, size_t len, size_t indx);
+double mean(int total, ...);
 
 /*** Main Function ***/
+
+/**
+ * @brief Точка входа в программу
+ * @return 0 при успешном завершении
+ */
 int main(void)
 {
-    short ar[MAX_LENGTH] = {0};
-    size_t count = 0;
-    while (count < MAX_LENGTH && scanf("%hd", &ar[count]) == 1)
-        count++;
-
-    int result = sum_ar(ar, count, 0);
-    printf("%d\n", result);
+    double res_f64 = mean(7, 5, -10, 11, 0, 12, 4, 2);
+    printf("%.2f\n", res_f64);
     return 0;
 }
 
-/*** Function Implementation ***/
-int sum_ar(const short *ar, size_t len, size_t indx)
+/*** Function Implementations ***/
+
+double mean(int total, ...)
 {
-    if (indx >= len)
-        return 0;
-    return ar[indx] + sum_ar(ar, len, indx + 1);
+    double sum_f64 = 0.0;
+    va_list args;
+    va_start(args, total);
+
+    for (size_t i = 0; i < (size_t)total; ++i)
+    {
+        sum_f64 += (double)va_arg(args, int);
+    }
+
+    va_end(args);
+    return sum_f64 / total;
 }

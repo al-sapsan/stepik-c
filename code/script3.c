@@ -1,149 +1,113 @@
-/**
- * @file    sum_criteria.c
- * @brief   Суммирует элементы массива по заданному критерию
- * @version 1.1
- */
+/*******************************************************************************
+ * @file    script_csv_parser.c
+ * @brief   Извлечение чисел из строки формата CSV с префиксом
+ * @version 1.0
+ * @date    2025-07-18
+ ******************************************************************************/
 
+/*** Includes ***/
 #include <stdio.h>
-#include <stddef.h>
-
-/*** Typedefs ***/
-
-typedef int (*filter_func_t)(int);
+#include <string.h>
+#include <stdlib.h>
 
 /*** Function Prototypes ***/
 
 /**
- * @brief Odd criteria
- * @details Возвращает 1 для нечётных значений, иначе 0
+ * @brief Извлекает числа из строки формата "csv: a; b; c"
+ * @param[out] ptr_array_f64  Указатель на массив для записи чисел
+ * @param[in]  max_count      Максимальное количество чисел
+ * @param[in]  ptr_str        Входная строка
+ * @return Количество успешно извлечённых чисел
  */
-int is_odd(int x);
-
-/**
- * @brief Positive criteria
- * @details Возвращает 1 для неотрицательных значений, иначе 0
- */
-int is_positive(int x);
-
-/**
- * @brief Negative criteria
- * @details Возвращает 1 для отрицательных значений, иначе 0
- */
-int is_negative(int x);
-
-/**
- * @brief Default criteria
- * @details Возвращает 1 для всех значений
- */
-int deflt(int x);
-
-/**
- * @brief Sum by criteria
- * @param[in] ar Указатель на массив
- * @param[in] len_ar Количество элементов
- * @param[in] filter Функция-фильтр
- * @return Сумма подходящих элементов
- */
-int sum_ar(const int *ar, size_t len_ar, filter_func_t filter);
+int get_data_csv(double *ptr_array_f64, int max_count, const char *ptr_str);
 
 /*** Main Function ***/
 
 /**
  * @brief Точка входа в программу
- * @details Считывает число, определяющее критерий фильтрации:
- * - 1 — сумма нечётных
- * - 2 — сумма неотрицательных
- * - 3 — сумма отрицательных
- * - любое другое — сумма всех
- *
- * Далее считываются значения массива, и выводится результат суммирования
- * по выбранному критерию.
- *
- * @return 0 при успешном завершении
+ * @return Код завершения
  */
 int main(void)
 {
-    filter_func_t funcs[4] =
-        {
-            is_odd,
-            is_positive,
-            is_negative,
-            deflt};
+    char str_input[100] = {0};
+    fgets(str_input, sizeof(str_input) - 1, stdin);
 
-    int marks[20] = {0};
-    int item = 0;
-    size_t count = 0;
-    int x = 0;
-
-    scanf("%d", &item); // выбор критерия
-
-    while (scanf("%d", &x) == 1)
+    // Удаляем символ новой строки, если есть
+    char *ptr_newline = strrchr(str_input, '\n');
+    if (ptr_newline != NULL)
     {
-        if (count < 20)
+        *ptr_newline = '\0';
+    }
+
+    double values_f64[20] = {0.0};
+    int count_values = get_data_csv(values_f64, 20, str_input);
+
+    for (int idx = 0; idx < count_values; ++idx)
+    {
+        printf("%.2f", values_f64[idx]);
+        if (idx < count_values - 1)
         {
-            marks[count++] = x;
+            printf(" ");
         }
     }
-
-    int sum = 0;
-
-    switch (item)
-    {
-    case 1:
-        sum = sum_ar(marks, count, funcs[0]);
-        break;
-    case 2:
-        sum = sum_ar(marks, count, funcs[1]);
-        break;
-    case 3:
-        sum = sum_ar(marks, count, funcs[2]);
-        break;
-    default:
-        sum = sum_ar(marks, count, funcs[3]);
-        break;
-    }
-
-    printf("%d\n", sum);
+    printf("\n");
 
     return 0;
 }
 
-/*** Criteria Functions ***/
+/*** Function Implementation ***/
 
-int is_odd(int x)
+int get_data_csv(double *ptr_array_f64, int max_count, const char *ptr_str)
 {
-    return (x % 2 != 0);
-}
+    int count = 0;
+    const char *ptr_prefix = "csv: ";
+    const char *ptr_current = ptr_str;
 
-int is_positive(int x)
-{
-    return (x >= 0);
-}
-
-int is_negative(int x)
-{
-    return (x < 0);
-}
-
-int deflt(int x)
-{
-    (void)x;
-    return 1;
-}
-
-/*** Sum Function ***/
-
-int sum_ar(const int *ar, size_t len_ar, filter_func_t filter)
-{
-    int sum = 0;
-
-    for (size_t i = 0; i < len_ar; ++i)
+    // Проверка префикса
+    if (strncmp(ptr_current, ptr_prefix, strlen(ptr_prefix)) != 0)
     {
-        if (filter(ar[i]))
+        return 0;
+    }
+
+    ptr_current += strlen(ptr_prefix);
+
+    // Пропуск пробелов
+    while (*ptr_current == ' ')
+    {
+        ++ptr_current;
+    }
+
+    // Разбор чисел
+    char *ptr_end = NULL;
+    while (*ptr_current != '\0' && count < max_count)
+    {
+        double value = strtod(ptr_current, &ptr_end);
+        if (ptr_current == ptr_end)
         {
-            sum += ar[i];
+            break; // Не удалось считать число
+        }
+
+        ptr_array_f64[count++] = value;
+        ptr_current = ptr_end;
+
+        while (*ptr_current == ' ')
+        {
+            ++ptr_current;
+        }
+
+        if (*ptr_current == ';')
+        {
+            ++ptr_current;
+            while (*ptr_current == ' ')
+            {
+                ++ptr_current;
+            }
+        }
+        else
+        {
+            break; // Нет разделителя — конец
         }
     }
 
-    return sum;
+    return count;
 }
