@@ -1,11 +1,11 @@
-/**
+/********************************************************************
  * @file emb_style_c.h
  * @brief Embedded C coding style for robotics and real-time systems
  * @version 3.3
  * @date 2025-07-07
  *
  * @copyright Copyright (c) 2025
- */
+ ********************************************************************/
 
 #ifndef STYLE_H
 #define STYLE_H
@@ -16,10 +16,10 @@ extern "C"
 #endif
 
     //==============================================================================
-    // 📘 Code Structure
+    //  Code Structure
     //==============================================================================
 
-    /**
+    /************************************************************************
      * 1. General Information (filename, purpose, platform, version, date)
      * Example:
         * @file motor_control.c
@@ -29,47 +29,66 @@ extern "C"
         *
         * @warning Do not use with DMA without buffer checks!
         * @note Maximum update rate: 1 kHz
+    *************************************************************************
 
-     * 2. Libraries used (grouped by purpose)
+     // 2. Libraries used (grouped by purpose)
      * Example:
-        // === Core ===
+        / *** Core *** /
         #include <stdint.h>
         #include "stm32f4xx_hal.h"
 
-        // === Drivers ===
+        / *** Drivers *** /
         #include "encoder.h"
         #include "pwm.h"
 
-        // === RTOS ===
+        / *** RTOS *** /
         #include "FreeRTOS.h"
         #include "task.h"
 
-     * 3. Data types
+     // 3. Data types
      * Example:
-        * typedef int16_t i16_t;
-        * typedef uint32_t u32_t;
-     * 4. Constants
+        / *** Typedefs *** /
+        typedef int16_t i16_t;
+        typedef uint32_t u32_t;
+
+     // 4. Constants
      * Example:
-        * constexpr u16_t MAX_BUFFER_SIZE = 128;
-        * constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
-        * constexpr f32_t PI_CONST = 3.1415926f;
-     * 5. Function prototypes with Doxygen comments
+        / *** Constants *** /
+        constexpr u16_t MAX_BUFFER_SIZE = 128;
+        constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
+        constexpr f32_t PI_CONST = 3.1415926f;
+
+     // 5. Function prototypes with Doxygen comments
      * Example:
+        / *** Function Prototypes *** /
         * @brief Initialize PID controller
         * @param pid Pointer to the structure (must be valid)
         * @param kp Proportional coefficient [0.0 - 5.0]
         * @return HAL_StatusTypeDef Initialization status
         HAL_StatusTypeDef pid_init(pid_controller_t* pid, float kp);
 
-     * 6. Main function
-     * 7. Function implementations
-     *
-     * Section headers use the following notation:
+     // 6. Main function
+    * Example:
+        / *** Main Function *** /
+        * @brief  Точка входа в программу
+        *         Генерирует массив из 11 случайных значений, добавляя их динамически
+        * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+
+         int main(void){
+         }
+
+    // 7. Function implementations
      * Example:
-     * /*** Header Text ***/
+        / *** Function Implementation *** /
+        void funct() {
+
+        }
+    // 8. Section headers use the following notation:
+     * Example:
+        /*** Header Text ***/
 
     //==============================================================================
-    // 📚 Doxygen Documentation
+    // Doxygen Documentation
     //==============================================================================
 
     /**
@@ -90,7 +109,7 @@ extern "C"
      */
 
     //==============================================================================
-    // 🧱 Variable Naming Conventions
+    // Variable Naming Conventions
     //==============================================================================
 
     /*
@@ -139,21 +158,21 @@ extern "C"
      *  full names -> other cases
      */
     // Example:
-    for (u8_t i_u8 = 0; i_u8 < 10; i_u8++)
+    for (size_t i = 0; i < 10; i++)
     { // Standard loop index
-        arr_waypoints_f32[i_u8] = 0.0f;
+        arr_waypoints_f32[i] = 0.0f;
     }
 
-    for (u8_t row_u8 = 0; row_u8 < 4; row_u8++)
+    for (size_t row = 0; row < 4; row++)
     { // Multi-Dimensional Loops
-        for (u8_t col_u8 = 0; col_u8 < 4; col_u8++)
+        for (size_t col = 0; col < 4; col++)
         {
-            matrix[row_u8][col_u8] = 0;
+            matrix[row][col] = 0;
         }
     }
 
     //==============================================================================
-    // 🧩 Data Types and Peripherals
+    //  Data Types and Peripherals
     //==============================================================================
 
 #include <stdint.h>
@@ -190,7 +209,7 @@ extern "C"
     } ctrl_reg_t;
 
     //==============================================================================
-    // 🤖 Robotics: Types and Constants
+    // Robotics: Types and Constants
     //==============================================================================
 
     // Coordinates and motion
@@ -216,7 +235,7 @@ extern "C"
     static const f32_t ROBOT_MAX_SPEED_MMPS = 500.0f; ///< Max speed (mm/s)
 
 //==============================================================================
-// 🛡 Safety and Checks
+// Safety and Checks
 //==============================================================================
 
 // Null pointer check
@@ -243,7 +262,7 @@ extern "C"
     ((val) < (min) ? (min) : ((val) > (max) ? (max) : (val)))
 
     //==============================================================================
-    // ⏱ RTOS and Tasks
+    // RTOS and Tasks
     //==============================================================================
 
     /// FreeRTOS task priorities
@@ -273,7 +292,7 @@ extern "C"
     }
 
     //==============================================================================
-    // ⚠ Error Handling
+    // Error Handling
     //==============================================================================
 
     /// Error codes
@@ -297,7 +316,7 @@ extern "C"
     } while (0)
 
 //==============================================================================
-// 🚨 Interrupts (ISR)
+// Interrupts (ISR)
 //==============================================================================
 
 // Compiler-specific attributes
@@ -317,7 +336,7 @@ extern "C"
     }
 
     //==============================================================================
-    // 📊 Usage Example
+    // Usage Example
     //==============================================================================
 
     /**

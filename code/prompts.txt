@@ -9,5 +9,6 @@ Use `size_t` type for the loops and counters
 Use `typedef` for structs, unions and enums
 Split the code into separate functions
 Remember this style for next code generations
-Explain the code step by step
+Explain the code in details step by step
+Check the code for MISRA-C Compliance
 Test output with the next data

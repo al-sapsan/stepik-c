@@ -1,4 +1,4 @@
-/**
+/**********************************************************************
  * @file emb_style_cpp.h
  * @brief Coding style for Embedded C++ (bare-metal/RTOS/robotics)
  *
@@ -8,7 +8,7 @@
  * @date 2025-07-07
  *
  * @copyright Copyright (c) 2025
- */
+ **********************************************************************/
 
 #ifndef EMB_STYLE_CPP_H
 #define EMB_STYLE_CPP_H
@@ -19,60 +19,78 @@ extern "C"
 #endif
 
     //==============================================================================
-    // 📘 Code Structure
+    //  Code Structure
     //==============================================================================
 
-    /**
-     * 1. General information (filename, purpose, platform, version, date)
+    /************************************************************************
+     * 1. General Information (filename, purpose, platform, version, date)
      * Example:
-        * @file motor_control.cpp
+        * @file motor_control.c
         * @brief Motor control driver (PID controller)
         * @version 1.1 (STM32F4xx HAL)
         * @date 2023-08-15
         *
         * @warning Do not use with DMA without buffer checks!
         * @note Maximum update rate: 1 kHz
+    *************************************************************************
 
-     * 2. Libraries used (grouped by purpose)
+     // 2. Libraries used (grouped by purpose)
      * Example:
-        // === Core ===
+        / *** Core *** /
         #include <stdint.h>
         #include "stm32f4xx_hal.h"
 
-        // === Drivers ===
+        / *** Drivers *** /
         #include "encoder.h"
         #include "pwm.h"
 
-        // === RTOS ===
+        / *** RTOS *** /
         #include "FreeRTOS.h"
         #include "task.h"
 
-     * 3. Data types
+     // 3. Data types
      * Example:
-        * typedef int16_t i16_t;
-        * typedef uint32_t u32_t;
-     * 4. Constants
+        / *** Typedefs *** /
+        typedef int16_t i16_t;
+        typedef uint32_t u32_t;
+
+     // 4. Constants
      * Example:
-        * constexpr u16_t MAX_BUFFER_SIZE = 128;
-        * constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
-        * constexpr f32_t PI_CONST = 3.1415926f;
-     * 5. Function prototypes with Doxygen comments
+        / *** Constants *** /
+        constexpr u16_t MAX_BUFFER_SIZE = 128;
+        constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
+        constexpr f32_t PI_CONST = 3.1415926f;
+
+     // 5. Function prototypes with Doxygen comments
      * Example:
+        / *** Function Prototypes *** /
         * @brief Initialize PID controller
-        * @param pid Pointer to structure (must be valid)
+        * @param pid Pointer to the structure (must be valid)
         * @param kp Proportional coefficient [0.0 - 5.0]
         * @return HAL_StatusTypeDef Initialization status
         HAL_StatusTypeDef pid_init(pid_controller_t* pid, float kp);
 
-     * 6. Main function
-     * 7. Function implementations
-     *
-     * Section headers use the following notation:
-     * Example:
-     * /*** Header Text ***/
+     // 6. Main function
+    * Example:
+        / *** Main Function *** /
+        * @brief  Точка входа в программу
+        *         Генерирует массив из 11 случайных значений, добавляя их динамически
+        * @return Код завершения (0 — успешно, 1 — ошибка памяти)
 
+         int main(void){
+         }
+
+    // 7. Function implementations
+     * Example:
+        / *** Function Implementation *** /
+        void funct() {
+
+        }
+    // 8. Section headers use the following notation:
+     * Example:
+        /*** Header Text ***/
     //==============================================================================
-    // 📚 Doxygen Documentation
+    // Doxygen Documentation
     //==============================================================================
 
     /**
@@ -93,7 +111,7 @@ extern "C"
      */
 
     //==============================================================================
-    // 🧱 Variable Naming Conventions
+    // Variable Naming Conventions
     //==============================================================================
 
     /*
@@ -156,7 +174,7 @@ extern "C"
     }
 
     //==============================================================================
-    // 🧩 Data Types
+    //  Data Types
     //==============================================================================
 
 #include <stdint.h>
@@ -181,7 +199,7 @@ extern "C"
     typedef volatile int32_t vi32_t;
 
     //==============================================================================
-    // 🔠 Constants (prefer constexpr)
+    //  Constants (prefer constexpr)
     //==============================================================================
 
     constexpr u16_t MAX_BUFFER_SIZE = 128; // Instead of #define
@@ -190,7 +208,7 @@ extern "C"
     constexpr f32_t DEG_TO_RAD = 0.0174533f;
 
     //==============================================================================
-    // 🤖 Robotics: Specialized Types
+    //  Robotics: Specialized Types
     //==============================================================================
 
     /// 2D coordinates (mm)
@@ -225,7 +243,7 @@ extern "C"
     } motor_params_t;
 
 //==============================================================================
-// 🛠 Safety: Checks
+//  Safety: Checks
 //==============================================================================
 
 // Null pointer check
@@ -259,7 +277,7 @@ extern "C"
     } while (0)
 
     //==============================================================================
-    // ⏱ RTOS: Tasks and Synchronization
+    //  RTOS: Tasks and Synchronization
     //==============================================================================
 
     // Recommended stack sizes (in words)
@@ -289,7 +307,7 @@ extern "C"
     }
 
     //==============================================================================
-    // 📘 Example Structures (Extended)
+    //  Example Structures (Extended)
     //==============================================================================
 
     typedef struct
@@ -325,7 +343,7 @@ extern "C"
     static u8_t s_rx_buffer_u8[MAX_BUFFER_SIZE];
 
     //==============================================================================
-    // 🧠 Interrupts (ISR)
+    //  Interrupts (ISR)
     //==============================================================================
     /*
      * - Use _isr prefix
@@ -339,7 +357,7 @@ extern "C"
     void exti0_isr(void);
 
     //==============================================================================
-    // ⏱ RTOS Conventions
+    //  RTOS Conventions
     //==============================================================================
     /*
      * - enum class State_t : u8_t {} for FSMs
@@ -348,7 +366,7 @@ extern "C"
      */
 
     //==============================================================================
-    // 🧮 Namespaces
+    //  Namespaces
     //==============================================================================
 
     namespace hal
@@ -372,7 +390,7 @@ extern "C"
     }
 
 //==============================================================================
-// ⚠ Banned in Embedded C++ (Do Not Use)
+//  Banned in Embedded C++ (Do Not Use)
 //==============================================================================
 /*
  * - std::shared_ptr, std::unique_ptr
@@ -383,7 +401,7 @@ extern "C"
  */
 
 //==============================================================================
-// 🛠 Example Safety Macro
+//  Example Safety Macro
 //==============================================================================
 #define CHECK_NULL(ptr)    \
     do                     \

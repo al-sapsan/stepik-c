@@ -1,88 +1,55 @@
-/*******************************************************************************
- * @file    script_divisors_recursive.c
- * @brief   Рекурсивный вывод делителей числа в порядке возрастания
+
+/********************************************************************
+ * @file    script7.c
+ * @brief   Динамическое расширение массива short и заполнение значением
  * @version 1.0
- * @date    2025-07-18
- ******************************************************************************/
+ * @date    2025-07-28
+ ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
 
-/*** Typedefs ***/
-typedef unsigned int u32_t;
-typedef double f64_t;
-
-/*** Function Prototypes ***/
-
-/**
- * @brief Рекурсивно выводит делители от 1 до sqrt(n)
- * @param[in] val_n Число
- * @param[in] idx_i Текущий индекс
- */
-void print_divisors_forward(u32_t val_n, u32_t idx_i);
-
-/**
- * @brief Рекурсивно выводит парные делители от sqrt(n) до 1
- * @param[in] val_n Число
- * @param[in] idx_i Текущий индекс
- */
-void print_divisors_reverse(u32_t val_n, u32_t idx_i);
-
-/*** Main Function ***/
-
-/**
- * @brief Точка входа
- * @return Код завершения
- */
-int main(void)
-{
-    u32_t val_n = 0U;
-    scanf("%u", &val_n);
-
-    f64_t root_f64 = sqrt((f64_t)val_n);
-    u32_t root_u32 = (u32_t)root_f64;
-
-    print_divisors_forward(val_n, 1U);
-    print_divisors_reverse(val_n, root_u32);
-
-    printf("\n");
-    return 0;
-}
+#define TOTAL 10
 
 /*** Function Implementation ***/
-
-void print_divisors_forward(u32_t val_n, u32_t idx_i)
+void *expand_array(short *ptr, size_t *len, short fill)
 {
-    f64_t root_f64 = sqrt((f64_t)val_n);
-    u32_t root_u32 = (u32_t)root_f64;
-
-    if (idx_i > root_u32)
-    {
-        return;
-    }
-
-    if (val_n % idx_i == 0U)
-    {
-        printf("%u ", idx_i);
-    }
-
-    print_divisors_forward(val_n, idx_i + 1U);
+    if (ptr == NULL || len == NULL || *len == 0)
+        return NULL;
+    size_t new_len = (*len) * 2;
+    short *ptr_new = (short *)malloc(new_len * sizeof(short));
+    if (ptr_new == NULL)
+        return ptr;
+    for (size_t i = 0; i < *len; ++i)
+        ptr_new[i] = ptr[i];
+    for (size_t i = *len; i < new_len; ++i)
+        ptr_new[i] = fill;
+    free(ptr);
+    *len = new_len;
+    return ptr_new;
 }
 
-void print_divisors_reverse(u32_t val_n, u32_t idx_i)
+/*** Main Function ***/
+int main(void)
 {
-    if (idx_i == 0U)
-    {
-        return;
-    }
+    short *ptr_d = calloc(TOTAL, sizeof(short));
+    size_t len = TOTAL;
+    if (ptr_d == NULL)
+        return 0;
 
-    u32_t pair = val_n / idx_i;
+    int count = 0;
+    while (count < TOTAL && scanf("%hd", &ptr_d[count]) == 1)
+        count++;
 
-    if (val_n % idx_i == 0U && pair != idx_i)
-    {
-        printf("%u ", pair);
-    }
+    // Расширение массива и заполнение значением -1
+    ptr_d = expand_array(ptr_d, &len, -1);
 
-    print_divisors_reverse(val_n, idx_i - 1U);
+    // Вывод всех len элементов
+    for (size_t i = 0; i < len; ++i)
+        printf("%hd ", ptr_d[i]);
+    printf("\n");
+
+    free(ptr_d);
+    return 0;
 }

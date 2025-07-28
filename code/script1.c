@@ -1,50 +1,36 @@
 /*******************************************************************************
- * @file script1.c
- * @brief Вариадическая функция для квадратичной нормы вектора
+ * @file    emb_generator.c
+ * @brief   Генерация последовательности 5, 8, 11, ...
  * @version 1.0
- * @date 2025-07-23
+ * @date    2025-07-24
  ******************************************************************************/
 #include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
 
 /*** Function Prototype ***/
 /**
- * @brief Quadratic norm of vector (variadic)
- * @param ptr_type Строка с типом вектора
- * @return Квадратичная норма
- * @details Вычисляет норму для vector2, vector3, vector4, иначе 0.0
+ * @brief Генерирует последовательность 5, 8, 11, ...
+ * @return Следующее число последовательности
  */
-double v_norm2(const char *ptr_type, ...);
+int range(void);
 
 /*** Main Function ***/
 int main(void)
 {
-    double res = v_norm2("vector2", 1.0, 2.0);
-    printf("%.1f\n", res);
+    for (size_t i = 0; i < 7; ++i)
+    {
+        if (i > 0)
+            (void)printf(" ");
+        (void)printf("%d", range());
+    }
+    (void)printf("\n");
     return 0;
 }
 
 /*** Function Implementation ***/
-double v_norm2(const char *ptr_type, ...)
+int range(void)
 {
-    int n = 0;
-    if (strcmp(ptr_type, "vector2") == 0)
-        n = 2;
-    else if (strcmp(ptr_type, "vector3") == 0)
-        n = 3;
-    else if (strcmp(ptr_type, "vector4") == 0)
-        n = 4;
-    else
-        return 0.0;
-    double norm2 = 0.0;
-    va_list args;
-    va_start(args, ptr_type);
-    for (int i = 0; i < n; ++i)
-    {
-        double val = va_arg(args, double);
-        norm2 += val * val;
-    }
-    va_end(args);
-    return norm2;
+    static int s_value_i32 = 5;
+    int result_i32 = s_value_i32;
+    s_value_i32 += 3;
+    return result_i32;
 }

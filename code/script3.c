@@ -1,113 +1,74 @@
+
 /*******************************************************************************
- * @file    script_csv_parser.c
- * @brief   Извлечение чисел из строки формата CSV с префиксом
+ * @file    script3.c
+ * @brief   Генерация циклической последовательности с параметрами (start, stop, step)
  * @version 1.0
- * @date    2025-07-18
+ * @date    2025-07-25
  ******************************************************************************/
 
 /*** Includes ***/
+
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 /*** Function Prototypes ***/
 
 /**
- * @brief Извлекает числа из строки формата "csv: a; b; c"
- * @param[out] ptr_array_f64  Указатель на массив для записи чисел
- * @param[in]  max_count      Максимальное количество чисел
- * @param[in]  ptr_str        Входная строка
- * @return Количество успешно извлечённых чисел
+ * @brief Генерирует циклическую последовательность целых чисел
+ *
+ * При первом вызове инициализирует параметры последовательности (start, stop, step).
+ * При последующих вызовах возвращает следующее значение последовательности.
+ * После достижения stop возвращается к start.
+ * Не использует глобальных переменных.
+ *
+ * @param[in] start Начальное значение (только при первом вызове)
+ * @param[in] stop Конечное значение (включительно, только при первом вызове)
+ * @param[in] step Шаг (только при первом вызове)
+ * @return Следующее значение последовательности
  */
-int get_data_csv(double *ptr_array_f64, int max_count, const char *ptr_str);
+int range(int start, int stop, int step);
 
 /*** Main Function ***/
 
 /**
  * @brief Точка входа в программу
- * @return Код завершения
+ * @return Код завершения (0)
  */
 int main(void)
 {
-    char str_input[100] = {0};
-    fgets(str_input, sizeof(str_input) - 1, stdin);
+    int start_i32, stop_i32, step_i32;
+    scanf("%d %d %d", &start_i32, &stop_i32, &step_i32);
 
-    // Удаляем символ новой строки, если есть
-    char *ptr_newline = strrchr(str_input, '\n');
-    if (ptr_newline != NULL)
+    for (size_t i = 0; i < 20; ++i)
     {
-        *ptr_newline = '\0';
+        printf("%d ", range(start_i32, stop_i32, step_i32));
     }
-
-    double values_f64[20] = {0.0};
-    int count_values = get_data_csv(values_f64, 20, str_input);
-
-    for (int idx = 0; idx < count_values; ++idx)
-    {
-        printf("%.2f", values_f64[idx]);
-        if (idx < count_values - 1)
-        {
-            printf(" ");
-        }
-    }
-    printf("\n");
-
     return 0;
 }
 
 /*** Function Implementation ***/
 
-int get_data_csv(double *ptr_array_f64, int max_count, const char *ptr_str)
+int range(int start, int stop, int step)
 {
-    int count = 0;
-    const char *ptr_prefix = "csv: ";
-    const char *ptr_current = ptr_str;
+    static int s_start_i32 = 0;
+    static int s_stop_i32 = 0;
+    static int s_step_i32 = 0;
+    static int s_current_i32 = 0;
+    static int s_first_call_b = 1;
 
-    // Проверка префикса
-    if (strncmp(ptr_current, ptr_prefix, strlen(ptr_prefix)) != 0)
+    if (s_first_call_b)
     {
-        return 0;
+        s_start_i32 = start;
+        s_stop_i32 = stop;
+        s_step_i32 = step;
+        s_current_i32 = s_start_i32;
+        s_first_call_b = 0;
+        return s_current_i32;
     }
 
-    ptr_current += strlen(ptr_prefix);
-
-    // Пропуск пробелов
-    while (*ptr_current == ' ')
+    s_current_i32 += s_step_i32;
+    if ((s_step_i32 > 0 && s_current_i32 > s_stop_i32) || (s_step_i32 < 0 && s_current_i32 < s_stop_i32))
     {
-        ++ptr_current;
+        s_current_i32 = s_start_i32;
     }
-
-    // Разбор чисел
-    char *ptr_end = NULL;
-    while (*ptr_current != '\0' && count < max_count)
-    {
-        double value = strtod(ptr_current, &ptr_end);
-        if (ptr_current == ptr_end)
-        {
-            break; // Не удалось считать число
-        }
-
-        ptr_array_f64[count++] = value;
-        ptr_current = ptr_end;
-
-        while (*ptr_current == ' ')
-        {
-            ++ptr_current;
-        }
-
-        if (*ptr_current == ';')
-        {
-            ++ptr_current;
-            while (*ptr_current == ' ')
-            {
-                ++ptr_current;
-            }
-        }
-        else
-        {
-            break; // Нет разделителя — конец
-        }
-    }
-
-    return count;
+    return s_current_i32;
 }
