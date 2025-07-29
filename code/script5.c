@@ -1,52 +1,32 @@
-
-/*******************************************************************************
+/********************************************************************
  * @file    script5.c
- * @brief   Динамическое выделение памяти и инициализация массива short
+ * @brief   Копирование структуры tag_price и вывод полей
  * @version 1.0
- * @date    2025-07-26
- ******************************************************************************/
+ * @date    2025-07-28
+ ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
-#include <stdlib.h>
 
-/*** Typedefs ***/
-typedef short i16_t;
+/*
+struct tag_price
+{
+    char name[100];
+    unsigned int rubs;
+    unsigned short kops;
+    unsigned int foreign_key;
+};
+*/
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @return Код завершения (0)
- */
 int main(void)
 {
-    /*** Variables ***/
-    double digits[20];
-    int count = 0;
-    double *ptr_d = NULL;
+    // Объявляем переменную pr и копируем данные из price_100
+    struct tag_price pr = price_100;
 
-    // Чтение не более 20 чисел
-    while (count < 20 && scanf("%lf", &digits[count]) == 1)
-    {
-        ++count;
-    }
+    // Выводим поля структуры в нужном порядке
+    printf("%s %u %hu %u\n", pr.name, pr.rubs, pr.kops, pr.foreign_key);
 
-    // Выделение памяти ровно под count элементов
-    if (count > 0)
-    {
-        ptr_d = (double *)malloc(count * sizeof(double));
-        if (ptr_d != NULL)
-        {
-            for (int i = 0; i < count; ++i)
-            {
-                ptr_d[i] = digits[i];
-            }
-        }
-    }
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-
-        // Освобождение памяти
-        free(ptr_d);
-    return 0;
+    __ASSERT_TESTS__ // макроопределение для тебирования (не убирать)
+        return 0;
 }

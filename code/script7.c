@@ -1,55 +1,51 @@
-
 /********************************************************************
  * @file    script7.c
- * @brief   Динамическое расширение массива short и заполнение значением
+ * @brief   Сложение времени в структурах tag_time
  * @version 1.0
  * @date    2025-07-28
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
-#include <stdlib.h>
 
-#define TOTAL 10
-
-/*** Function Implementation ***/
-void *expand_array(short *ptr, size_t *len, short fill)
+/*** Typedefs ***/
+typedef struct
 {
-    if (ptr == NULL || len == NULL || *len == 0)
-        return NULL;
-    size_t new_len = (*len) * 2;
-    short *ptr_new = (short *)malloc(new_len * sizeof(short));
-    if (ptr_new == NULL)
-        return ptr;
-    for (size_t i = 0; i < *len; ++i)
-        ptr_new[i] = ptr[i];
-    for (size_t i = *len; i < new_len; ++i)
-        ptr_new[i] = fill;
-    free(ptr);
-    *len = new_len;
-    return ptr_new;
-}
+    unsigned char hours;
+    unsigned char minutes;
+    unsigned char seconds;
+} tag_time;
 
 /*** Main Function ***/
+/**
+ * @brief  Точка входа в программу
+ *         Складывает два времени и выводит результат
+ * @return Код завершения (0 — успешно)
+ */
 int main(void)
 {
-    short *ptr_d = calloc(TOTAL, sizeof(short));
-    size_t len = TOTAL;
-    if (ptr_d == NULL)
+    tag_time tm1, tm2, tm_sum;
+    unsigned int h1, m1, s1, h2, m2, s2;
+    scanf("%u %u %u %u %u %u", &h1, &m1, &s1, &h2, &m2, &s2);
+    tm1.hours = (unsigned char)h1;
+    tm1.minutes = (unsigned char)m1;
+    tm1.seconds = (unsigned char)s1;
+    tm2.hours = (unsigned char)h2;
+    tm2.minutes = (unsigned char)m2;
+    tm2.seconds = (unsigned char)s2;
+
+    unsigned int sum_sec = tm1.seconds + tm2.seconds;
+    tm_sum.seconds = (unsigned char)(sum_sec % 60);
+    unsigned int carry_min = sum_sec / 60;
+
+    unsigned int sum_min = tm1.minutes + tm2.minutes + carry_min;
+    tm_sum.minutes = (unsigned char)(sum_min % 60);
+    unsigned int carry_hour = sum_min / 60;
+
+    tm_sum.hours = (unsigned char)(tm1.hours + tm2.hours + carry_hour);
+
+    printf("%02u:%02u:%02u\n", tm_sum.hours, tm_sum.minutes, tm_sum.seconds);
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
         return 0;
-
-    int count = 0;
-    while (count < TOTAL && scanf("%hd", &ptr_d[count]) == 1)
-        count++;
-
-    // Расширение массива и заполнение значением -1
-    ptr_d = expand_array(ptr_d, &len, -1);
-
-    // Вывод всех len элементов
-    for (size_t i = 0; i < len; ++i)
-        printf("%hd ", ptr_d[i]);
-    printf("\n");
-
-    free(ptr_d);
-    return 0;
 }

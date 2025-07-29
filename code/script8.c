@@ -1,52 +1,48 @@
-
 /********************************************************************
  * @file    script8.c
- * @brief   Объединение двух строк с динамическим выделением памяти
+ * @brief   Чтение точек в массив структур tag_point_3d
  * @version 1.0
  * @date    2025-07-28
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-void get_ln(char *buffer, size_t max_len)
+/*** Typedefs ***/
+typedef struct tag_point_3d
 {
-    fgets(buffer, max_len - 1, stdin);
-    char *ptr_n = strrchr(buffer, '\n');
-    if (ptr_n != NULL)
-        *ptr_n = '\0';
-}
+    int x;
+    int y;
+    int z;
+} tag_point_3d;
 
-/*** Function Implementation ***/
-char *merge_string(const char *str1, const char *str2)
+enum
 {
-    size_t len1 = strlen(str1);
-    size_t len2 = strlen(str2);
-    char *ptr_result = (char *)malloc(len1 + len2 + 1);
-    if (ptr_result == NULL)
-        return NULL;
-    memcpy(ptr_result, str1, len1);
-    memcpy(ptr_result + len1, str2, len2);
-    ptr_result[len1 + len2] = '\0';
-    return ptr_result;
-}
+    total_points = 100
+};
 
 /*** Main Function ***/
+/**
+ * @brief  Точка входа в программу
+ *         Читает координаты точек и выводит последнюю корректную
+ * @return Код завершения (0 — успешно)
+ */
 int main(void)
 {
-    char str_1[200] = {0};
-    char str_2[200] = {0};
-
-    get_ln(str_1, sizeof(str_1));
-    get_ln(str_2, sizeof(str_2));
-
-    char *ptr_merged = merge_string(str_1, str_2);
-    if (ptr_merged != NULL)
+    tag_point_3d points[total_points];
+    int total = 0;
+    int x, y, z;
+    while (total < total_points && scanf("%d %d %d", &x, &y, &z) == 3)
     {
-        printf("%s\n", ptr_merged);
-        free(ptr_merged);
+        points[total].x = x;
+        points[total].y = y;
+        points[total].z = z;
+        total++;
     }
-    return 0;
+    if (total > 0)
+    {
+        printf("%d %d %d\n", points[total - 1].x, points[total - 1].y, points[total - 1].z);
+    }
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+        return 0;
 }

@@ -1,66 +1,57 @@
-/*******************************************************************************
+
+/********************************************************************
  * @file    script2.c
- * @brief   Генерация циклической последовательности чисел с параметрами
+ * @brief   Определение мажорных нот через enum и функцию
  * @version 1.0
- * @date    2025-07-21
- ******************************************************************************/
+ * @date    2025-07-28
+ ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
 
-/*** Function Prototypes ***/
+/*** Typedefs ***/
+typedef enum
+{
+    _do = 1,
+    _re = 2,
+    _mi = 3,
+    _fa = 4,
+    _sol = 5,
+    _la = 6,
+    _si = 7
+} NOTES;
 
+/*** Function Prototypes ***/
 /**
- * @brief Генерирует последовательность чисел от start до stop с шагом step (циклически)
- * @param[in] start Начальное значение последовательности
- * @param[in] stop  Конечное значение последовательности (включительно)
- * @param[in] step  Шаг последовательности
- * @return Следующее значение последовательности
+ * @brief Проверяет, является ли нота мажорной (_do, _mi, _sol)
+ *
+ * @param[in] note Нота типа NOTES
+ * @return 1 — если мажорная, 0 — иначе
  */
-int range(int start, int stop, int step);
+int get_major(NOTES note);
 
 /*** Main Function ***/
-
 /**
  * @brief Точка входа в программу
- * @return Код завершения
+ * @return Код завершения (0)
  */
 int main(void)
 {
-    int start = 0, stop = 0, step = 0;
-    scanf("%d %d %d", &start, &stop, &step);
+    int arr_notes[5];
+    for (size_t i = 0; i < 5; ++i)
+        scanf("%d", &arr_notes[i]);
 
-    for (size_t i = 0; i < 20; ++i)
+    for (size_t i = 0; i < 5; ++i)
     {
-        int val = range(start, stop, step);
-        printf("%d", val);
-        if (i != 19)
-            printf(" ");
+        if (get_major((NOTES)arr_notes[i]))
+            printf("%d ", arr_notes[i]);
     }
     printf("\n");
     return 0;
 }
 
-/*** Function Definitions ***/
-
-int range(int start, int stop, int step)
+/*** Function Implementation ***/
+int get_major(NOTES note)
 {
-    static int s_start = 0, s_stop = 0, s_step = 0, s_cur = 0;
-    static int s_first_call = 1;
-
-    if (s_first_call)
-    {
-        s_start = start;
-        s_stop = stop;
-        s_step = step;
-        s_cur = s_start;
-        s_first_call = 0;
-        return s_cur;
-    }
-    s_cur += s_step;
-    if ((s_step > 0 && s_cur > s_stop) || (s_step < 0 && s_cur < s_stop))
-    {
-        s_cur = s_start;
-    }
-    return s_cur;
+    return (note == _do || note == _mi || note == _sol) ? 1 : 0;
 }
