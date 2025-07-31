@@ -1,51 +1,85 @@
 /********************************************************************
  * @file    script7.c
- * @brief   Сложение времени в структурах tag_time
+ * @brief   Реализация стека для хранения истории URL-адресов
  * @version 1.0
- * @date    2025-07-28
+ * @date    2025-07-29
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*** Typedefs ***/
-typedef struct
+typedef struct tag_obj
 {
-    unsigned char hours;
-    unsigned char minutes;
-    unsigned char seconds;
-} tag_time;
+    struct tag_obj *next;
+    char url[1024];
+} OBJ;
+
+/*** Function Prototypes ***/
+/**
+ * @brief  Добавляет новый элемент в стек
+ * @param[in] top Текущий верхний элемент стека
+ * @param[in] url URL-адрес для добавления
+ * @return Новый верхний элемент стека
+ */
+OBJ *push(OBJ *top, const char *url);
+
+/**
+ * @brief  Удаляет верхний элемент стека
+ * @param[in] top Текущий верхний элемент стека
+ * @return Новый верхний элемент стека
+ */
+OBJ *pop(OBJ *top);
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Складывает два времени и выводит результат
+ *         Формирует стек URL-адресов и освобождает память
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    tag_time tm1, tm2, tm_sum;
-    unsigned int h1, m1, s1, h2, m2, s2;
-    scanf("%u %u %u %u %u %u", &h1, &m1, &s1, &h2, &m2, &s2);
-    tm1.hours = (unsigned char)h1;
-    tm1.minutes = (unsigned char)m1;
-    tm1.seconds = (unsigned char)s1;
-    tm2.hours = (unsigned char)h2;
-    tm2.minutes = (unsigned char)m2;
-    tm2.seconds = (unsigned char)s2;
+    OBJ *top = NULL;
+    top = push(top, "https://proproprogs.ru/c_base/c_base/c_etapy-translyacii-programmy-v-mashinnyy-kod-standarty");
+    top = push(top, "https://proproprogs.ru/c_base/c_struktura-i-ponimanie-raboty-programmy-hello-world");
+    top = push(top, "https://proproprogs.ru/c_base/c_dvoichnaya-shestnadcaterichnaya-i-vosmerichnaya-sistemy-schisleniya");
+    top = push(top, "https://proproprogs.ru/c_base/c_lokalnye-i-globalnye-peremennye");
+    top = push(top, "https://proproprogs.ru/c_base/c_perechisleniya-enum-direktiva-typedef");
 
-    unsigned int sum_sec = tm1.seconds + tm2.seconds;
-    tm_sum.seconds = (unsigned char)(sum_sec % 60);
-    unsigned int carry_min = sum_sec / 60;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать)
 
-    unsigned int sum_min = tm1.minutes + tm2.minutes + carry_min;
-    tm_sum.minutes = (unsigned char)(sum_min % 60);
-    unsigned int carry_hour = sum_min / 60;
+        // Освобождение памяти стека
+        while (top != NULL)
+    {
+        top = pop(top);
+    }
+    return 0;
+}
 
-    tm_sum.hours = (unsigned char)(tm1.hours + tm2.hours + carry_hour);
+/*** Function Implementation ***/
 
-    printf("%02u:%02u:%02u\n", tm_sum.hours, tm_sum.minutes, tm_sum.seconds);
+OBJ *push(OBJ *top, const char *url)
+{
+    OBJ *node = (OBJ *)malloc(sizeof(OBJ));
+    if (node == NULL)
+    {
+        return top;
+    }
+    strncpy(node->url, url, sizeof(node->url) - 1);
+    node->url[sizeof(node->url) - 1] = '\0';
+    node->next = top;
+    return node;
+}
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+OBJ *pop(OBJ *top)
+{
+    if (top == NULL)
+    {
+        return NULL;
+    }
+    OBJ *next = top->next;
+    free(top);
+    return next;
 }

@@ -1,57 +1,40 @@
-
 /********************************************************************
  * @file    script2.c
- * @brief   Определение мажорных нот через enum и функцию
+ * @brief   Работа с динамической структурой tag_rub и расчетом валюты
  * @version 1.0
- * @date    2025-07-28
+ * @date    2025-07-29
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
+#include <stdlib.h>
 
 /*** Typedefs ***/
-typedef enum
+typedef struct tag_rub
 {
-    _do = 1,
-    _re = 2,
-    _mi = 3,
-    _fa = 4,
-    _sol = 5,
-    _la = 6,
-    _si = 7
-} NOTES;
-
-/*** Function Prototypes ***/
-/**
- * @brief Проверяет, является ли нота мажорной (_do, _mi, _sol)
- *
- * @param[in] note Нота типа NOTES
- * @return 1 — если мажорная, 0 — иначе
- */
-int get_major(NOTES note);
+    double ratio_usd;
+    int rubs;
+} tag_rub;
 
 /*** Main Function ***/
 /**
- * @brief Точка входа в программу
- * @return Код завершения (0)
+ * @brief  Точка входа в программу
+ *         Выделяет память под tag_rub, вычисляет доллары и освобождает память
+ * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    int arr_notes[5];
-    for (size_t i = 0; i < 5; ++i)
-        scanf("%d", &arr_notes[i]);
-
-    for (size_t i = 0; i < 5; ++i)
+    tag_rub *account_r = (tag_rub *)malloc(sizeof(tag_rub));
+    if (account_r == NULL)
     {
-        if (get_major((NOTES)arr_notes[i]))
-            printf("%d ", arr_notes[i]);
+        return 1;
     }
-    printf("\n");
-    return 0;
-}
+    account_r->ratio_usd = 91.32;
+    scanf("%d", &account_r->rubs);
+    double dollars = account_r->rubs / account_r->ratio_usd;
+    (void)printf("%.2f\n", dollars);
 
-/*** Function Implementation ***/
-int get_major(NOTES note)
-{
-    return (note == _do || note == _mi || note == _sol) ? 1 : 0;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать)
+        free(account_r);
+    return 0;
 }

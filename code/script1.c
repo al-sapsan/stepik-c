@@ -1,54 +1,41 @@
-
 /********************************************************************
  * @file    script1.c
- * @brief   Вычисление площади или периметра прямоугольника через enum и функцию
+ * @brief   Работа со структурой tag_geom и указателем
  * @version 1.0
- * @date    2025-07-28
+ * @date    2025-07-29
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
 
 /*** Typedefs ***/
-typedef enum
+typedef struct tag_geom
 {
-    _perimetr = 1,
-    _square = 2
-} calc_types;
-
-/*** Function Prototypes ***/
-/**
- * @brief Вычисляет площадь или периметр прямоугольника
- *
- * @param[in] width  Ширина прямоугольника
- * @param[in] height Высота прямоугольника
- * @param[in] type   Тип вычисления (периметр или площадь)
- * @return double    Результат вычисления
- */
-double calc_rect(double width, double height, calc_types type);
+    char type;
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+} tag_geom;
 
 /*** Main Function ***/
 /**
- * @brief Точка входа в программу
- * @return Код завершения (0)
+ * @brief  Точка входа в программу
+ *         Заполняет структуру tag_geom и выводит поля через указатель
+ * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    int type_i32 = 0;
-    double width_f64 = 0.0, height_f64 = 0.0;
-    scanf("%d %lf %lf", &type_i32, &width_f64, &height_f64);
+    tag_geom geom;
+    geom.type = 1;
+    geom.x0 = 10;
+    geom.y0 = 20;
+    geom.x1 = 50;
+    geom.y1 = 30;
 
-    double result_f64 = calc_rect(width_f64, height_f64, (calc_types)type_i32);
-    printf("%.1f\n", result_f64);
-    return 0;
-}
+    tag_geom *ptr_geom = &geom;
+    printf("%d %d %d %d %d\n", ptr_geom->type, ptr_geom->x0, ptr_geom->y0, ptr_geom->x1, ptr_geom->y1);
 
-/*** Function Implementation ***/
-double calc_rect(double width, double height, calc_types type)
-{
-    if (type == _square)
-        return width * height;
-    else if (type == _perimetr)
-        return 2.0 * (width + height);
-    return 0.0;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать)
+        return 0;
 }

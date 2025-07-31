@@ -234,6 +234,8 @@ extern "C"
     static const f32_t ENCODER_PPR = 1024.0f;         ///< Pulses per revolution
     static const f32_t ROBOT_MAX_SPEED_MMPS = 500.0f; ///< Max speed (mm/s)
 
+    // Function `printf()` usage
+    (void)printf("%.2f\n", number); ///< Always add (void) before printf()
 //==============================================================================
 // Safety and Checks
 //==============================================================================

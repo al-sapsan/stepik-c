@@ -1,8 +1,8 @@
 /********************************************************************
- * @file    script8.c
+ * @file    breadth_first_search.c
  * @brief   Модель метро: станции и связи, variadic set_station_links
- * @version 1.0
- * @date    2025-07-29
+ * @version 2.1
+ * @date
  ********************************************************************/
 
 /*** Includes ***/
@@ -33,7 +33,6 @@ typedef struct tag_station
  * @param[in] ... Перечень указателей на станции
  */
 void set_station_links(STATION *st, int count_links, ...);
-
 /**
  * @brief  Находит кратчайший маршрут между двумя станциями метро (BFS)
  * @param[in] from Начальная станция
@@ -44,11 +43,6 @@ void set_station_links(STATION *st, int count_links, ...);
 void find_path(STATION *from, STATION *to, STATION *path[], int *count_st);
 
 /*** Main Function ***/
-/**
- * @brief  Точка входа в программу
- *         Формирует станции метро и их связи
- * @return Код завершения (0 — успешно)
- */
 int main(void)
 {
     STATION st[10] = {
@@ -64,22 +58,21 @@ int main(void)
         {"St #10", .count_links = 0, .fl_reserved = 0},
     };
 
-    set_station_links(&st[0], 2, &st[1], &st[2]);                 ///< 1 -> 2, 3
-    set_station_links(&st[1], 3, &st[0], &st[3], &st[4]);         ///< 2 -> 1, 4, 5
-    set_station_links(&st[2], 2, &st[0], &st[5]);                 ///< 3 -> 1, 6
-    set_station_links(&st[3], 2, &st[1], &st[5]);                 ///< 4 -> 2, 6
-    set_station_links(&st[4], 2, &st[1], &st[7]);                 ///< 5 -> 2, 8
-    set_station_links(&st[5], 4, &st[2], &st[3], &st[6], &st[8]); ///< 6 -> 3, 4, 7, 9
-    set_station_links(&st[6], 2, &st[5], &st[8]);                 ///< 7 -> 6, 9
-    set_station_links(&st[7], 2, &st[4], &st[8]);                 ///< 8 -> 5, 9
-    set_station_links(&st[8], 4, &st[5], &st[6], &st[7], &st[9]); ///< 9 -> 6, 7, 8, 10
-    set_station_links(&st[9], 1, &st[8]);                         ///< 10 -> 9
+    set_station_links(&st[0], 2, &st[1], &st[2]);                 // 1 -> 2, 3
+    set_station_links(&st[1], 3, &st[0], &st[3], &st[4]);         // 2 -> 1, 4, 5
+    set_station_links(&st[2], 2, &st[0], &st[5]);                 // 3 -> 1, 6
+    set_station_links(&st[3], 2, &st[1], &st[5]);                 // 4 -> 2, 6
+    set_station_links(&st[4], 2, &st[1], &st[7]);                 // 5 -> 2, 8
+    set_station_links(&st[5], 4, &st[2], &st[3], &st[6], &st[8]); // 6 -> 3, 4, 7, 9
+    set_station_links(&st[6], 2, &st[5], &st[8]);                 // 7 -> 6, 9
+    set_station_links(&st[7], 2, &st[4], &st[8]);                 // 8 -> 5, 9
+    set_station_links(&st[8], 4, &st[5], &st[6], &st[7], &st[9]); // 9 -> 6, 7, 8, 10
+    set_station_links(&st[9], 1, &st[8]);                         // 10 -> 9
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+    __ASSERT_TESTS__ // макроопределение для тестирования
         return 0;
 }
 
-/*** Function Implementation ***/
 void set_station_links(STATION *st, int count_links, ...)
 {
     va_list args;
@@ -94,70 +87,72 @@ void set_station_links(STATION *st, int count_links, ...)
 
 void find_path(STATION *from, STATION *to, STATION *path[], int *count_st)
 {
+    // Поскольку stations не передается, будем считать, что все станции доступны через from
     STATION *queue[max_path_station];
     STATION *prev[100] = {0};
     int visited[100] = {0};
     int front = 0, rear = 0;
-    int idx_from = -1, idx_to = -1;
-    // Определяем индексы from и to
-    extern STATION st[];
-    for (int i = 0; i < 100; ++i)
-    {
-        if (&st[i] == from)
-            idx_from = i;
-        if (&st[i] == to)
-            idx_to = i;
-    }
-    if (idx_from < 0 || idx_to < 0)
-        return;
+
+    // Начинаем BFS с начальной станции
     queue[rear++] = from;
-    visited[idx_from] = 1;
+    visited[0] = 1; // Помечаем начальную станцию как посещенную
+
+    // Основной цикл BFS
     while (front < rear)
     {
         STATION *cur = queue[front++];
-        int cur_idx = -1;
-        for (int i = 0; i < 100; ++i)
-            if (&st[i] == cur)
-                cur_idx = i;
+
+        // Если достигли конечной станции - выходим
         if (cur == to)
             break;
+
+        // Перебираем все соседние станции
         for (int i = 0; i < cur->count_links; ++i)
         {
             STATION *next = cur->links[i];
-            int next_idx = -1;
-            for (int j = 0; j < 100; ++j)
-                if (&st[j] == next)
-                    next_idx = j;
-            if (next_idx >= 0 && !visited[next_idx])
+
+            // Проверяем, не посещали ли мы эту станцию
+            int visited_flag = 0;
+            for (int j = 0; j < rear; j++)
+            {
+                if (queue[j] == next)
+                {
+                    visited_flag = 1;
+                    break;
+                }
+            }
+
+            if (!visited_flag)
             {
                 queue[rear++] = next;
-                visited[next_idx] = 1;
-                prev[next_idx] = cur;
+                prev[next - from] = cur; // Сохраняем предыдущую станцию
             }
         }
     }
-    // Восстановление пути
+
+    // Восстановление пути (обратный проход от конечной станции)
     int path_len = 0;
     STATION *cur = to;
-    int cur_idx = idx_to;
     while (cur != NULL && cur != from)
     {
         path[path_len++] = cur;
-        // ищем индекс предыдущей станции
-        int prev_idx = -1;
-        for (int i = 0; i < 100; ++i)
-            if (&st[i] == cur)
-                prev_idx = i;
-        cur = prev[prev_idx];
+        cur = prev[cur - from]; // Переходим к предыдущей станции
     }
+
+    // Добавляем начальную станцию, если путь найден
     if (cur == from)
+    {
         path[path_len++] = from;
-    // Разворачиваем путь
+    }
+
+    // Разворачиваем путь, так как собирали его с конца
     for (int i = 0; i < path_len / 2; ++i)
     {
         STATION *tmp = path[i];
         path[i] = path[path_len - 1 - i];
         path[path_len - 1 - i] = tmp;
     }
+
+    // Возвращаем длину найденного пути
     *count_st = path_len;
 }

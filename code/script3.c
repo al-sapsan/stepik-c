@@ -1,76 +1,49 @@
-
 /********************************************************************
  * @file    script3.c
- * @brief   Подсчет слов, содержащих фрагмент "ra" без учета регистра
+ * @brief   Сложение комплексных чисел через функцию complex_sum
  * @version 1.0
- * @date    2025-07-28
+ * @date    2025-07-29
  ********************************************************************/
 
 /*** Includes ***/
 #include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 
 /*** Typedefs ***/
-typedef int (*FUNC_CORRECT)(const char *str);
+typedef struct
+{
+    double re; // действительная часть
+    double im; // мнимая часть
+} COMPLEX;
 
 /*** Function Prototypes ***/
-/**
- * @brief Проверяет, содержит ли строка фрагмент "ra" без учета регистра
- *
- * @param[in] str Входная строка
- * @return 1 — если содержит "ra", 0 — иначе
- */
-int is_correct(const char *str);
-
-/**
- * @brief Подсчитывает количество корректных слов по фильтру
- *
- * @param[in] words Массив слов
- * @param[in] count_words Количество слов
- * @param[in] filter Функция-фильтр
- * @return Количество корректных слов
- */
-int get_correct_words(const char (*words)[50], int count_words, FUNC_CORRECT filter);
+COMPLEX complex_sum(COMPLEX a, COMPLEX b);
 
 /*** Main Function ***/
 /**
- * @brief Точка входа в программу
- * @return Код завершения (0)
+ * @brief  Точка входа в программу
+ *         Складывает два комплексных числа через функцию complex_sum
+ * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    char words[20][50] = {{0}};
-    int count_words = 0;
-    while (count_words < 20 && scanf("%49s", words[count_words]) == 1)
-        ++count_words;
-
-    int result = get_correct_words(words, count_words, is_correct);
-    printf("%d\n", result);
-    return 0;
+    COMPLEX cmp_1, cmp_2, res;
+    scanf("%lf, %lf, %lf, %lf", &cmp_1.re, &cmp_1.im, &cmp_2.re, &cmp_2.im);
+    res = complex_sum(cmp_1, cmp_2);
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать)
+        return 0;
 }
 
 /*** Function Implementation ***/
-int is_correct(const char *str)
+/**
+ * @brief  Складывает два комплексных числа
+ * @param[in] a Первое комплексное число
+ * @param[in] b Второе комплексное число
+ * @return Сумма комплексных чисел
+ */
+COMPLEX complex_sum(COMPLEX a, COMPLEX b)
 {
-    size_t len = strlen(str);
-    for (size_t i = 0; i + 1 < len; ++i)
-    {
-        char c1 = tolower((unsigned char)str[i]);
-        char c2 = tolower((unsigned char)str[i + 1]);
-        if (c1 == 'r' && c2 == 'a')
-            return 1;
-    }
-    return 0;
-}
-
-int get_correct_words(const char (*words)[50], int count_words, FUNC_CORRECT filter)
-{
-    int count = 0;
-    for (int i = 0; i < count_words; ++i)
-    {
-        if (filter(words[i]))
-            ++count;
-    }
-    return count;
+    COMPLEX result;
+    result.re = a.re + b.re;
+    result.im = a.im + b.im;
+    return result;
 }
