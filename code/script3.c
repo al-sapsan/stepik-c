@@ -1,36 +1,47 @@
 /********************************************************************
  * @file    script3.c
- * @brief   Работа с битовым полем PERSON_DATA
+ * @brief   Read lines from stdin and print (Stepik 8.4.3)
  * @version 1.0
- * @date    2025-07-31
+ * @date    2025-08-02
+ *
+ * @note    Embedded/robotics C style
  ********************************************************************/
 
-/*** Includes ***/
+/*** Core ***/
 #include <stdio.h>
+#include <string.h>
 
-/*** Typedefs ***/
-typedef struct
+/*** Constants ***/
+enum
 {
-    unsigned int old : 7;
-    unsigned int salary : 20;
-    unsigned int height : 8;
-    unsigned int weight : 7;
-} PERSON_DATA;
+    max_lines = 10,
+    max_string_len = 200
+};
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Заполняет битовое поле и выводит его размер
+ *         Считывает строки из stdin, сохраняет в массиве, выводит без символа перевода строки
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    PERSON_DATA pd;
-    pd.old = 45;
-    pd.salary = 876043;
-    pd.height = 186;
-    pd.weight = 83;
-    (void)printf("%zu\n", sizeof(pd));
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+    char text_arr_i8[max_lines][max_string_len];
+    FILE *ptr_stream_FILE = stdin; // имитация отрытого файлового потока
+    int line_count_i32 = 0;
+    while (line_count_i32 < max_lines && fgets(text_arr_i8[line_count_i32], max_string_len, ptr_stream_FILE) != NULL)
+    {
+        size_t len = strlen(text_arr_i8[line_count_i32]);
+        if (len > 0 && text_arr_i8[line_count_i32][len - 1] == '\n')
+        {
+            text_arr_i8[line_count_i32][len - 1] = '\0';
+        }
+        line_count_i32++;
+    }
+    for (int i = 0; i < line_count_i32; ++i)
+    {
+        (void)printf("%s\n", text_arr_i8[i]);
+    }
+    // fclose(ptr_stream_FILE); закрывать стандартный поток не нужно
+    return 0;
 }

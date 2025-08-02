@@ -1,10 +1,10 @@
 /********************************************************************
  * @file    script5.c
- * @brief   Read bytes from stdin and print value:position for each
+ * @brief   Read binary short array from stdin and print (Stepik 8.4.5)
  * @version 1.0
- * @date    2025-08-01
+ * @date    2025-08-02
  *
- * @note    Embedded/robotics C style, Stepik task 3
+ * @note    Embedded/robotics C style
  ********************************************************************/
 
 /*** Core ***/
@@ -13,28 +13,23 @@
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Читает байты из stdin, выводит их значение и позицию
+ *         Считывает массив short из бинарного потока stdin, выводит значения
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    char byte_i8;
-    FILE *ptr_stream_FILE = stdin; // стандартный поток для чтения данных
-    int pos_i32 = -1;
-    int first_b = 1;
-    while ((byte_i8 = fgetc(ptr_stream_FILE)) != EOF)
+    short data_arr_i16[10] = {0};
+    FILE *ptr_stream_FILE = stdin; // имитация входного потока
+    size_t read_count = fread(data_arr_i16, sizeof(short), 10, ptr_stream_FILE);
+    for (size_t i = 0; i < read_count; ++i)
     {
-        // Для Stepik позиция всегда -1, для реальных файлов ftell(fp)
-        if (!first_b)
+        if (i > 0)
         {
             (void)printf(" ");
         }
-        else
-        {
-            first_b = 0;
-        }
-        (void)printf("%d:%d", (unsigned char)byte_i8, pos_i32);
+        (void)printf("%d", data_arr_i16[i]);
     }
-    // fclose(ptr_stream_FILE); для стандартного потока делать не нужно
+    (void)putchar("\n");
+    // fclose(ptr_stream_FILE);
     return 0;
 }

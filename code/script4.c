@@ -1,29 +1,26 @@
 /********************************************************************
  * @file    script4.c
- * @brief   Проверка открытия файла test.dat
+ * @brief   Write short array to binary stream (Stepik 8.4.4)
  * @version 1.0
- * @date    2025-07-31
+ * @date    2025-08-02
+ *
+ * @note    Embedded/robotics C style
  ********************************************************************/
 
-/*** Includes ***/
+/*** Core ***/
 #include <stdio.h>
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Открывает файл test.dat на чтение, возвращает 0 или 2
- * @return Код завершения (0 — успешно, 2 — ошибка открытия)
+ *         Записывает массив short в бинарный поток stdout
+ * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    FILE *fp = fopen("test.dat", "r");
-    if (fp != NULL)
-    {
-        fclose(fp);
-        return 0;
-    }
-    else
-    {
-        return 2;
-    }
+    short data_arr_i16[] = {79 + 256 * 80, 81 + 256 * 82, 83 + 256 * 84, 85 + 256 * 86};
+    FILE *ptr_stream_FILE = stdout; // имитация выходного потока
+    (void)fwrite(data_arr_i16, sizeof(short), sizeof(data_arr_i16) / sizeof(short), ptr_stream_FILE);
+    // fclose(ptr_stream_FILE);
+    return 0;
 }

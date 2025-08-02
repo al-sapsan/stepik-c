@@ -1,72 +1,40 @@
 /********************************************************************
  * @file    script2.c
- * @brief   Суммирование массива объединений DATA с типом TYPE_PARAM
+ * @brief   Read BOX struct and print formatted output (Stepik 8.3.8)
  * @version 1.0
- * @date    2025-07-31
+ * @date    2025-08-02
+ *
+ * @note    Embedded/robotics C style
  ********************************************************************/
 
-/*** Includes ***/
+/*** Core ***/
 #include <stdio.h>
-#include <stddef.h>
 
 /*** Typedefs ***/
-typedef enum
+typedef struct
 {
-    param_int,
-    param_double
-} TYPE_PARAM;
-
-typedef union
-{
-    int data_i;
-    double data_d;
-} DATA;
-
-/*** Function Prototypes ***/
-/**
- * @brief  Суммирует значения массива DATA по типу TYPE_PARAM
- * @param[in] arr Массив DATA
- * @param[in] len Количество элементов
- * @param[in] type Тип данных
- * @return DATA с суммой в соответствующем поле
- */
-DATA sum_ar(const DATA arr[], size_t len, TYPE_PARAM type);
+    unsigned int id_u32;
+    unsigned int width_u32;
+    unsigned int height_u32;
+    unsigned int depth_u32;
+    double weight_f64;
+} BOX_t;
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Демонстрирует суммирование int и double массивов DATA
+ *         Считывает структуру BOX из stdin, выводит форматированные габариты
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    DATA res_1 = sum_ar((DATA[]){{1}, {2}, {3}, {4}, {5}}, 5, param_int);
-    DATA res_2 = sum_ar((DATA[]){{.data_d = 1.1}, {.data_d = 2.2}, {.data_d = 3.3}, {.data_d = 4.4}, {.data_d = 5.5}}, 5, param_double);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
-}
-
-/*** Function Implementation ***/
-DATA sum_ar(const DATA arr[], size_t len, TYPE_PARAM type)
-{
-    DATA result;
-    if (type == param_int)
+    BOX_t box_st;
+    FILE *ptr_stream_FILE = stdout; // имитация отрытого файлового потока
+    // Чтение данных через ;
+    if (scanf("%u; %u; %u; %u; %lf", &box_st.id_u32, &box_st.width_u32, &box_st.height_u32, &box_st.depth_u32, &box_st.weight_f64) == 5)
     {
-        int sum = 0;
-        for (size_t i = 0; i < len; i++)
-        {
-            sum += arr[i].data_i;
-        }
-        result.data_i = sum;
+        (void)fprintf(ptr_stream_FILE, "box %u: %u x %u x %u\n", box_st.id_u32, box_st.width_u32, box_st.height_u32, box_st.depth_u32);
     }
-    else
-    {
-        double sum = 0.0;
-        for (size_t i = 0; i < len; i++)
-        {
-            sum += arr[i].data_d;
-        }
-        result.data_d = sum;
-    }
-    return result;
+    // fclose(ptr_stream_FILE); закрывать стандартный поток не нужно
+    return 0;
 }

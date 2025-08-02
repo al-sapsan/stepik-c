@@ -1,50 +1,38 @@
 /********************************************************************
  * @file    script6.c
- * @brief   Count words in a line from stdin (Stepik 8.3.5)
+ * @brief   Print symmetric star pyramid (Stepik 8.4.7)
  * @version 1.0
- * @date    2025-08-01
+ * @date    2025-08-02
  *
  * @note    Embedded/robotics C style
  ********************************************************************/
 
 /*** Core ***/
 #include <stdio.h>
-#include <string.h>
-
-/*** Constants ***/
-#define BUFF_SIZE 512
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Считывает строку из stdin, считает количество слов
+ *         Выводит симметричную фигуру из звездочек по числу строк n
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    char buff_arr_i8[BUFF_SIZE];
-    FILE *ptr_stream_FILE = stdin; // имитация отрытого файлового входного потока
-    int word_count_i32 = 0;
-    int in_word_b = 0;
-    if (fgets(buff_arr_i8, BUFF_SIZE, ptr_stream_FILE) != NULL)
+    int n_i32;
+    if (scanf("%d", &n_i32) == 1 && n_i32 > 0)
     {
-        for (char *ptr_i8 = buff_arr_i8; *ptr_i8 != '\0'; ++ptr_i8)
+        for (int row = 0; row < n_i32; ++row)
         {
-            if (*ptr_i8 != ' ' && *ptr_i8 != '\t' && *ptr_i8 != '\n')
+            for (int space = 0; space < n_i32 - row - 1; ++space)
             {
-                if (!in_word_b)
-                {
-                    in_word_b = 1;
-                    word_count_i32++;
-                }
+                (void)printf(" ");
             }
-            else
+            for (int star = 0; star < 2 * row + 1; ++star)
             {
-                in_word_b = 0;
+                (void)printf("*");
             }
+            (void)printf("\n");
         }
     }
-    (void)printf("%d\n", word_count_i32);
-    // fclose(ptr_stream_FILE); закрывать стандартный поток не нужно
     return 0;
 }
