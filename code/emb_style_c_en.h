@@ -118,7 +118,7 @@ extern "C"
      *
      * Scope prefixes:
      *   g_      -> global
-     *   s_      -> static (module-local)
+     *   s_      -> static
      *   m_      -> member (struct/class)
      *   ptr_    -> pointer
      *   vptr_   -> volatile pointer

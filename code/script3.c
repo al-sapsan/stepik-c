@@ -1,8 +1,8 @@
 /********************************************************************
  * @file    script3.c
- * @brief   Сложение комплексных чисел через функцию complex_sum
+ * @brief   Работа с битовым полем PERSON_DATA
  * @version 1.0
- * @date    2025-07-29
+ * @date    2025-07-31
  ********************************************************************/
 
 /*** Includes ***/
@@ -11,39 +11,26 @@
 /*** Typedefs ***/
 typedef struct
 {
-    double re; // действительная часть
-    double im; // мнимая часть
-} COMPLEX;
-
-/*** Function Prototypes ***/
-COMPLEX complex_sum(COMPLEX a, COMPLEX b);
+    unsigned int old : 7;
+    unsigned int salary : 20;
+    unsigned int height : 8;
+    unsigned int weight : 7;
+} PERSON_DATA;
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Складывает два комплексных числа через функцию complex_sum
+ *         Заполняет битовое поле и выводит его размер
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    COMPLEX cmp_1, cmp_2, res;
-    scanf("%lf, %lf, %lf, %lf", &cmp_1.re, &cmp_1.im, &cmp_2.re, &cmp_2.im);
-    res = complex_sum(cmp_1, cmp_2);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать)
+    PERSON_DATA pd;
+    pd.old = 45;
+    pd.salary = 876043;
+    pd.height = 186;
+    pd.weight = 83;
+    (void)printf("%zu\n", sizeof(pd));
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
         return 0;
-}
-
-/*** Function Implementation ***/
-/**
- * @brief  Складывает два комплексных числа
- * @param[in] a Первое комплексное число
- * @param[in] b Второе комплексное число
- * @return Сумма комплексных чисел
- */
-COMPLEX complex_sum(COMPLEX a, COMPLEX b)
-{
-    COMPLEX result;
-    result.re = a.re + b.re;
-    result.im = a.im + b.im;
-    return result;
 }

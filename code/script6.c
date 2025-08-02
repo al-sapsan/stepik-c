@@ -1,84 +1,50 @@
 /********************************************************************
  * @file    script6.c
- * @brief   Заполнение структуры PERSON по форматной строке и вариадическим параметрам
+ * @brief   Count words in a line from stdin (Stepik 8.3.5)
  * @version 1.0
- * @date    2025-07-29
+ * @date    2025-08-01
+ *
+ * @note    Embedded/robotics C style
  ********************************************************************/
 
-/*** Includes ***/
+/*** Core ***/
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
 
-/*** Typedefs ***/
-typedef struct
-{
-    char fname[100];
-    int old;
-    int stag;
-    int salary;
-    double efs;
-} PERSON;
-
-/*** Function Prototypes ***/
-/**
- * @brief  Заполняет структуру PERSON по форматной строке и вариадическим параметрам
- * @param[in,out] ptr Указатель на структуру PERSON
- * @param[in] fmt Форматная строка
- * @param[in] ... Вариадические параметры
- */
-void fill_data(PERSON *ptr, const char *fmt, ...);
+/*** Constants ***/
+#define BUFF_SIZE 512
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Заполняет структуру PERSON по форматной строке
+ *         Считывает строку из stdin, считает количество слов
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    PERSON p;
-    fill_data(&p, "#o #e #s #f", 35, 0.95, 120000, "Ivanov");
-    return 0;
-}
-
-/*** Function Implementation ***/
-void fill_data(PERSON *ptr, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    const char *p = fmt;
-    while (*p)
+    char buff_arr_i8[BUFF_SIZE];
+    FILE *ptr_stream_FILE = stdin; // имитация отрытого файлового входного потока
+    int word_count_i32 = 0;
+    int in_word_b = 0;
+    if (fgets(buff_arr_i8, BUFF_SIZE, ptr_stream_FILE) != NULL)
     {
-        if (*p == '#')
+        for (char *ptr_i8 = buff_arr_i8; *ptr_i8 != '\0'; ++ptr_i8)
         {
-            p++;
-            switch (*p)
+            if (*ptr_i8 != ' ' && *ptr_i8 != '\t' && *ptr_i8 != '\n')
             {
-            case 'f':
-            {
-                char *str = va_arg(args, char *);
-                strncpy(ptr->fname, str, sizeof(ptr->fname) - 1);
-                ptr->fname[sizeof(ptr->fname) - 1] = '\0';
-                break;
+                if (!in_word_b)
+                {
+                    in_word_b = 1;
+                    word_count_i32++;
+                }
             }
-            case 'o':
-                ptr->old = va_arg(args, int);
-                break;
-            case 'g':
-                ptr->stag = va_arg(args, int);
-                break;
-            case 's':
-                ptr->salary = va_arg(args, int);
-                break;
-            case 'e':
-                ptr->efs = va_arg(args, double);
-                break;
-            default:
-                break;
+            else
+            {
+                in_word_b = 0;
             }
         }
-        p++;
     }
-    va_end(args);
+    (void)printf("%d\n", word_count_i32);
+    // fclose(ptr_stream_FILE); закрывать стандартный поток не нужно
+    return 0;
 }

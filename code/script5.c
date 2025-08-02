@@ -1,72 +1,40 @@
 /********************************************************************
  * @file    script5.c
- * @brief   Вычисление средних координат массива структур POINT
+ * @brief   Read bytes from stdin and print value:position for each
  * @version 1.0
- * @date    2025-07-29
+ * @date    2025-08-01
+ *
+ * @note    Embedded/robotics C style, Stepik task 3
  ********************************************************************/
 
-/*** Includes ***/
+/*** Core ***/
 #include <stdio.h>
-#include <stdlib.h>
-
-/*** Typedefs ***/
-typedef struct
-{
-    int x;
-    int y;
-} POINT;
-
-typedef struct
-{
-    double mean_x;
-    double mean_y;
-} DATA;
-
-/*** Function Prototypes ***/
-/**
- * @brief  Вычисляет средние значения координат массива POINT
- * @param[in] arr Массив структур POINT
- * @param[in] len Количество элементов массива
- * @return Структура DATA с результатами
- */
-DATA get_means(const POINT arr[], size_t len);
 
 /*** Main Function ***/
 /**
  * @brief  Точка входа в программу
- *         Считывает точки, вычисляет средние координаты
+ *         Читает байты из stdin, выводит их значение и позицию
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    POINT points[20];
-    size_t count = 0;
-    int x, y;
-    while (count < 20 && scanf("%d %d", &x, &y) == 2)
+    char byte_i8;
+    FILE *ptr_stream_FILE = stdin; // стандартный поток для чтения данных
+    int pos_i32 = -1;
+    int first_b = 1;
+    while ((byte_i8 = fgetc(ptr_stream_FILE)) != EOF)
     {
-        points[count].x = x;
-        points[count].y = y;
-        count++;
+        // Для Stepik позиция всегда -1, для реальных файлов ftell(fp)
+        if (!first_b)
+        {
+            (void)printf(" ");
+        }
+        else
+        {
+            first_b = 0;
+        }
+        (void)printf("%d:%d", (unsigned char)byte_i8, pos_i32);
     }
-    if (count > 0)
-    {
-        DATA res = get_means(points, count);
-        (void)printf("%.2f %.2f\n", res.mean_x, res.mean_y);
-    }
+    // fclose(ptr_stream_FILE); для стандартного потока делать не нужно
     return 0;
-}
-
-/*** Function Implementation ***/
-DATA get_means(const POINT arr[], size_t len)
-{
-    double sum_x = 0.0, sum_y = 0.0;
-    for (size_t i = 0; i < len; i++)
-    {
-        sum_x += arr[i].x;
-        sum_y += arr[i].y;
-    }
-    DATA result;
-    result.mean_x = sum_x / len;
-    result.mean_y = sum_y / len;
-    return result;
 }
