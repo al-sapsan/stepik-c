@@ -75,13 +75,14 @@ extern "C"
         * @return Код завершения (0 — успешно, 1 — ошибка памяти)
 
          int main(void){
+            ...
          }
 
     // 7. Function implementations
      * Example:
         / *** Function Implementation *** /
         void funct() {
-
+            ...
         }
     // 8. Section headers use the following notation:
      * Example:
