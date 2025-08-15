@@ -1,39 +1,23 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Вычисление периметров треугольника и прямоугольника (namespaces)
+ * @brief Выбор предметов для рюкзака по весу (структура THING)
  * @version 1.0 (Embedded C++ style)
- * @date 2025-08-04
+ * @date 2025-08-15
  **********************************************************************/
 
-#include "emb_style_cpp_en.h"
 #include <iostream>
+#include <cstring>
 
 /*** Typedefs ***/
-typedef short i16_t;
-
-/*** Function Prototypes ***/
-namespace triangle
+using u32_t = unsigned int;
+using THING = struct
 {
-    /**
-     * @brief Вычисляет периметр треугольника
-     * @param[in] a_i16 Сторона a
-     * @param[in] b_i16 Сторона b
-     * @param[in] c_i16 Сторона c
-     * @return Периметр треугольника (i16_t)
-     */
-    i16_t perimetr(i16_t a_i16, i16_t b_i16, i16_t c_i16);
-}
+    char name_str[51];
+    u32_t weight_u32_g;
+};
 
-namespace rectangle
-{
-    /**
-     * @brief Вычисляет периметр прямоугольника
-     * @param[in] width_i16 Ширина
-     * @param[in] height_i16 Высота
-     * @return Периметр прямоугольника (i16_t)
-     */
-    i16_t perimetr(i16_t width_i16, i16_t height_i16);
-}
+/*** Constants ***/
+constexpr size_t NUM_THINGS = 14;
 
 /*** Main Function ***/
 /**
@@ -42,22 +26,37 @@ namespace rectangle
  */
 int main(void)
 {
-    i16_t a0_i16 = 0;
-    i16_t a1_i16 = 0;
-    i16_t a2_i16 = 0;
-    std::cin >> a0_i16 >> a1_i16 >> a2_i16;
-    i16_t tri_perim_i16 = triangle::perimetr(a0_i16, a1_i16, a2_i16);
-    i16_t rect_perim_i16 = rectangle::perimetr(a0_i16, a1_i16);
-    std::cout << tri_perim_i16 << " " << rect_perim_i16 << std::endl;
+    THING things[NUM_THINGS] = {
+        {"карандаш", 20}, {"зеркальце", 100}, {"зонт", 500}, {"рубашка", 300}, {"брюки", 1000}, {"бумага", 200}, {"молоток", 600}, {"пила", 400}, {"удочка", 1200}, {"расческа", 40}, {"котелок", 820}, {"палатка", 5240}, {"брезент", 2130}, {"спички", 10}};
+    u32_t max_weight_u32_g = 0;
+    std::cin >> max_weight_u32_g;
+    max_weight_u32_g *= 1000;
+    // Сортировка по убыванию веса
+    for (size_t i = 0; i + 1 < NUM_THINGS; ++i)
+    {
+        for (size_t j = i + 1; j < NUM_THINGS; ++j)
+        {
+            if (things[i].weight_u32_g < things[j].weight_u32_g)
+            {
+                THING tmp = things[i];
+                things[i] = things[j];
+                things[j] = tmp;
+            }
+        }
+    }
+    u32_t sum_weight_u32_g = 0;
+    bool first = true;
+    for (size_t i = 0; i < NUM_THINGS; ++i)
+    {
+        if (sum_weight_u32_g + things[i].weight_u32_g <= max_weight_u32_g)
+        {
+            sum_weight_u32_g += things[i].weight_u32_g;
+            if (!first)
+                std::cout << " ";
+            std::cout << things[i].name_str;
+            first = false;
+        }
+    }
+    std::cout << std::endl;
     return 0;
-}
-
-/*** Function Implementation ***/
-i16_t triangle::perimetr(i16_t a_i16, i16_t b_i16, i16_t c_i16)
-{
-    return a_i16 + b_i16 + c_i16;
-}
-i16_t rectangle::perimetr(i16_t width_i16, i16_t height_i16)
-{
-    return 2 * (width_i16 + height_i16);
 }

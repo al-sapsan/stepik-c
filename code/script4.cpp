@@ -1,44 +1,24 @@
 /**********************************************************************
- * @file    script4.cpp
- * @brief   Read up to max_size_ar integers and print (Stepik 9.3.5)
- * @version 1.0
- * @date
- *
- * @note    Embedded C++ style
+ * @file script4.cpp
+ * @brief Чтение и вывод слова (импорт cin, cout, endl)
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-08-15
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
-
-/*** Constants ***/
-enum
-{
-    max_size_ar = 20
-};
+using std::cin;
+using std::cout;
+using std::endl;
 
 /*** Main Function ***/
 /**
- * @brief  Точка входа в программу
- *         Считывает не более max_size_ar целых чисел, выводит их
+ * @brief Точка входа в программу
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    int data_arr_i32[max_size_ar];
-    int count_i32 = 0;
-    while (count_i32 < max_size_ar && std::cin >> data_arr_i32[count_i32])
-    {
-        count_i32++;
-    }
-    for (int i = 0; i < count_i32; ++i)
-    {
-        if (i > 0)
-        {
-            std::cout << " ";
-        }
-        std::cout << data_arr_i32[i];
-    }
-    std::cout << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+    char word_str[51] = {0}; // 50 + 1 для '\0'
+    cin >> word_str;
+    cout << word_str << endl;
+    return 0;
 }

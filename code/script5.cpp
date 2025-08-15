@@ -1,51 +1,50 @@
 /**********************************************************************
- * @file    script5.cpp
- * @brief   Read up to max_size_ar integers with any non-digit separator and print (Stepik 9.3.6)
- * @version 1.0
- * @date    2025-08-04
- *
- * @note    Embedded C++ style
+ * @file script5.cpp
+ * @brief Структуры AUTO и MEASURE, заполнение из переменных
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-08-15
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
-#include <cctype>
+#include <cstring>
 
-/*** Constants ***/
-enum
+/*** Typedefs ***/
+using u16_t = unsigned short;
+using f64_t = double;
+using MEASURE = struct
 {
-    max_size_ar = 20
+    u16_t width_u16;
+    u16_t height_u16;
+    u16_t depth_u16;
+};
+using AUTO = struct
+{
+    char model_str[51];
+    u16_t max_speed_u16;
+    f64_t weight_f64;
+    MEASURE m;
 };
 
 /*** Main Function ***/
 /**
- * @brief  Точка входа в программу
- *         Считывает не более max_size_ar целых чисел с любым нечисловым разделителем, выводит их
+ * @brief Точка входа в программу
  * @return Код завершения (0 — успешно)
  */
 int main(void)
 {
-    int data_arr_i32[max_size_ar];
-    int count_i32 = 0;
-    char ch;
-    int num_i32;
-    while (count_i32 < max_size_ar && std::cin >> num_i32)
-    {
-        data_arr_i32[count_i32++] = num_i32;
-        ch = std::cin.peek();
-        if (!std::isdigit(ch) && !std::isspace(ch) && ch != EOF)
-        {
-            std::cin.get(); // consume separator
-        }
-    }
-    for (int i = 0; i < count_i32; ++i)
-    {
-        if (i > 0)
-        {
-            std::cout << " ";
-        }
-        std::cout << data_arr_i32[i];
-    }
-    std::cout << std::endl;
-    return 0;
+    AUTO auto_sell = {0};
+    char model_str[51] = {0};
+    u16_t max_speed_u16 = 0;
+    f64_t weight_f64 = 0.0;
+    u16_t width_u16 = 0, height_u16 = 0, depth_u16 = 0;
+    std::cin >> model_str >> max_speed_u16 >> weight_f64 >> width_u16 >> height_u16 >> depth_u16;
+    std::strncpy(auto_sell.model_str, model_str, 50);
+    auto_sell.model_str[50] = '\0';
+    auto_sell.max_speed_u16 = max_speed_u16;
+    auto_sell.weight_f64 = weight_f64;
+    auto_sell.m.width_u16 = width_u16;
+    auto_sell.m.height_u16 = height_u16;
+    auto_sell.m.depth_u16 = depth_u16;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+        return 0;
 }
