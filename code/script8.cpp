@@ -1,23 +1,30 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Выбор предметов для рюкзака по весу (структура THING)
- * @version 1.0 (Embedded C++ style)
- * @date 2025-08-15
+ * @brief Вычисление расстояния между двумя точками
+ * @version 1.0
+ * @date 2025-08-16
  **********************************************************************/
 
+/*** Libraries ***/
 #include <iostream>
-#include <cstring>
+#include <iomanip>
+#include <cmath>
 
 /*** Typedefs ***/
-using u32_t = unsigned int;
-using THING = struct
+using POINT = struct
 {
-    char name_str[51];
-    u32_t weight_u32_g;
+    double x;
+    double y;
 };
 
-/*** Constants ***/
-constexpr size_t NUM_THINGS = 14;
+/*** Function Prototypes ***/
+/**
+ * @brief Вычисляет евклидово расстояние между двумя точками
+ * @param pt1 Первая точка
+ * @param pt2 Вторая точка
+ * @return double Расстояние
+ */
+double get_length(const POINT &pt1, const POINT &pt2);
 
 /*** Main Function ***/
 /**
@@ -26,37 +33,17 @@ constexpr size_t NUM_THINGS = 14;
  */
 int main(void)
 {
-    THING things[NUM_THINGS] = {
-        {"карандаш", 20}, {"зеркальце", 100}, {"зонт", 500}, {"рубашка", 300}, {"брюки", 1000}, {"бумага", 200}, {"молоток", 600}, {"пила", 400}, {"удочка", 1200}, {"расческа", 40}, {"котелок", 820}, {"палатка", 5240}, {"брезент", 2130}, {"спички", 10}};
-    u32_t max_weight_u32_g = 0;
-    std::cin >> max_weight_u32_g;
-    max_weight_u32_g *= 1000;
-    // Сортировка по убыванию веса
-    for (size_t i = 0; i + 1 < NUM_THINGS; ++i)
-    {
-        for (size_t j = i + 1; j < NUM_THINGS; ++j)
-        {
-            if (things[i].weight_u32_g < things[j].weight_u32_g)
-            {
-                THING tmp = things[i];
-                things[i] = things[j];
-                things[j] = tmp;
-            }
-        }
-    }
-    u32_t sum_weight_u32_g = 0;
-    bool first = true;
-    for (size_t i = 0; i < NUM_THINGS; ++i)
-    {
-        if (sum_weight_u32_g + things[i].weight_u32_g <= max_weight_u32_g)
-        {
-            sum_weight_u32_g += things[i].weight_u32_g;
-            if (!first)
-                std::cout << " ";
-            std::cout << things[i].name_str;
-            first = false;
-        }
-    }
-    std::cout << std::endl;
+    POINT pt1 = {-2.5, 7.8};
+    POINT pt2 = {11.4, 43.2};
+    double len = get_length(pt1, pt2);
+    std::cout << std::fixed << std::setprecision(2) << len << std::endl;
     return 0;
+}
+
+/*** Function Implementation ***/
+double get_length(const POINT &pt1, const POINT &pt2)
+{
+    double dx = pt1.x - pt2.x;
+    double dy = pt1.y - pt2.y;
+    return std::sqrt(dx * dx + dy * dy);
 }

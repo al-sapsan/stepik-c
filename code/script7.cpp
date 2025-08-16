@@ -1,24 +1,19 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Массив структур THING, сортировка по весу
- * @version 1.0 (Embedded C++ style)
- * @date 2025-08-15
+ * @brief Обработка массива оценок: обнуление значений < 3
+ * @version 1.0
+ * @date 2025-08-16
  **********************************************************************/
 
+/*** Libraries ***/
+#include "emb_style_cpp_en.h"
 #include <iostream>
-#include <cstring>
 
 /*** Typedefs ***/
-using THING = struct
-{
-    char name_str[51];
-    double weight_f64;
-};
+using i16_t = short;
 
-enum : size_t
-{
-    max_things = 20
-};
+/*** Constants ***/
+constexpr size_t TOTAL_MARKS = 23;
 
 /*** Main Function ***/
 /**
@@ -27,29 +22,22 @@ enum : size_t
  */
 int main(void)
 {
-    THING th[max_things] = {0};
-    size_t count_sz = 0;
-    while (count_sz < max_things && std::cin >> th[count_sz].name_str >> th[count_sz].weight_f64)
+    i16_t arr_marks_i16[TOTAL_MARKS] = {0};
+    size_t count = 0;
+    i16_t val_i16;
+    while (count < TOTAL_MARKS && std::cin >> val_i16)
     {
-        ++count_sz;
+        arr_marks_i16[count++] = val_i16;
     }
-    // Сортировка по весу (возрастание)
-    for (size_t i = 0; i + 1 < count_sz; ++i)
+    for (i16_t &mark : arr_marks_i16)
     {
-        for (size_t j = i + 1; j < count_sz; ++j)
-        {
-            if (th[i].weight_f64 > th[j].weight_f64)
-            {
-                THING tmp = th[i];
-                th[i] = th[j];
-                th[j] = tmp;
-            }
-        }
+        if (mark < 3)
+            mark = 0;
     }
-    for (size_t i = 0; i < count_sz; ++i)
+    for (size_t i = 0; i < TOTAL_MARKS; ++i)
     {
-        std::cout << th[i].name_str;
-        if (i + 1 < count_sz)
+        std::cout << arr_marks_i16[i];
+        if (i + 1 < count)
             std::cout << " ";
     }
     std::cout << std::endl;
