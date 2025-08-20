@@ -1,49 +1,47 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Формирование строки из городов с длиной имени > 5
+ * @brief Rectangle value calculation (embedded C++ style)
  * @version 1.0
- * @date 2025-08-18
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
+#include "emb_style_cpp_en.h"
 #include <iostream>
-#include <string>
 
-/*** Usings ***/
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
+/*** Typedefs ***/
+using calc_type = enum { calc_perimetr,
+                         calc_square };
 
-/*** Constants ***/
-enum
-{
-    max_cities = 10
-};
+/*** Function Prototypes ***/
+/**
+ * @brief  Вычисляет периметр или площадь прямоугольника
+ * @param  width   Ширина прямоугольника
+ * @param  length  Длина прямоугольника
+ * @param  type    Тип вычисления (calc_perimetr/calc_square)
+ * @return Периметр или площадь
+ */
+int get_rect_value(int width, int length, calc_type type = calc_perimetr);
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
- */
-int main()
+int main(void)
 {
-    string cities[max_cities];
-    size_t count = 0;
-    while (count < max_cities && cin >> cities[count])
-        ++count;
-    string res;
-    for (size_t i = 0; i < count; ++i)
-    {
-        if (cities[i].size() > 5)
-        {
-            if (!res.empty())
-                res += " ";
-            res += cities[i];
-        }
-    }
-    cout << res << endl;
+    int width = 0;
+    int length = 0;
+    std::cin >> width >> length;
+    int result = get_rect_value(width, length);
+    std::cout << result << std::endl;
+    return 0;
+}
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+/*** Function Implementation ***/
+int get_rect_value(int width, int length, calc_type type)
+{
+    if (type == calc_perimetr)
+    {
+        return 2 * (width + length);
+    }
+    else
+    {
+        return width * length;
+    }
 }

@@ -1,49 +1,42 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Вычисление расстояния между двумя точками
- * @version 1.0
- * @date 2025-08-16
+ * @brief Tag wrapping for strings (embedded C++ style)
+ * @version 2.1
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
 #include <iostream>
-#include <iomanip>
-#include <cmath>
-
-/*** Typedefs ***/
-using POINT = struct
-{
-    double x;
-    double y;
-};
+#include <string>
 
 /*** Function Prototypes ***/
 /**
- * @brief Вычисляет евклидово расстояние между двумя точками
- * @param pt1 Первая точка
- * @param pt2 Вторая точка
- * @return double Расстояние
+ * @brief  Оборачивает строку в тег
+ * @param  title    Строка для оборачивания (std::string, изменяется)
+ * @param  tag      Тег для оборачивания (std::string, по умолчанию "h1")
  */
-double get_length(const POINT &pt1, const POINT &pt2);
+void set_tag(std::string &str, const std::string &tag = "h1");
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
- */
 int main(void)
 {
-    POINT pt1 = {-2.5, 7.8};
-    POINT pt2 = {11.4, 43.2};
-    double len = get_length(pt1, pt2);
-    std::cout << std::fixed << std::setprecision(2) << len << std::endl;
+    std::string title;
+    std::string tag;
+    std::getline(std::cin, title);
+    std::getline(std::cin, tag);
+
+    std::string title1 = title;
+    set_tag(title1);
+    std::cout << title1 << std::endl;
+
+    std::string title2 = title;
+    set_tag(title2, tag);
+    std::cout << title2 << std::endl;
+
     return 0;
 }
 
 /*** Function Implementation ***/
-double get_length(const POINT &pt1, const POINT &pt2)
+void set_tag(std::string &str, const std::string &tag)
 {
-    double dx = pt1.x - pt2.x;
-    double dy = pt1.y - pt2.y;
-    return std::sqrt(dx * dx + dy * dy);
+    str = "<" + tag + ">" + str + "</" + tag + ">";
 }

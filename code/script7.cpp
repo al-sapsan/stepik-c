@@ -1,40 +1,47 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Замена повторяющихся дефисов на один
+ * @brief Password check (embedded C++ style)
  * @version 1.0
- * @date 2025-08-18
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
+#include "emb_style_cpp_en.h"
 #include <iostream>
-#include <string>
+#include <cstring>
 
-/*** Usings ***/
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
+/*** Function Prototypes ***/
+/**
+ * @brief  Проверяет корректность пароля
+ * @param  password  Си-строка (пароль)
+ * @param  chars     Строка символов для проверки (по умолчанию "$%!?@#")
+ * @return true, если пароль корректен, иначе false
+ */
+bool check_password(const char *password, const char *chars = "$%!?@#");
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
- */
-int main()
+int main(void)
 {
-    string url;
-    std::getline(cin, url);
-    string result;
-    char prev = 0;
-    for (char ch : url)
-    {
-        if (ch == '-' && prev == '-')
-            continue;
-        result += ch;
-        prev = ch;
-    }
-    cout << result << endl;
+    char password[128] = {0};
+    std::cin >> password;
+    bool valid = check_password(password);
+    std::cout << (valid ? "yes" : "no") << std::endl;
+    return 0;
+}
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+/*** Function Implementation ***/
+bool check_password(const char *password, const char *chars)
+{
+    size_t len = std::strlen(password);
+    if (len < 8)
+    {
+        return false;
+    }
+    for (size_t i = 0; i < len; ++i)
+    {
+        if (std::strchr(chars, password[i]) != nullptr)
+        {
+            return true;
+        }
+    }
+    return false;
 }

@@ -1,34 +1,55 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Формирование строки с параметрами width и height
+ * @brief Minimal value selection (embedded C++ style)
  * @version 1.0
- * @date 2025-08-18
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
+#include "emb_style_cpp_en.h"
 #include <iostream>
-#include <string>
+#include <iomanip>
 
-/*** Usings ***/
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::to_string;
+/*** Typedefs ***/
+
+//*** Function Prototypes ***/
+/**
+ * @brief  Возвращает минимальное из двух целых чисел
+ * @param  a  Первое число
+ * @param  b  Второе число
+ * @return Минимальное целое число
+ */
+int min2(int a, int b);
+
+/**
+ * @brief  Возвращает минимальное из двух вещественных чисел
+ * @param  a  Первое число
+ * @param  b  Второе число
+ * @return Минимальное вещественное число
+ */
+double min2(double a, double b);
 
 /*** Main Function ***/
 /**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
+ * @brief  Точка входа в программу
+ * @return Код завершения (0 — успешно, 1 — ошибка)
  */
-int main()
+int main(void)
 {
-    int width = 0;
-    int height = 0;
-    cin >> width >> height;
-    const string data_str = "Переменная width = " + to_string(width) + ", переменная height = " + to_string(height);
-    cout << data_str << endl;
+    int val_int = 0;
+    double val_double = 0.0;
+    std::cin >> val_int >> val_double;
+    double result = min2(static_cast<double>(val_int), val_double);
+    std::cout << std::fixed << std::setprecision(1) << result << std::endl;
+    return 0;
+}
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+/*** Function Implementation ***/
+int min2(int a, int b)
+{
+    return (a < b) ? a : b;
+}
+
+double min2(double a, double b)
+{
+    return (a < b) ? a : b;
 }

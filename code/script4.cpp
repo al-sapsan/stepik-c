@@ -1,34 +1,54 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Вывод первых четырех символов строки
+ * @brief Mean value calculation (C/C++ compatible, embedded style)
  * @version 1.0
- * @date 2025-08-18
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
+#ifdef __cplusplus
+#include "emb_style_cpp_en.h"
 #include <iostream>
-#include <string>
+#include <iomanip>
+#else
+#include "emb_style_cpp_en.h"
+#include <stdio.h>
+#endif
 
-/*** Usings ***/
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
+/*** Function Prototypes ***/
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    /**
+     * @brief  Вычисляет среднее арифметическое двух целых чисел
+     * @param  a  Первое число
+     * @param  b  Второе число
+     * @return Среднее арифметическое
+     */
+    double mean_2(int a, int b);
+#ifdef __cplusplus
+}
+#endif
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
- */
-int main()
+int main(void)
 {
-    string msg;
-    std::getline(cin, msg);
-    for (size_t i = 0; i < 4; ++i)
-    {
-        std::putchar(msg[i]);
-    }
+    int a = 0;
+    int b = 0;
+#ifdef __cplusplus
+    std::cin >> a >> b;
+    double result = mean_2(a, b);
+    std::cout << std::fixed << std::setprecision(1) << result << std::endl;
+#else
+    scanf("%d %d", &a, &b);
+    double result = mean_2(a, b);
+    printf("%.1f\n", result);
+#endif
+    return 0;
+}
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+/*** Function Implementation ***/
+double mean_2(int a, int b)
+{
+    return (a + b) / 2.0;
 }

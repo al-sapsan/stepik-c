@@ -1,51 +1,54 @@
 /**********************************************************************
  * @file script9.cpp
- * @brief Вычисление площади треугольника по координатам
+ * @brief Rectangle perimeter/area calculation (overloads, embedded C++ style)
  * @version 1.0
- * @date 2025-08-16
+ * @date 2025-08-20
  **********************************************************************/
 
-/*** Libraries ***/
-#include <iostream>
-#include <iomanip>
-#include <cmath>
-
 /*** Typedefs ***/
-struct point
-{
-    int x, y;
-};
+using calc_type = enum { calc_perimetr,
+                         calc_square };
 
 /*** Function Prototypes ***/
 /**
- * @brief Вычисляет площадь треугольника по трем точкам
- * @param pt1 Первая точка
- * @param pt2 Вторая точка
- * @param pt3 Третья точка
- * @return double Площадь
+ * @brief  Вычисляет периметр или площадь прямоугольника (int)
+ * @param  width   Ширина прямоугольника
+ * @param  length  Длина прямоугольника
+ * @param  type    Тип вычисления (calc_perimetr/calc_square)
+ * @return Периметр или площадь (int)
  */
-double sq_tr(const point &pt1, const point &pt2, const point &pt3);
+int get_rect(int width, int length, calc_type type = calc_perimetr);
 
-/*** Main Function ***/
 /**
- * @brief Точка входа в программу
- * @return Код завершения (0 — успешно)
+ * @brief  Вычисляет периметр или площадь прямоугольника (double)
+ * @param  width   Ширина прямоугольника
+ * @param  length  Длина прямоугольника
+ * @param  type    Тип вычисления (calc_perimetr/calc_square)
+ * @return Периметр или площадь (double)
  */
-int main(void)
-{
-    point pt1, pt2, pt3;
-    std::cin >> pt1.x >> pt1.y >> pt2.x >> pt2.y >> pt3.x >> pt3.y;
-    double area = sq_tr(pt1, pt2, pt3);
-    std::cout << std::fixed << std::setprecision(2) << area << std::endl;
-    return 0;
-}
+double get_rect(double width, double length, calc_type type = calc_perimetr);
 
 /*** Function Implementation ***/
-double sq_tr(const point &pt1, const point &pt2, const point &pt3)
+int get_rect(int width, int length, calc_type type)
 {
-    double a = std::sqrt((pt1.x - pt2.x) * (pt1.x - pt2.x) + (pt1.y - pt2.y) * (pt1.y - pt2.y));
-    double b = std::sqrt((pt2.x - pt3.x) * (pt2.x - pt3.x) + (pt2.y - pt3.y) * (pt2.y - pt3.y));
-    double c = std::sqrt((pt3.x - pt1.x) * (pt3.x - pt1.x) + (pt3.y - pt1.y) * (pt3.y - pt1.y));
-    double p = (a + b + c) / 2.0;
-    return std::sqrt(p * (p - a) * (p - b) * (p - c));
+    if (type == calc_perimetr)
+    {
+        return 2 * (width + length);
+    }
+    else
+    {
+        return width * length;
+    }
+}
+
+double get_rect(double width, double length, calc_type type)
+{
+    if (type == calc_perimetr)
+    {
+        return 2.0 * (width + length);
+    }
+    else
+    {
+        return width * length;
+    }
 }
