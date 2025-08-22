@@ -1,47 +1,31 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Rectangle value calculation (embedded C++ style)
- * @version 1.0
- * @date 2025-08-20
+ * @brief Inline range generator (embedded C++ style)
+ * @version 1.1
+ * @date 2025-08-22
  **********************************************************************/
 
-#include "emb_style_cpp_en.h"
-#include <iostream>
-
-/*** Typedefs ***/
-using calc_type = enum { calc_perimetr,
-                         calc_square };
+#include <cstddef>
 
 /*** Function Prototypes ***/
 /**
- * @brief  Вычисляет периметр или площадь прямоугольника
- * @param  width   Ширина прямоугольника
- * @param  length  Длина прямоугольника
- * @param  type    Тип вычисления (calc_perimetr/calc_square)
- * @return Периметр или площадь
+ * @brief  Заполняет массив арифметической прогрессией
+ * @param  arr      Массив int для заполнения
+ * @param  max_len  Максимальная длина массива
+ * @param  start    Начальное значение
+ * @param  stop     Конечное значение (не включается)
+ * @param  step     Шаг прогрессии
  */
-int get_rect_value(int width, int length, calc_type type = calc_perimetr);
-
-/*** Main Function ***/
-int main(void)
-{
-    int width = 0;
-    int length = 0;
-    std::cin >> width >> length;
-    int result = get_rect_value(width, length);
-    std::cout << result << std::endl;
-    return 0;
-}
+inline void range(int *arr, size_t max_len, int start, int stop, int step);
 
 /*** Function Implementation ***/
-int get_rect_value(int width, int length, calc_type type)
+inline void range(int *arr, size_t max_len, int start, int stop, int step)
 {
-    if (type == calc_perimetr)
+    size_t i = 0;
+    int value = start;
+    while (i < max_len && ((step > 0 && value < stop) || (step < 0 && value > stop)))
     {
-        return 2 * (width + length);
-    }
-    else
-    {
-        return width * length;
+        arr[i++] = value;
+        value += step;
     }
 }

@@ -1,54 +1,28 @@
 /**********************************************************************
  * @file script9.cpp
- * @brief Rectangle perimeter/area calculation (overloads, embedded C++ style)
- * @version 1.0
- * @date 2025-08-20
+ * @brief Lambda for triangle area (embedded C++ style)
+ * @version 1.1
+ * @date 2025-08-22
  **********************************************************************/
 
-/*** Typedefs ***/
-using calc_type = enum { calc_perimetr,
-                         calc_square };
+#include "emb_style_cpp_en.h"
+#include <iostream>
+#include <cmath>
 
-/*** Function Prototypes ***/
-/**
- * @brief  Вычисляет периметр или площадь прямоугольника (int)
- * @param  width   Ширина прямоугольника
- * @param  length  Длина прямоугольника
- * @param  type    Тип вычисления (calc_perimetr/calc_square)
- * @return Периметр или площадь (int)
- */
-int get_rect(int width, int length, calc_type type = calc_perimetr);
-
-/**
- * @brief  Вычисляет периметр или площадь прямоугольника (double)
- * @param  width   Ширина прямоугольника
- * @param  length  Длина прямоугольника
- * @param  type    Тип вычисления (calc_perimetr/calc_square)
- * @return Периметр или площадь (double)
- */
-double get_rect(double width, double length, calc_type type = calc_perimetr);
-
-/*** Function Implementation ***/
-int get_rect(int width, int length, calc_type type)
+int main(void)
 {
-    if (type == calc_perimetr)
-    {
-        return 2 * (width + length);
-    }
-    else
-    {
-        return width * length;
-    }
-}
+    int a = 0, b = 0, c = 0;
+    std::cin >> a >> b >> c;
 
-double get_rect(double width, double length, calc_type type)
-{
-    if (type == calc_perimetr)
+    auto sq_tr = [](int a, int b, int c) -> double
     {
-        return 2.0 * (width + length);
-    }
-    else
-    {
-        return width * length;
-    }
+        double p = (a + b + c) / 2.0;
+        return std::sqrt(p * (p - a) * (p - b) * (p - c));
+    };
+
+    double result = sq_tr(a, b, c);
+    std::cout << std::fixed << std::setprecision(2) << result << std::endl;
+
+    __ASSERT_TESTS__
+    return 0;
 }

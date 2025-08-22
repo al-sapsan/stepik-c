@@ -1,42 +1,75 @@
-/**********************************************************************
- * @file script8.cpp
- * @brief Tag wrapping for strings (embedded C++ style)
- * @version 2.1
- * @date 2025-08-20
- **********************************************************************/
+/****************************************************************************
+ * @file reverse_array.cpp
+ * @brief Программа для переворота массива целых чисел
+ * @version 1.0
+ * @date 2025-08-22
+ ****************************************************************************/
 
 #include <iostream>
-#include <string>
 
-/*** Function Prototypes ***/
+// *** Constants ***
+enum
+{
+    max_size = 20
+};
+
+// *** Function Prototypes ***
 /**
- * @brief  Оборачивает строку в тег
- * @param  title    Строка для оборачивания (std::string, изменяется)
- * @param  tag      Тег для оборачивания (std::string, по умолчанию "h1")
+ * @brief Функция для переворота массива
+ * @param[in,out] arr Указатель на массив для переворота
+ * @param[in] n Количество элементов в массиве
  */
-void set_tag(std::string &str, const std::string &tag = "h1");
+void reverse(short *arr, size_t n);
 
-/*** Main Function ***/
+// *** Main Function ***
 int main(void)
 {
-    std::string title;
-    std::string tag;
-    std::getline(std::cin, title);
-    std::getline(std::cin, tag);
+    // Объявление массива и счетчика
+    short digs[max_size];
+    int count = 0;
 
-    std::string title1 = title;
-    set_tag(title1);
-    std::cout << title1 << std::endl;
+    // Ввод данных
+    while (count < max_size && std::cin >> digs[count])
+    {
+        count++;
+    }
 
-    std::string title2 = title;
-    set_tag(title2, tag);
-    std::cout << title2 << std::endl;
+    // Вызов функции переворота массива
+    reverse(digs, static_cast<size_t>(count));
+
+    // Вывод результата
+    for (int i = 0; i < count; i++)
+    {
+        std::cout << digs[i];
+
+        if (i < count - 1)
+        {
+            std::cout << " ";
+        }
+    }
+
+    std::cout << std::endl;
 
     return 0;
 }
 
-/*** Function Implementation ***/
-void set_tag(std::string &str, const std::string &tag)
+// *** Function Implementations ***
+void reverse(short *arr, size_t n)
 {
-    str = "<" + tag + ">" + str + "</" + tag + ">";
+    // Используем два указателя: один с начала, другой с конца
+    size_t i = 0;
+    size_t j = n - 1;
+
+    // Меняем элементы местами пока указатели не встретятся
+    while (i < j)
+    {
+        // Обмен значений
+        short temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+
+        // Двигаем указатели навстречу друг другу
+        i++;
+        j--;
+    }
 }

@@ -1,47 +1,58 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Password check (embedded C++ style)
- * @version 1.0
- * @date 2025-08-20
+ * @brief Sum array with predicate (embedded C++ style)
+ * @version 1.1
+ * @date 2025-08-22
  **********************************************************************/
 
 #include "emb_style_cpp_en.h"
 #include <iostream>
-#include <cstring>
+
+enum
+{
+    max_size = 20
+};
 
 /*** Function Prototypes ***/
 /**
- * @brief  Проверяет корректность пароля
- * @param  password  Си-строка (пароль)
- * @param  chars     Строка символов для проверки (по умолчанию "$%!?@#")
- * @return true, если пароль корректен, иначе false
+ * @brief  Вычисляет сумму элементов массива по предикату
+ * @param  ar      Массив целых чисел
+ * @param  len_ar  Количество элементов
+ * @param  pred    Указатель на функцию-предикат (bool(int))
+ * @return Сумма элементов, удовлетворяющих предикату
  */
-bool check_password(const char *password, const char *chars = "$%!?@#");
+int sum_ar(const int *ar, size_t len_ar, bool (*pred)(int));
 
 /*** Main Function ***/
 int main(void)
 {
-    char password[128] = {0};
-    std::cin >> password;
-    bool valid = check_password(password);
-    std::cout << (valid ? "yes" : "no") << std::endl;
+    int marks[max_size] = {0};
+    int x = 0;
+    size_t count = 0;
+    while (std::cin >> x)
+    {
+        if (count < max_size)
+        {
+            marks[count++] = x;
+        }
+    }
+    auto is_even = [](int v) -> bool
+    { return v % 2 == 0; };
+    int result = sum_ar(marks, count, is_even);
+    std::cout << result << std::endl;
     return 0;
 }
 
 /*** Function Implementation ***/
-bool check_password(const char *password, const char *chars)
+int sum_ar(const int *ar, size_t len_ar, bool (*pred)(int))
 {
-    size_t len = std::strlen(password);
-    if (len < 8)
+    int sum = 0;
+    for (size_t i = 0; i < len_ar; ++i)
     {
-        return false;
-    }
-    for (size_t i = 0; i < len; ++i)
-    {
-        if (std::strchr(chars, password[i]) != nullptr)
+        if (pred(ar[i]))
         {
-            return true;
+            sum += ar[i];
         }
     }
-    return false;
+    return sum;
 }
