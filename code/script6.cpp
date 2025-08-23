@@ -1,31 +1,20 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Inline range generator (embedded C++ style)
+ * @brief Lambda sum with capture (embedded C++ style)
  * @version 1.1
- * @date 2025-08-22
+ * @date 2025-08-23
  **********************************************************************/
 
-#include <cstddef>
+#include <iostream>
 
-/*** Function Prototypes ***/
-/**
- * @brief  Заполняет массив арифметической прогрессией
- * @param  arr      Массив int для заполнения
- * @param  max_len  Максимальная длина массива
- * @param  start    Начальное значение
- * @param  stop     Конечное значение (не включается)
- * @param  step     Шаг прогрессии
- */
-inline void range(int *arr, size_t max_len, int start, int stop, int step);
-
-/*** Function Implementation ***/
-inline void range(int *arr, size_t max_len, int start, int stop, int step)
+/*** Main Function ***/
+int main(void)
 {
-    size_t i = 0;
-    int value = start;
-    while (i < max_len && ((step > 0 && value < stop) || (step < 0 && value > stop)))
-    {
-        arr[i++] = value;
-        value += step;
-    }
+    int w = 0, h = 0;
+    std::cin >> w >> h;
+    auto sum_ab = [w, h]()
+    { return w + h; };
+    std::cout << sum_ab() << std::endl;
+    __ASSERT_TESTS__
+    return 0;
 }

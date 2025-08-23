@@ -1,41 +1,55 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Inline sum of int array (embedded C++ style)
+ * @brief Sum elements by pairwise filter (embedded C++ style)
  * @version 1.1
- * @date 2025-08-22
+ * @date 2025-08-23
  **********************************************************************/
 
 #include <iostream>
 
+enum
+{
+    max_length_ar = 20
+};
+using filter_func = bool (*)(int, int);
+
 /*** Function Prototypes ***/
 /**
- * @brief  Вычисляет сумму элементов массива int
- * @param  arr  Массив целых чисел
- * @param  len  Количество элементов
- * @return Сумма элементов массива
+ * @brief  Суммирует элементы массива по парному фильтру
+ * @param  ar     Массив int
+ * @param  len    Длина массива
+ * @param  filter Функция-фильтр (true — включить в сумму)
+ * @return Сумма элементов, удовлетворяющих фильтру
  */
-inline int sum_ar_int(const int *arr, size_t len);
+int sum_elem(const int *ar, size_t len, filter_func filter);
 
 /*** Main Function ***/
 int main(void)
 {
-    int arr[10] = {0};
-    for (size_t i = 0; i < 10; ++i)
-    {
-        std::cin >> arr[i];
-    }
-    int result = sum_ar_int(arr, 10);
+    int marks[max_length_ar] = {0};
+    int count = 0;
+    while (count < max_length_ar && std::cin >> marks[count])
+        count++;
+
+    int result = 0;
+    auto filter = [](int prev, int curr)
+    { return prev % 2 == 0 && curr % 3 == 0; };
+    result = sum_elem(marks, count, filter);
     std::cout << result << std::endl;
+
     return 0;
 }
 
 /*** Function Implementation ***/
-inline int sum_ar_int(const int *arr, size_t len)
+int sum_elem(const int *ar, size_t len, filter_func filter)
 {
     int sum = 0;
-    for (size_t i = 0; i < len; ++i)
+    for (size_t i = 1; i < len; ++i)
     {
-        sum += arr[i];
+        if (filter(ar[i - 1], ar[i]))
+        {
+            sum += ar[i];
+        }
     }
     return sum;
 }

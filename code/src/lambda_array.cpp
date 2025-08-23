@@ -1,7 +1,7 @@
 /**********************************************************************
- * @file script2.cpp
- * @brief Array of lambda pointers (embedded C++ style)
- * @version 1.1
+ * @file script1.cpp
+ * @brief Array of lambda filters (embedded C++ style)
+ * @version 1.2
  * @date 2025-08-22
  **********************************************************************/
 
@@ -9,7 +9,7 @@
 
 /*** Function Prototypes ***/
 /**
- * @brief  Массив указателей на лямбда-функции для проверки целых чисел
+ * @brief  Массив лямбда-фильтров для проверки целых чисел
  *
  * Первый фильтр: возвращает 1, если число четное, иначе 0
  * Второй фильтр: возвращает 1, если число отрицательное, иначе 0
@@ -18,17 +18,18 @@
  * @param v Проверяемое целое число
  * @return 1 — условие выполнено, 0 — не выполнено
  */
-// ...lambda pointer array defined in main...
+
+// ...lambda array defined in main...
 
 /*** Main Function ***/
 int main(void)
 {
-    int (*func_filter[3])(int) = {
-        [](int v) -> int
+    std::function<int(int)> func_filter[] = {
+        [](int v)
         { return v % 2 == 0 ? 1 : 0; },
-        [](int v) -> int
+        [](int v)
         { return v < 0 ? 1 : 0; },
-        [](int v) -> int
+        [](int v)
         { return v > 0 ? 1 : 0; }};
 
     int value = 0;

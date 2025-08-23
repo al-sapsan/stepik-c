@@ -1,58 +1,36 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Sum array with predicate (embedded C++ style)
- * @version 1.1
- * @date 2025-08-22
+ * @brief Replace get_line with lambda (embedded C++ style)
+ * @version 1.0 (Stepik exercise)
+ * @date 2025-08-23
  **********************************************************************/
 
-#include "emb_style_cpp_en.h"
 #include <iostream>
+#include <string>
 
-enum
-{
-    max_size = 20
-};
-
-/*** Function Prototypes ***/
 /**
- * @brief  Вычисляет сумму элементов массива по предикату
- * @param  ar      Массив целых чисел
- * @param  len_ar  Количество элементов
- * @param  pred    Указатель на функцию-предикат (bool(int))
- * @return Сумма элементов, удовлетворяющих предикату
+ * @brief  Точка входа в программу
+ * @return Код завершения (0 — успешно, 1 — ошибка памяти)
  */
-int sum_ar(const int *ar, size_t len_ar, bool (*pred)(int));
-
 /*** Main Function ***/
 int main(void)
 {
-    int marks[max_size] = {0};
-    int x = 0;
-    size_t count = 0;
-    while (std::cin >> x)
+    char arr_str_u8[100];
+    /**
+     * @brief Лямбда-выражение для чтения строки из консоли
+     * @param Нет параметров (захват массива arr_str_u8)
+     * @return Нет возвращаемого значения (модифицирует arr_str_u8)
+     */
+    auto gl = [&arr_str_u8]()
     {
-        if (count < max_size)
-        {
-            marks[count++] = x;
-        }
-    }
-    auto is_even = [](int v) -> bool
-    { return v % 2 == 0; };
-    int result = sum_ar(marks, count, is_even);
-    std::cout << result << std::endl;
+        std::string line;
+        std::getline(std::cin, line);
+        size_t i = 0;
+        for (; i < line.length() && i < sizeof(arr_str_u8) - 1; ++i)
+            arr_str_u8[i] = line[i];
+        arr_str_u8[i] = '\0';
+    };
+    gl();
+    std::cout << arr_str_u8 << std::endl;
     return 0;
-}
-
-/*** Function Implementation ***/
-int sum_ar(const int *ar, size_t len_ar, bool (*pred)(int))
-{
-    int sum = 0;
-    for (size_t i = 0; i < len_ar; ++i)
-    {
-        if (pred(ar[i]))
-        {
-            sum += ar[i];
-        }
-    }
-    return sum;
 }

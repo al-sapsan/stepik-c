@@ -1,42 +1,54 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Inline max of three values (embedded C++ style)
+ * @brief Remove elements by filter (embedded C++ style)
  * @version 1.1
  * @date 2025-08-22
  **********************************************************************/
 
-#include "emb_style_cpp_en.h"
 #include <iostream>
+
+enum
+{
+    max_length_ar = 20
+};
+using filter_func = bool (*)(short);
 
 /*** Function Prototypes ***/
 /**
- * @brief  Возвращает максимальное из трех целых чисел
- * @param  a  Первое число
- * @param  b  Второе число
- * @param  c  Третье число
- * @return Максимальное целое число
+ * @brief  Удаляет элементы массива по фильтру
+ * @param  ar     Массив short
+ * @param  len    Ссылка на длину массива (обновляется)
+ * @param  filter Функция-фильтр (true — удалить)
  */
-inline int get_max_3(int a, int b, int c);
+void remove_elem(short *ar, int &len, filter_func filter);
 
 /*** Main Function ***/
 int main(void)
 {
-    int a = 0;
-    int b = 0;
-    int c = 0;
-    std::cin >> a >> b >> c;
-    int result = get_max_3(a, b, c);
-    std::cout << result << std::endl;
+    short marks[max_length_ar] = {0};
+    int count = 0;
+    while (count < max_length_ar && std::cin >> marks[count])
+        count++;
+
+    remove_elem(marks, count, [](short v)
+                { return v < 3; });
+    for (int i = 0; i < count; ++i)
+        std::cout << marks[i] << " ";
+    std::cout << std::endl;
+
     return 0;
 }
 
 /*** Function Implementation ***/
-inline int get_max_3(int a, int b, int c)
+void remove_elem(short *ar, int &len, filter_func filter)
 {
-    int max = a;
-    if (b > max)
-        max = b;
-    if (c > max)
-        max = c;
-    return max;
+    int j = 0;
+    for (int i = 0; i < len; ++i)
+    {
+        if (!filter(ar[i]))
+        {
+            ar[j++] = ar[i];
+        }
+    }
+    len = j;
 }
