@@ -1,39 +1,55 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Array of lambda pointers (embedded C++ style)
- * @version 1.1
- * @date 2025-08-22
+ * @brief Структура book с методом price_per_page (embedded C++ style)
+ * @version 1.0 (Stepik exercise)
+ * @date 2025-08-26
  **********************************************************************/
 
 #include <iostream>
+#include <iomanip>
+#include <string>
 
-/*** Function Prototypes ***/
 /**
- * @brief  Массив указателей на лямбда-функции для проверки целых чисел
- *
- * Первый фильтр: возвращает 1, если число четное, иначе 0
- * Второй фильтр: возвращает 1, если число отрицательное, иначе 0
- * Третий фильтр: возвращает 1, если число положительное (>0), иначе 0
- *
- * @param v Проверяемое целое число
- * @return 1 — условие выполнено, 0 — не выполнено
+ * @brief Структура книги с методом вычисления цены за страницу
  */
-// ...lambda pointer array defined in main...
+struct book
+{
+    std::string title;
+    std::string author;
+    int price;
+    int npages;
+    /**
+     * @brief Вычисляет цену за одну страницу
+     * @return Цена за страницу (вещественное число)
+     */
+    double price_per_page(void) const
+    {
+        return npages ? static_cast<double>(price) / npages : 0.0;
+    }
+};
 
 /*** Main Function ***/
+/**
+ * @brief  Точка входа в программу
+ * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+ */
 int main(void)
 {
-    int (*func_filter[3])(int) = {
-        [](int v) -> int
-        { return v % 2 == 0 ? 1 : 0; },
-        [](int v) -> int
-        { return v < 0 ? 1 : 0; },
-        [](int v) -> int
-        { return v > 0 ? 1 : 0; }};
-
-    int value = 0;
-    std::cin >> value;
-    std::cout << func_filter[1](value) << std::endl;
-
+    book arr_lib[10];
+    int n = 0;
+    while (n < 10 && std::getline(std::cin, arr_lib[n].title))
+    {
+        if (arr_lib[n].title.empty())
+            break;
+        std::getline(std::cin, arr_lib[n].author);
+        std::cin >> arr_lib[n].price >> arr_lib[n].npages;
+        std::cin.ignore();
+        ++n;
+    }
+    std::cout << std::fixed << std::setprecision(2);
+    for (int i = 0; i < n; ++i)
+        std::cout << arr_lib[i].price_per_page() << (i < n - 1 ? " " : "");
+    std::cout << std::endl;
+    __ASSERT_TESTS__
     return 0;
 }

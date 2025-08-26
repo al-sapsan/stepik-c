@@ -1,55 +1,69 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Sum elements by pairwise filter (embedded C++ style)
- * @version 1.1
- * @date 2025-08-23
+ * @brief Структура tag_time: методы get_time и sum_time (embedded C++ style)
+ * @version 1.0 (Stepik exercise)
+ * @date 2025-08-26
  **********************************************************************/
 
 #include <iostream>
+#include <cstdio>
+#include <cstring>
 
-enum
-{
-    max_length_ar = 20
-};
-using filter_func = bool (*)(int, int);
-
-/*** Function Prototypes ***/
 /**
- * @brief  Суммирует элементы массива по парному фильтру
- * @param  ar     Массив int
- * @param  len    Длина массива
- * @param  filter Функция-фильтр (true — включить в сумму)
- * @return Сумма элементов, удовлетворяющих фильтру
+ * @brief Структура времени с методами форматирования и сложения
  */
-int sum_elem(const int *ar, size_t len, filter_func filter);
+struct tag_time
+{
+    unsigned char hours;
+    unsigned char minutes;
+    unsigned char seconds;
+    /**
+     * @brief Формирует строку времени hh:mm:ss
+     * @param str Буфер для строки
+     * @param max_length Максимальная длина строки
+     * @return Адрес строки str
+     */
+    char *get_time(char *str, size_t max_length) const
+    {
+        if (max_length < 9)
+        { // "hh:mm:ss" + '\0'
+            if (max_length > 0)
+                str[0] = '\0';
+            return str;
+        }
+        std::snprintf(str, max_length, "%02u:%02u:%02u", hours, minutes, seconds);
+        return str;
+    }
+    /**
+     * @brief Складывает два времени
+     * @param t1 Первое время
+     * @param t2 Второе время
+     * @return Сумма времен
+     */
+    static tag_time sum_time(const tag_time &t1, const tag_time &t2)
+    {
+        tag_time res;
+        unsigned int s = t1.seconds + t2.seconds;
+        unsigned int m = t1.minutes + t2.minutes + s / 60;
+        res.seconds = s % 60;
+        res.minutes = m % 60;
+        res.hours = t1.hours + t2.hours + m / 60;
+        return res;
+    }
+};
 
 /*** Main Function ***/
+/**
+ * @brief  Точка входа в программу
+ * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+ */
 int main(void)
 {
-    int marks[max_length_ar] = {0};
-    int count = 0;
-    while (count < max_length_ar && std::cin >> marks[count])
-        count++;
-
-    int result = 0;
-    auto filter = [](int prev, int curr)
-    { return prev % 2 == 0 && curr % 3 == 0; };
-    result = sum_elem(marks, count, filter);
-    std::cout << result << std::endl;
-
+    tag_time tm1, tm2;
+    std::cin >> tm1.hours >> tm1.minutes >> tm1.seconds >> tm2.hours >> tm2.minutes >> tm2.seconds;
+    tag_time time_res = tag_time::sum_time(tm1, tm2);
+    char arr_str_time[16];
+    std::cout << time_res.get_time(arr_str_time, sizeof(arr_str_time)) << std::endl;
+    __ASSERT_TESTS__
     return 0;
-}
-
-/*** Function Implementation ***/
-int sum_elem(const int *ar, size_t len, filter_func filter)
-{
-    int sum = 0;
-    for (size_t i = 1; i < len; ++i)
-    {
-        if (filter(ar[i - 1], ar[i]))
-        {
-            sum += ar[i];
-        }
-    }
-    return sum;
 }

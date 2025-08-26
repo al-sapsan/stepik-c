@@ -1,43 +1,36 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Array of lambda filters (embedded C++ style)
- * @version 1.2
- * @date 2025-08-22
+ * @brief Структура volume с методом get_volume (embedded C++ style)
+ * @version 1.0 (Stepik exercise)
+ * @date 2025-08-26
  **********************************************************************/
 
 #include <iostream>
 
-/*** Function Prototypes ***/
-/**
- * @brief  Массив лямбда-фильтров для проверки целых чисел
- *
- * Первый фильтр: возвращает 1, если число четное, иначе 0
- * Второй фильтр: возвращает 1, если число отрицательное, иначе 0
- * Третий фильтр: возвращает 1, если число положительное (>0), иначе 0
- *
- * @param v Проверяемое целое число
- * @return 1 — условие выполнено, 0 — не выполнено
- */
-
-// ...lambda array defined in main...
+struct volume
+{
+    int width;
+    int height;
+    int depth;
+    /**
+     * @brief Вычисляет объем
+     * @return Объем (целое число)
+     */
+    int get_volume(void) const
+    {
+        return width * height * depth;
+    }
+};
 
 /*** Main Function ***/
+/**
+ * @brief  Точка входа в программу
+ * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+ */
 int main(void)
 {
-    auto func_filter = {
-        [](int v)
-        { return v % 2 == 0 ? 1 : 0; },
-        [](int v)
-        { return v < 0 ? 1 : 0; },
-        [](int v)
-        { return v > 0 ? 1 : 0; }};
-
-    int value = 0;
-    std::cin >> value;
-    auto it = func_filter.begin();
-    ++it; // second lambda
-    std::cout << (*it)(value) << std::endl;
-
-    __ASSERT_TESTS__
+    volume data;
+    std::cin >> data.width >> data.height >> data.depth;
+    std::cout << data.get_volume() << std::endl;
     return 0;
 }
