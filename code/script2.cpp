@@ -1,30 +1,64 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Структура book с методом price_per_page (embedded C++ style)
+ * @brief Структура point: приватные поля, публичные методы, main (embedded C++ style)
  * @version 1.0 (Stepik exercise)
- * @date 2025-08-26
+ * @date 2025-08-27
  **********************************************************************/
 
 #include <iostream>
-#include <iomanip>
-#include <string>
 
 /**
- * @brief Структура книги с методом вычисления цены за страницу
+ * @brief Структура точки с приватными координатами и публичными методами
  */
-struct book
+struct point
 {
-    std::string title;
-    std::string author;
-    int price;
-    int npages;
+private:
+    int m_x_i32;
+    int m_y_i32;
+
+public:
     /**
-     * @brief Вычисляет цену за одну страницу
-     * @return Цена за страницу (вещественное число)
+     * @brief Получить координату x
+     * @return x
      */
-    double price_per_page(void) const
+    int get_x(void) const { return m_x_i32; }
+    /**
+     * @brief Получить координату y
+     * @return y
+     */
+    int get_y(void) const { return m_y_i32; }
+    /**
+     * @brief Получить обе координаты
+     * @param[out] x x
+     * @param[out] y y
+     */
+    void get_coords(int &x, int &y) const
     {
-        return npages ? static_cast<double>(price) / npages : 0.0;
+        x = m_x_i32;
+        y = m_y_i32;
+    }
+    /**
+     * @brief Установить координаты
+     * @param[in] x x
+     * @param[in] y y
+     */
+    void set_coords(int x, int y)
+    {
+        m_x_i32 = x;
+        m_y_i32 = y;
+    }
+    /**
+     * @brief Суммировать две точки
+     * @param[in] p1 Первая точка
+     * @param[in] p2 Вторая точка
+     * @return Новая точка с суммой координат
+     */
+    static point sum(point &p1, point &p2)
+    {
+        point res;
+        res.m_x_i32 = p1.m_x_i32 + p2.m_x_i32;
+        res.m_y_i32 = p1.m_y_i32 + p2.m_y_i32;
+        return res;
     }
 };
 
@@ -35,21 +69,12 @@ struct book
  */
 int main(void)
 {
-    book arr_lib[10];
-    int n = 0;
-    while (n < 10 && std::getline(std::cin, arr_lib[n].title))
-    {
-        if (arr_lib[n].title.empty())
-            break;
-        std::getline(std::cin, arr_lib[n].author);
-        std::cin >> arr_lib[n].price >> arr_lib[n].npages;
-        std::cin.ignore();
-        ++n;
-    }
-    std::cout << std::fixed << std::setprecision(2);
-    for (int i = 0; i < n; ++i)
-        std::cout << arr_lib[i].price_per_page() << (i < n - 1 ? " " : "");
-    std::cout << std::endl;
-    __ASSERT_TESTS__
+    point pt1, pt2;
+    int x1, y1, x2, y2;
+    std::cin >> x1 >> y1 >> x2 >> y2;
+    pt1.set_coords(x1, y1);
+    pt2.set_coords(x2, y2);
+    point pt_sum = point::sum(pt1, pt2);
+    std::cout << pt_sum.get_x() << " " << pt_sum.get_y() << std::endl;
     return 0;
 }

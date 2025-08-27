@@ -1,69 +1,109 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Структура vector4D с методами read_data и length (embedded C++ style)
+ * @brief Структура point: приватные поля, публичные методы, main
  * @version 1.0 (Stepik exercise)
- * @date 2025-08-26
+ * @date 2025-08-27
  **********************************************************************/
 
 #include <iostream>
-#include <cstdio>
-#include <cmath>
 #include <iomanip>
 
 /**
- * @brief Структура 4D-вектора с методами чтения и вычисления длины
+ * @brief Структура точки с перегруженными сеттерами и геттерами
  */
-struct vector4D
+enum data_type
 {
-    double x, y, z, t;
-    /**
-     * @brief Чтение данных из потока
-     * @param stream Указатель на поток
-     * @param sep Разделитель
-     */
-    void read_data(FILE *stream, char sep = ' ')
+    data_none = 1,
+    data_int,
+    data_double
+};
+
+struct point
+{
+private:
+    enum
     {
-        char buf[128];
-        if (fgets(buf, sizeof(buf), stream))
-        {
-            double vals[4] = {0};
-            int idx = 0;
-            char *p = buf;
-            while (idx < 4)
-            {
-                vals[idx] = strtod(p, &p);
-                if (*p == sep)
-                    ++p;
-                ++idx;
-            }
-            x = vals[0];
-            y = vals[1];
-            z = vals[2];
-            t = vals[3];
-        }
+        max_coords = 3
+    };
+    union
+    {
+        int v_int;
+        double v_double;
+    } coords[max_coords];
+    data_type type = data_none;
+
+public:
+    /**
+     * @brief Установить целочисленные координаты
+     */
+    void set_coords(int x, int y, int z)
+    {
+        coords[0].v_int = x;
+        coords[1].v_int = y;
+        coords[2].v_int = z;
+        type = data_int;
     }
     /**
-     * @brief Вычисляет длину радиус-вектора
-     * @return Длина (double)
+     * @brief Установить вещественные координаты
      */
-    double length(void) const
+    void set_coords(double x, double y, double z)
     {
-        return std::sqrt(x * x + y * y + z * z + t * t);
+        coords[0].v_double = x;
+        coords[1].v_double = y;
+        coords[2].v_double = z;
+        type = data_double;
+    }
+    /**
+     * @brief Получить тип данных
+     */
+    data_type get_type() const { return type; }
+    /**
+     * @brief Получить размер массива координат
+     */
+    int get_size() const { return max_coords; }
+    /**
+     * @brief Получить целочисленные координаты
+     */
+    bool get_coords(int &x, int &y, int &z) const
+    {
+        if (type != data_int)
+            return false;
+        x = coords[0].v_int;
+        y = coords[1].v_int;
+        z = coords[2].v_int;
+        return true;
+    }
+    /**
+     * @brief Получить вещественные координаты
+     */
+    bool get_coords(double &x, double &y, double &z) const
+    {
+        if (type != data_double)
+            return false;
+        x = coords[0].v_double;
+        y = coords[1].v_double;
+        z = coords[2].v_double;
+        return true;
     }
 };
 
 /*** Main Function ***/
-/**
- * @brief  Точка входа в программу
- * @return Код завершения (0 — успешно, 1 — ошибка памяти)
- */
 int main(void)
 {
-    vector4D v1, v2;
-    v1.read_data(stdin, ';');
-    v2.read_data(stdin, ';');
-    std::cout << std::fixed << std::setprecision(3)
-              << v1.length() << " " << v2.length() << std::endl;
-    __ASSERT_TESTS__
+    point pt;
+    pt.set_coords(5, -8, 34);
+    if (pt.get_type() == data_int)
+    {
+        int x, y, z;
+        if (pt.get_coords(x, y, z))
+            std::cout << x << " " << y << " " << z << std::endl;
+    }
+    else if (pt.get_type() == data_double)
+    {
+        double x, y, z;
+        if (pt.get_coords(x, y, z))
+            std::cout << std::fixed << std::setprecision(1)
+                      << x << " " << y << " " << z << std::endl;
+    }
     return 0;
 }
