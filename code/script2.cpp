@@ -1,80 +1,88 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Структура point: приватные поля, публичные методы, main (embedded C++ style)
- * @version 1.0 (Stepik exercise)
- * @date 2025-08-27
+ * @brief Struct rectangle: private coords, constructors, methods, dynamic allocation
+ * @version 1.1 (Embedded C++ style, struct version)
+ * @date 2025-08-29
  **********************************************************************/
 
+/*** Core ***/
 #include <iostream>
 
-/**
- * @brief Структура точки с приватными координатами и публичными методами
- */
-struct point
+/*** Struct Definition ***/
+struct rectangle
 {
 private:
-    int m_x_i32;
-    int m_y_i32;
+    int m_x0_i32;
+    int m_y0_i32;
+    int m_x1_i32;
+    int m_y1_i32;
 
 public:
+    /*** Public Methods ***/
     /**
-     * @brief Получить координату x
-     * @return x
+     * @brief Конструктор по умолчанию
+     * @details Все координаты инициализируются нулём.
      */
-    int get_x(void) const { return m_x_i32; }
+    rectangle()
+        : m_x0_i32(0), m_y0_i32(0), m_x1_i32(0), m_y1_i32(0) {}
+
     /**
-     * @brief Получить координату y
-     * @return y
+     * @brief Конструктор с координатами
+     * @param[in] x0, y0, x1, y1 Координаты прямоугольника
      */
-    int get_y(void) const { return m_y_i32; }
+    rectangle(int x0, int y0, int x1, int y1)
+        : m_x0_i32(x0), m_y0_i32(y0), m_x1_i32(x1), m_y1_i32(y1) {}
+
     /**
-     * @brief Получить обе координаты
-     * @param[out] x x
-     * @param[out] y y
+     * @brief Проверка попадания точки в прямоугольник
+     * @param[in] x, y Координаты точки
+     * @return true, если точка внутри или на границе, иначе false
      */
-    void get_coords(int &x, int &y) const
+    bool is_in_rect(int x, int y)
     {
-        x = m_x_i32;
-        y = m_y_i32;
+        return (x >= m_x0_i32 && x <= m_x1_i32 && y >= m_y0_i32 && y <= m_y1_i32);
     }
+
     /**
-     * @brief Установить координаты
-     * @param[in] x x
-     * @param[in] y y
+     * @brief Задать новые координаты прямоугольника
+     * @param[in] x0, y0, x1, y1 Новые координаты
      */
-    void set_coords(int x, int y)
+    void set_coords(int x0, int y0, int x1, int y1)
     {
-        m_x_i32 = x;
-        m_y_i32 = y;
+        m_x0_i32 = x0;
+        m_y0_i32 = y0;
+        m_x1_i32 = x1;
+        m_y1_i32 = y1;
     }
+
     /**
-     * @brief Суммировать две точки
-     * @param[in] p1 Первая точка
-     * @param[in] p2 Вторая точка
-     * @return Новая точка с суммой координат
+     * @brief Получить текущие координаты прямоугольника
+     * @param[out] x0, y0, x1, y1 Текущие координаты
      */
-    static point sum(point &p1, point &p2)
+    void get_coords(int &x0, int &y0, int &x1, int &y1)
     {
-        point res;
-        res.m_x_i32 = p1.m_x_i32 + p2.m_x_i32;
-        res.m_y_i32 = p1.m_y_i32 + p2.m_y_i32;
-        return res;
+        x0 = m_x0_i32;
+        y0 = m_y0_i32;
+        x1 = m_x1_i32;
+        y1 = m_y1_i32;
     }
 };
 
 /*** Main Function ***/
 /**
- * @brief  Точка входа в программу
- * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+ * @brief Точка входа в программу
+ * @details Создание прямоугольника, проверка точки, вывод результата, освобождение памяти.
+ * @return Код завершения (0 — успешно)
  */
-int main(void)
+int main()
 {
-    point pt1, pt2;
-    int x1, y1, x2, y2;
-    std::cin >> x1 >> y1 >> x2 >> y2;
-    pt1.set_coords(x1, y1);
-    pt2.set_coords(x2, y2);
-    point pt_sum = point::sum(pt1, pt2);
-    std::cout << pt_sum.get_x() << " " << pt_sum.get_y() << std::endl;
+    rectangle *ptr_r = new rectangle(-5, 4, 8, 32);
+    int x = 0, y = 0;
+    std::cin >> x >> y;
+    if (ptr_r->is_in_rect(x, y))
+        std::cout << "yes" << std::endl;
+    else
+        std::cout << "no" << std::endl;
+    delete ptr_r;
     return 0;
 }

@@ -1,69 +1,38 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Структура triangle: конструкторы, приватные поля, публичные методы, main (embedded C++ style)
- * @version 1.0 (Stepik exercise)
- * @date 2025-08-27
+ * @brief Dynamic array of complex, initialization and cleanup
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-08-29
  **********************************************************************/
 
+/*** Core ***/
 #include <iostream>
 
-/**
- * @brief Структура треугольника с конструктором и методами
- */
-struct triangle
-{
-private:
-    int m_a_i32;
-    int m_b_i32;
-    int m_c_i32;
+/*** Typedefs ***/
+typedef double f64_t;
 
-public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    triangle() : m_a_i32(0), m_b_i32(0), m_c_i32(0) {}
-    /**
-     * @brief Конструктор с параметрами
-     */
-    triangle(int a, int b, int c) : m_a_i32(a), m_b_i32(b), m_c_i32(c) {}
-    /**
-     * @brief Проверка возможности построения треугольника
-     * @return true, если стороны образуют треугольник
-     */
-    bool is_triangle(void) const
-    {
-        return m_a_i32 > 0 && m_b_i32 > 0 && m_c_i32 > 0 &&
-               m_a_i32 + m_b_i32 > m_c_i32 &&
-               m_a_i32 + m_c_i32 > m_b_i32 &&
-               m_b_i32 + m_c_i32 > m_a_i32;
-    }
-    /**
-     * @brief Получить длины сторон
-     * @param[out] a, b, c
-     */
-    void get_lengths(int &a, int &b, int &c) const
-    {
-        a = m_a_i32;
-        b = m_b_i32;
-        c = m_c_i32;
-    }
-    /**
-     * @brief Установить длины сторон
-     * @param[in] a, b, c
-     */
-    void set_lengths(int a, int b, int c)
-    {
-        m_a_i32 = a;
-        m_b_i32 = b;
-        m_c_i32 = c;
-    }
+/*** Struct Definition ***/
+struct complex
+{
+    f64_t re;
+    f64_t im;
 };
 
 /*** Main Function ***/
+/**
+ * @brief Точка входа в программу
+ * @details Выделение памяти под массив complex, инициализация, освобождение
+ * @return Код завершения (0 — успешно)
+ */
 int main(void)
 {
-    triangle tr_1;
-    triangle tr_2(7, 4, 8);
-    __ASSERT_TESTS__
+    complex *vc = new complex[7];
+    for (int i = 0; i < 7; ++i)
+    {
+        vc[i].re = 0.0;
+        vc[i].im = 0.0;
+    }
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+        delete[] vc;
     return 0;
 }

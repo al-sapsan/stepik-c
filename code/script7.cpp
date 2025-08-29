@@ -1,78 +1,51 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Структуры point3D и line3D: конструкторы, методы, деструктор, main (embedded C++ style)
- * @version 1.0 (Stepik exercise)
- * @date 2025-08-27
+ * @brief box struct with constructors and dynamic array allocation
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-08-29
  **********************************************************************/
 
+/*** Core ***/
 #include <iostream>
-#include <cmath>
 
-/**
- * @brief Структура точки в 3D пространстве
- */
-struct point3D
+/*** Typedefs ***/
+typedef unsigned short u16_t;
+
+/*** Struct Definition ***/
+struct box
 {
-private:
-    int m_x_i32, m_y_i32, m_z_i32;
+    u16_t a, b, c;
 
-public:
-    point3D() : m_x_i32(0), m_y_i32(0), m_z_i32(0) {}
-    point3D(int x, int y, int z) : m_x_i32(x), m_y_i32(y), m_z_i32(z) {}
+    /*** Struct Constructors ***/
     /**
-     * @brief Получить координаты
+     * @brief Конструктор по умолчанию
+     * @details Инициализирует поля нулями, выводит "Empty box"
      */
-    void get_coords(int &x, int &y, int &z) const
+    box() : a(0), b(0), c(0)
     {
-        x = m_x_i32;
-        y = m_y_i32;
-        z = m_z_i32;
-    }
-};
-
-/**
- * @brief Структура линии в 3D пространстве
- */
-struct line3D
-{
-private:
-    point3D m_start_pt;
-    point3D m_end_pt;
-
-public:
-    line3D(const point3D &start, const point3D &end) : m_start_pt(start), m_end_pt(end) {}
-    ~line3D()
-    {
-        int x0, y0, z0, x1, y1, z1;
-        m_start_pt.get_coords(x0, y0, z0);
-        m_end_pt.get_coords(x1, y1, z1);
-        std::cout << "Deleted line: (" << x0 << ", " << y0 << ", " << z0 << ") ("
-                  << x1 << ", " << y1 << ", " << z1 << ")\n";
+        std::cout << "Empty box" << std::endl;
     }
     /**
-     * @brief Длина линии
+     * @brief Конструктор с параметрами
+     * @param[in] a, b, c Значения сторон
+     * @details Инициализирует поля и выводит "Box: a, b, c"
      */
-    double length(void) const
+    box(u16_t a, u16_t b, u16_t c) : a(a), b(b), c(c)
     {
-        int x0, y0, z0, x1, y1, z1;
-        m_start_pt.get_coords(x0, y0, z0);
-        m_end_pt.get_coords(x1, y1, z1);
-        return std::sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1) + (z0 - z1) * (z0 - z1));
+        std::cout << "Box: " << a << ", " << b << ", " << c << std::endl;
     }
-    /**
-     * @brief Получить константную ссылку на стартовую точку
-     */
-    const point3D &get_coords_start(void) const { return m_start_pt; }
-    /**
-     * @brief Получить константную ссылку на конечную точку
-     */
-    const point3D &get_coords_end(void) const { return m_end_pt; }
 };
 
 /*** Main Function ***/
 int main(void)
 {
-    line3D line(point3D(-5, 100, 45), point3D(0, 32, -42));
-    __ASSERT_TESTS__
+    box *ar_box = new box[5]{
+        box(1, 2, 3),
+        box(6, 2, 1),
+        box(0, 0, 0),
+        box(11, 13, 19),
+        box(23, 5, 7)};
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+        delete[] ar_box;
     return 0;
 }
