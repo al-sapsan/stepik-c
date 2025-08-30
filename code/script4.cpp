@@ -1,151 +1,52 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief OneLinkedList: max 10 elements, embedded C++ style
+ * @brief Stack with object, push, print top-to-bottom
  * @version 1.0 (Embedded C++ style)
- * @date 2025-08-29
+ * @date 2025-08-30
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <memory>
 
-/*** Typedefs ***/
-typedef double f64_t;
-
-typedef struct Node
+struct object
 {
-public:
-    f64_t data;
-    Node *next;
+private:
+    short data;
+    object *next;
 
 public:
-    Node(f64_t data)
-    {
-        this->data = data;
-        this->next = NULL;
-    }
-} Node;
+    object(short d) : data(d), next(nullptr) {}
+    object *get_next() { return next; }
+    short get_data() { return data; }
+    void set_next(object *ptr) { next = ptr; }
+    void set_data(short d) { data = d; }
+};
 
-typedef struct OneLinkedList
+using st_unique_ptr = std::unique_ptr<object>;
+
+void push(st_unique_ptr &top, short data)
 {
-public:
-    Node *head, *tail;
-    int m_count_i32;
+    st_unique_ptr new_obj = std::make_unique<object>(data);
+    new_obj->set_next(top.release());
+    top.reset(new_obj.release());
+}
 
-public:
-    OneLinkedList()
+/*** Main Function ***/
+int main(void)
+{
+    st_unique_ptr top;
+    for (int i = 1; i <= 7; ++i)
+        push(top, i);
+    object *curr = top.get();
+    while (curr)
     {
-        this->head = this->tail = NULL;
-        m_count_i32 = 0;
+        std::cout << curr->get_data();
+        if (curr->get_next())
+            std::cout << " ";
+        curr = curr->get_next();
     }
-    ~OneLinkedList()
-    {
-        while (head != NULL)
-            pop_front();
-    }
-    void pop_front()
-    {
-        if (head == NULL)
-            return;
-        if (head == tail)
-        {
-            delete tail;
-            head = tail = NULL;
-            m_count_i32 = 0;
-            return;
-        }
-        Node *node = head;
-        head = node->next;
-        delete node;
-        m_count_i32--;
-    }
-    void push_back(f64_t data)
-    {
-        if (m_count_i32 >= 10)
-            return;
-        Node *node = new Node(data);
-        if (head == NULL)
-            head = node;
-        if (tail != NULL)
-            tail->next = node;
-        tail = node;
-        m_count_i32++;
-    }
-    void push_front(f64_t data)
-    {
-        if (m_count_i32 >= 10)
-            return;
-        Node *node = new Node(data);
-        node->next = head;
-        head = node;
-        if (tail == NULL)
-            tail = node;
-        m_count_i32++;
-    }
-    void pop_back()
-    {
-        if (tail == NULL)
-            return;
-        if (head == tail)
-        {
-            delete tail;
-            head = tail = NULL;
-            m_count_i32 = 0;
-            return;
-        }
-        Node *node = head;
-        for (; node->next != tail; node = node->next)
-            ;
-        node->next = NULL;
-        delete tail;
-        tail = node;
-        m_count_i32--;
-    }
-    Node *getAt(int k)
-    {
-        if (k < 0)
-            return NULL;
-        Node *node = head;
-        int n = 0;
-        while (node && n != k && node->next)
-        {
-            node = node->next;
-            n++;
-        }
-        return (n == k) ? node : NULL;
-    }
-    void insert(int k, f64_t data)
-    {
-        if (m_count_i32 >= 10)
-            return;
-        Node *left = getAt(k);
-        if (left == NULL)
-            return;
-        Node *right = left->next;
-        Node *node = new Node(data);
-        left->next = node;
-        node->next = right;
-        if (right == NULL)
-            tail = node;
-        m_count_i32++;
-    }
-    void erase(int k)
-    {
-        if (k < 0)
-            return;
-        if (k == 0)
-        {
-            pop_front();
-            return;
-        }
-        Node *left = getAt(k - 1);
-        Node *node = left->next;
-        if (node == NULL)
-            return;
-        Node *right = node->next;
-        left->next = right;
-        if (node == tail)
-            tail = left;
-        delete node;
-        m_count_i32--;
-    }
-} OneLinkedList;
+    std::cout << std::endl;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+        return 0;
+}

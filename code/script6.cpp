@@ -1,38 +1,38 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Dynamic array of complex, initialization and cleanup
+ * @brief sum_ar for shared_ptr<int[]>, read and sum up to max_size_ar
  * @version 1.0 (Embedded C++ style)
- * @date 2025-08-29
+ * @date 2025-08-30
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <memory>
 
-/*** Typedefs ***/
-typedef double f64_t;
-
-/*** Struct Definition ***/
-struct complex
+enum
 {
-    f64_t re;
-    f64_t im;
+    max_size_ar = 10
 };
+using shared_ari_ptr = std::shared_ptr<int[]>;
+
+int sum_ar(const shared_ari_ptr &ar, size_t len)
+{
+    int sum = 0;
+    for (size_t i = 0; i < len; ++i)
+        sum += ar[i];
+    return sum;
+}
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @details Выделение памяти под массив complex, инициализация, освобождение
- * @return Код завершения (0 — успешно)
- */
 int main(void)
 {
-    complex *vc = new complex[7];
-    for (int i = 0; i < 7; ++i)
+    shared_ari_ptr ar{new int[max_size_ar]{0}};
+    unsigned count = 0;
+    int val = 0;
+    while (count < max_size_ar && std::cin >> val)
     {
-        vc[i].re = 0.0;
-        vc[i].im = 0.0;
+        ar[count++] = val;
     }
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        delete[] vc;
+    std::cout << sum_ar(ar, count) << std::endl;
     return 0;
 }
