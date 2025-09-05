@@ -1,27 +1,51 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief shared_ptr for short, print bytes as unsigned decimals
+ * @brief struct Goods: публичные поля, методы, main
  * @version 1.0 (Embedded C++ style)
- * @date 2025-08-30
+ * @date 2025-09-05
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <memory>
+#include <string>
+
+/*** Struct Definition ***/
+/**
+ * @brief Структура для хранения информации о товаре
+ */
+struct Goods
+{
+    std::string name; ///< название
+    double weight;    ///< вес
+    int price;        ///< цена
+    /*** Function Prototypes ***/
+    /**
+     * @brief Получить ссылку на название
+     * @return ссылка на name
+     */
+    const std::string &get_name() { return name; }
+    /**
+     * @brief Получить вес
+     * @return вес
+     */
+    double get_weight() { return weight; }
+    /**
+     * @brief Получить цену
+     * @return цена
+     */
+    int get_price() { return price; }
+};
 
 /*** Main Function ***/
 int main(void)
 {
-    int x;
-    std::cin >> x;
-    std::shared_ptr<short> p_val(new short);
-    *p_val = static_cast<short>(x);
-    unsigned char *ptr = reinterpret_cast<unsigned char *>(p_val.get());
-    for (size_t i = 0; i < sizeof(short); ++i)
-    {
-        std::cout << static_cast<unsigned int>(ptr[i]) << " ";
-    }
-    std::cout << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+    Goods book, toy;
+    book.name = "Основы ООП";
+    book.weight = 234.5;
+    book.price = 2000;
+    toy.name = "Oculus Quest 3";
+    toy.weight = 204.6;
+    toy.price = 80000;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
         return 0;
 }

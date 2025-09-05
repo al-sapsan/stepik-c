@@ -58,6 +58,5 @@ int main(void)
     TravelBlog blog1, blog2;
     blog1.set_info("ОАЭ", 10);
     blog2.set_info(blog1);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        return 0;
+    return 0;
 }

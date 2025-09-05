@@ -1,52 +1,75 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Stack with object, push, print top-to-bottom
+ * @brief Класс Clock: приватное время, методы, main
  * @version 1.0 (Embedded C++ style)
- * @date 2025-08-30
+ * @date 2025-09-05
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <memory>
+#include <iomanip>
 
-struct object
+/*** Class Definition ***/
+/**
+ * @brief Класс для хранения времени в секундах и получения часов, минут, секунд
+ */
+class Clock
 {
 private:
-    short data;
-    object *next;
+    unsigned m_time_current_u32;
 
 public:
-    object(short d) : data(d), next(nullptr) {}
-    object *get_next() { return next; }
-    short get_data() { return data; }
-    void set_next(object *ptr) { next = ptr; }
-    void set_data(short d) { data = d; }
+    /*** Methods Implementation ***/
+    /**
+     * @brief Установить текущее время в секундах
+     * @param[in] tm время в секундах
+     */
+    void set_time(unsigned tm)
+    {
+        m_time_current_u32 = tm;
+    }
+    /**
+     * @brief Получить количество часов
+     * @return часы
+     */
+    unsigned get_hours()
+    {
+        return m_time_current_u32 / 3600;
+    }
+    /**
+     * @brief Получить количество минут (без учёта часов)
+     * @return минуты
+     */
+    unsigned get_minutes()
+    {
+        return (m_time_current_u32 / 60) % 60;
+    }
+    /**
+     * @brief Получить количество секунд (без учёта часов и минут)
+     * @return секунды
+     */
+    unsigned get_seconds()
+    {
+        return m_time_current_u32 % 60;
+    }
 };
-
-using st_unique_ptr = std::unique_ptr<object>;
-
-void push(st_unique_ptr &top, short data)
-{
-    st_unique_ptr new_obj = std::make_unique<object>(data);
-    new_obj->set_next(top.release());
-    top.reset(new_obj.release());
-}
 
 /*** Main Function ***/
 int main(void)
 {
-    st_unique_ptr top;
-    for (int i = 1; i <= 7; ++i)
-        push(top, i);
-    object *curr = top.get();
-    while (curr)
-    {
-        std::cout << curr->get_data();
-        if (curr->get_next())
-            std::cout << " ";
-        curr = curr->get_next();
-    }
-    std::cout << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-        return 0;
+    Clock *ptr_cl = new Clock;
+    unsigned tm;
+    std::cin >> tm;
+    ptr_cl->set_time(tm);
+    unsigned hh = ptr_cl->get_hours();
+    unsigned mm = ptr_cl->get_minutes();
+    unsigned ss = ptr_cl->get_seconds();
+    std::cout << std::setfill('0'); // Установить fill для всех полей
+    std::cout << std::setw(2) << hh << ":"
+              << std::setw(2) << mm << ":"
+              << std::setw(2) << ss << std::endl;
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
+        delete ptr_cl;
+    ptr_cl = nullptr; // <- тренируем мышечную память
+    return 0;
 }
