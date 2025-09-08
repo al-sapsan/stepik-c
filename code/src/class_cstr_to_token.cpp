@@ -17,9 +17,6 @@
  */
 class Vector3D
 {
-private:
-    int m_x_i32, m_y_i32, m_z_i32;
-
 public:
     /*** Constructors ***/
     /**
@@ -80,6 +77,9 @@ public:
         b = m_y_i32;
         c = m_z_i32;
     }
+
+private:
+    int m_x_i32, m_y_i32, m_z_i32;
 };
 /*** Пример использования ***/
 int main()

@@ -1,68 +1,111 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief struct Person: приватные поля, методы, main
+ * @brief Класс IntOperator: арифметика массива, деструктор обнуляет исходный массив
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-05
+ * @date 2025-09-08
  **********************************************************************/
 
 /*** Core ***/
-#include <iostream>
-#include <string>
+#include <cstddef>
+#include <iterator>
 
-/*** Struct Definition ***/
+/*** Class Definition ***/
 /**
- * @brief Структура для хранения информации о человеке
+ * @brief Класс для операций над массивом int
  */
-struct Person
+class IntOperator
 {
 private:
-    std::string m_fio_str;  ///< ФИО
-    std::string m_job_str;  ///< работа
-    unsigned char m_old_u8; ///< возраст
+    int *data; ///< Указатель на массив int
+    int size;  ///< Размер массива
+    int *src;  ///< Указатель на исходный массив (для обнуления)
 public:
-    /*** Function Prototypes ***/
     /**
-     * @brief Задать данные человека
-     * @param[in] fio ФИО
-     * @param[in] job работа
-     * @param[in] old возраст
+     * @brief Конструктор по умолчанию
      */
-    void set_person_data(const std::string &fio, const std::string &job, unsigned char old)
+    IntOperator() : data(nullptr), size(0), src(nullptr) {}
+    /**
+     * @brief Конструктор с массивом
+     * @param[in] arr указатель на массив int
+     * @param[in] sz размер массива
+     */
+    IntOperator(int *arr, int sz) : data(arr), size(sz), src(arr) {}
+    /**
+     * @brief Деструктор: обнуляет исходный массив
+     */
+    ~IntOperator()
     {
-        m_fio_str = fio;
-        m_job_str = job;
-        m_old_u8 = old;
+        if (src)
+        {
+            for (int i = 0; i < size; ++i)
+                src[i] = 0;
+        }
     }
     /**
-     * @brief Задать данные из другого объекта
-     * @param[in] p объект Person
+     * @brief Среднее арифметическое
+     * @return double среднее значение
      */
-    void set_person_data(const Person &p)
-    {
-        m_fio_str = p.m_fio_str;
-        m_job_str = p.m_job_str;
-        m_old_u8 = p.m_old_u8;
-    }
+    double average();
     /**
-     * @brief Получить данные человека
-     * @param[out] fio ссылка для ФИО
-     * @param[out] job ссылка для работы
-     * @param[out] old ссылка для возраста
+     * @brief Сумма элементов
+     * @return int сумма
      */
-    void get_data(std::string &fio, std::string &job, unsigned char &old)
-    {
-        fio = m_fio_str;
-        job = m_job_str;
-        old = m_old_u8;
-    }
+    int sum();
+    /**
+     * @brief Максимум
+     * @return int максимум
+     */
+    int max();
+    /**
+     * @brief Минимум
+     * @return int минимум
+     */
+    int min();
 };
 
-/*** Main Function ***/
-int main(void)
+/*** Methods Implementation ***/
+double IntOperator::average()
 {
-    Person p1, p2;
-    p1.set_person_data("С.М. Балакирев", "Просветитель", 84);
-    p2.set_person_data(p1);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
+    if (!data || size == 0)
+        return 0.0;
+    int s = 0;
+    for (int i = 0; i < size; ++i)
+        s += data[i];
+    return static_cast<double>(s) / size;
+}
+
+int IntOperator::sum()
+{
+    if (!data || size == 0)
         return 0;
+    int s = 0;
+    for (int i = 0; i < size; ++i)
+        s += data[i];
+    return s;
+}
+
+int IntOperator::max()
+{
+    if (!data || size == 0)
+        return 0;
+    int m = data[0];
+    for (int i = 1; i < size; ++i)
+    {
+        if (data[i] > m)
+            m = data[i];
+    }
+    return m;
+}
+
+int IntOperator::min()
+{
+    if (!data || size == 0)
+        return 0;
+    int m = data[0];
+    for (int i = 1; i < size; ++i)
+    {
+        if (data[i] < m)
+            m = data[i];
+    }
+    return m;
 }

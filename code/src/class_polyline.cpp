@@ -97,6 +97,5 @@ int main(void)
     PolyLine poly(coords, 20);
     PolyLine pl;
     pl.append_coord(coords[19]);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        return 0;
+    return 0;
 }

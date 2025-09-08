@@ -16,15 +16,12 @@
  */
 class Point
 {
-private:
-    int x, y;
-
 public:
     /*** Constructor ***/
     /**
      * @brief Конструктор (secured)
      */
-    Point(const char *str) : x(0), y(0)
+    Point(const char *str) : m_x_i32(0), m_y_i32(0)
     {
         if (str == nullptr)
             return;
@@ -44,13 +41,16 @@ public:
      * @brief Получить x
      * @return x
      */
-    int get_x() { return x; }
+    int get_x() { return m_x_i32; }
 
     /**
      * @brief Получить y
      * @return y
      */
-    int get_y() { return y; }
+    int get_y() { return m_y_i32; }
+
+private:
+    int m_x_i32, m_y_i32;
 };
 
 /*** Main Function ***/

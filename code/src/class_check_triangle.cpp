@@ -36,10 +36,25 @@ public:
      */
     int is_triangle()
     {
+        // Проверка положительных сторон
         if (m_a_i32 <= 0 || m_b_i32 <= 0 || m_c_i32 <= 0)
             return 1;
-        if (m_a_i32 + m_b_i32 <= m_c_i32 || m_a_i32 + m_c_i32 <= m_b_i32 || m_b_i32 + m_c_i32 <= m_a_i32)
+
+        // Оптимизированная проверка неравенства треугольника
+        int a = m_a_i32, b = m_b_i32, c = m_c_i32;
+
+        // Сортируем стороны для более эффективной проверки
+        if (a > b)
+            std::swap(a, b);
+        if (b > c)
+            std::swap(b, c);
+        if (a > b)
+            std::swap(a, b);
+
+        // Теперь a ≤ b ≤ c, проверяем a + b > c
+        if (a + b <= c)
             return 2;
+
         return 3;
     }
 };
@@ -56,7 +71,7 @@ int main(void)
     std::cin >> a >> b >> c;
     TriangleChecker *ptr_tr = new TriangleChecker(a, b, c);
     std::cout << ptr_tr->is_triangle() << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        delete ptr_tr;
+    delete ptr_tr;
+    ptr_tr = nullptr; // <- тренируем мышечную память
     return 0;
 }

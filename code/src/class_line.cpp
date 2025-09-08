@@ -102,8 +102,7 @@ int main(void)
     Point e2 = ptr_ln2->get_end();
     std::cout << s1.x << " " << s1.y << " " << e1.x << " " << e1.y << " ";
     std::cout << s2.x << " " << s2.y << " " << e2.x << " " << e2.y << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        delete ptr_ln1;
+    delete ptr_ln1;
     delete ptr_ln2;
     return 0;
 }

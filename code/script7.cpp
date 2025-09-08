@@ -1,63 +1,104 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Класс TravelBlog: приватные поля, методы, main
+ * @brief Класс IntOperator: арифметика массива, деструктор обнуляет исходный массив
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-05
+ * @date 2025-09-08
  **********************************************************************/
 
 /*** Core ***/
-#include <iostream>
-#include <string>
+#include <cstddef>
+#include <limits>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения информации о путешествии
+ * @brief Класс для операций над массивом int
  */
-class TravelBlog
+class IntOperator
 {
 private:
-    std::string m_country_str;
-    short m_days_i16;
-
+    int *data; ///< Указатель на массив int
+    int size;  ///< Размер массива
+    int *src;  ///< Указатель на исходный массив (для обнуления)
 public:
-    /*** Function Prototypes ***/
     /**
-     * @brief Задать страну и дни
-     * @param[in] country страна
-     * @param[in] days число дней
+     * @brief Конструктор по умолчанию
      */
-    void set_info(const std::string &country, short days)
+    IntOperator() : data(nullptr), size(0), src(nullptr) {}
+    /**
+     * @brief Конструктор с массивом
+     * @param[in] arr указатель на массив int
+     * @param[in] sz размер массива
+     */
+    IntOperator(int *arr, int sz) : data(arr), size(sz), src(arr) {}
+    /**
+     * @brief Деструктор: обнуляет исходный массив
+     */
+    ~IntOperator()
     {
-        m_country_str = country;
-        m_days_i16 = days;
+        if (src)
+        {
+            for (int i = 0; i < size; ++i)
+                src[i] = 0;
+        }
+    }
+    /*** Methods Implementation ***/
+    /**
+     * @brief Среднее арифметическое
+     * @return double среднее значение
+     */
+    double average()
+    {
+        if (!data || size == 0)
+            return 0.0;
+        int s = 0;
+        for (int i = 0; i < size; ++i)
+            s += data[i];
+        return static_cast<double>(s) / size;
     }
     /**
-     * @brief Задать данные из другого блога
-     * @param[in] blog объект TravelBlog
+     * @brief Сумма элементов
+     * @return int сумма
      */
-    void set_info(const TravelBlog &blog)
+    int sum()
     {
-        m_country_str = blog.m_country_str;
-        m_days_i16 = blog.m_days_i16;
+        if (!data || size == 0)
+            return 0.0;
+        int s = 0;
+        for (int i = 0; i < size; ++i)
+            s += data[i];
+        return static_cast<double>(s) / size;
     }
     /**
-     * @brief Получить страну
-     * @return ссылка на страну
+     * @brief Максимум
+     * @return int максимум
      */
-    const std::string &get_country() { return m_country_str; }
-    /**
-     * @brief Получить число дней
-     * @return число дней
-     */
-    short get_days() { return m_days_i16; }
-};
+    int max()
+    {
+        if (!data || size == 0)
+            return 0;
+        int m = data[0];
+        for (int i = 1; i < size; ++i)
+        {
+            if (data[i] > m)
+                m = data[i];
+        }
+        return m;
+    }
 
-/*** Main Function ***/
-int main(void)
-{
-    TravelBlog blog1, blog2;
-    blog1.set_info("ОАЭ", 10);
-    blog2.set_info(blog1);
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        return 0;
-}
+    /**
+     * @brief Минимум
+     * @return int минимум
+     */
+    int min()
+    {
+        if (!data || size == 0)
+            return 0;
+        int m = data[0];
+        for (int i = 1; i < size; ++i)
+        {
+            if (data[i] < m)
+                m = data[i];
+        }
+        return m;
+    }
+};
