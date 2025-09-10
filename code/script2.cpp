@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс TriangleChecker: приватные стороны, методы, main
+ * @brief Класс StringBuffer: копирующий конструктор и деструктор
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-06
+ * @date 2025-09-08
  **********************************************************************/
 
 /*** Core ***/
@@ -10,53 +10,60 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс для проверки возможности построения треугольника
+ * @brief Класс для хранения строки в динамическом буфере
  */
-class TriangleChecker
+class StringBuffer
 {
-private:
-    int m_a_i32;
-    int m_b_i32;
-    int m_c_i32;
-
 public:
-    /*** Constructors ***/
     /**
-     * @brief Конструктор с параметрами сторон
-     * @param[in] a длина стороны a
-     * @param[in] b длина стороны b
-     * @param[in] c длина стороны c
+     * @brief Конструктор из C-строки
+     * @param[in] str исходная строка
      */
-    TriangleChecker(int a, int b, int c) : m_a_i32(a), m_b_i32(b), m_c_i32(c) {}
-
-    /*** Methods Implementation ***/
-    /**
-     * @brief Проверить возможность построения треугольника
-     * @return 1 - некорректные значения, 2 - не треугольник, 3 - треугольник
-     */
-    int is_triangle()
+    StringBuffer(const char *str)
     {
-        if (m_a_i32 <= 0 || m_b_i32 <= 0 || m_c_i32 <= 0)
-            return 1;
-        if (m_a_i32 + m_b_i32 <= m_c_i32 || m_a_i32 + m_c_i32 <= m_b_i32 || m_b_i32 + m_c_i32 <= m_a_i32)
-            return 2;
-        return 3;
+        size = 0;
+        while (str[size] != '\0' && size < max_size - 1)
+            size++;
+        buffer = new char[size + 1];
+        for (int i = 0; i < size; ++i)
+            buffer[i] = str[i];
+        buffer[size] = '\0';
     }
-};
+    /**
+     * @brief Копирующий конструктор
+     * @param[in] other другой объект StringBuffer
+     */
+    StringBuffer(const StringBuffer &other)
+    {
+        size = other.size;
+        buffer = new char[size + 1];
+        for (int i = 0; i < size; ++i)
+            buffer[i] = other.buffer[i];
+        buffer[size] = '\0';
+    }
+    /**
+     * @brief Деструктор: освобождает память
+     */
+    ~StringBuffer()
+    {
+        delete[] buffer;
+    }
+    /**
+     * @brief Получить строку
+     * @return указатель на строку
+     */
+    const char *get_data() { return buffer; }
+    /**
+     * @brief Получить размер строки
+     * @return размер
+     */
+    int get_size() { return size; }
 
-/*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @details Считывает стороны, создает объект TriangleChecker, выводит результат проверки, освобождает память
- * @return Код завершения (0 — успешно)
- */
-int main(void)
-{
-    int a, b, c;
-    std::cin >> a >> b >> c;
-    TriangleChecker *ptr_tr = new TriangleChecker(a, b, c);
-    std::cout << ptr_tr->is_triangle() << std::endl;
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        delete ptr_tr;
-    return 0;
-}
+private:
+    enum
+    {
+        max_size = 1024
+    };
+    char *buffer{nullptr};
+    int size{0};
+};

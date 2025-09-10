@@ -1,102 +1,66 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief struct Point, class PolyLine: приватные поля, методы, main
+ * @brief Класс Complex: конструкторы, копирование с модулем, геттеры
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-06
+ * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-
-struct Point
-{
-    short x, y;
-};
+#include <cstdlib>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения полилинии (массива точек)
+ * @brief Класс для хранения комплексного числа
  */
-class PolyLine
+class Complex
 {
-private:
-    enum
-    {
-        max_coords = 10
-    };
-    Point m_coords[max_coords];
-    int m_total_i32;
-
 public:
-    /*** Constructors ***/
     /**
-     * @brief Конструктор по умолчанию (без координат)
+     * @brief Конструктор по умолчанию
      */
-    PolyLine() : m_total_i32(0) {}
+    Complex() : re(0), im(0) {}
     /**
-     * @brief Конструктор с массивом координат
-     * @param[in] ar массив точек
-     * @param[in] size количество точек
+     * @brief Конструктор с одним параметром
+     * @param[in] r действительная часть
      */
-    PolyLine(const Point *ar, int size) : m_total_i32(0)
-    {
-        set_coords(ar, size);
-    }
+    Complex(short r) : re(r), im(0) {}
+    /**
+     * @brief Конструктор с двумя параметрами
+     * @param[in] r действительная часть
+     * @param[in] i мнимая часть
+     */
+    Complex(short r, short i) : re(r), im(i) {}
+    /**
+     * @brief Конструктор копирования (копирует модули)
+     * @param[in] other другой объект Complex
+     */
+    Complex(const Complex &other) : re(std::abs(other.re)), im(std::abs(other.im)) {}
+    /**
+     * @brief Получить действительную часть
+     * @return short
+     */
+    short real() { return re; }
+    /**
+     * @brief Получить мнимую часть
+     * @return short
+     */
+    short imag() { return im; }
 
-    /*** Methods Implementation ***/
-    /**
-     * @brief Установить координаты из массива
-     * @param[in] ar массив точек
-     * @param[in] size количество точек
-     */
-    void set_coords(const Point *ar, int size)
-    {
-        m_total_i32 = (size > max_coords) ? max_coords : size;
-        for (int i = 0; i < m_total_i32; ++i)
-        {
-            m_coords[i] = ar[i];
-        }
-    }
-    /**
-     * @brief Добавить координату в конец
-     * @param[in] pt точка
-     */
-    void append_coord(Point pt)
-    {
-        if (m_total_i32 < max_coords)
-        {
-            m_coords[m_total_i32++] = pt;
-        }
-    }
-    /**
-     * @brief Получить указатель на массив координат
-     * @return указатель на массив
-     */
-    const Point *get_coords() { return m_coords; }
-    /**
-     * @brief Получить количество точек
-     * @return количество точек
-     */
-    int get_total() { return m_total_i32; }
+private:
+    short re{0}; ///< действительная часть
+    short im{0}; ///< мнимая часть
 };
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @details Создает объекты PolyLine, добавляет координаты
- * @return Код завершения (0 — успешно)
- */
 int main(void)
 {
-    Point coords[20];
-    for (int i = 0; i < 20; ++i)
-    {
-        coords[i].x = i + 1;
-        coords[i].y = i + 2;
-    }
-    PolyLine poly(coords, 20);
-    PolyLine pl;
-    pl.append_coord(coords[19]);
+    // создаём объект с re=-4, im=7
+    Complex digit(-4, 7);
+    // копируем с модулем
+    Complex res = digit;
+
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
+
         return 0;
 }

@@ -1,99 +1,87 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Класс Vector3D: конструкторы из строки и массива, методы-геттеры
+ * @brief Класс Graph: динамический массив, конструкторы, деструктор, set/get
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-08
+ * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
-#include <sstream>
-#include <cstdlib>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения 3D-вектора с разными конструкторами
+ * @brief Класс для хранения массива вещественных значений
  */
-class Vector3D
+class Graph
 {
-private:
-    int m_x_i32, m_y_i32, m_z_i32;
-
 public:
-    /*** Constructors ***/
     /**
      * @brief Конструктор по умолчанию
      */
-    Vector3D() : m_x_i32(0), m_y_i32(0), m_z_i32(0) {}
+    Graph() : data(nullptr), length(0) {}
     /**
-     * @brief Конструктор из C-строки
-     * @param[in] str C-строка с координатами
-     * @details Извлекает первые три числа, преобразует к int, нечисловое = 0
+     * @brief Конструктор с массивом
+     * @param[in] ar массив double
+     * @param[in] size размер массива
      */
-    Vector3D(const char *str) : m_x_i32(0), m_y_i32(0), m_z_i32(0)
+    Graph(const double *ar, int size) : data(nullptr), length(0)
     {
-        char buf[128] = {0};
-        if (str)
+        set_data(ar, size);
+    }
+    /**
+     * @brief Деструктор: освобождает память
+     */
+    ~Graph()
+    {
+        delete[] data;
+    }
+    /**
+     * @brief Передать данные в массив
+     * @param[in] ar массив double
+     * @param[in] size размер массива
+     */
+    void set_data(const double *ar, int size)
+    {
+        if (data)
+            delete[] data;
+        if (ar && size > 0)
         {
-            std::strncpy(buf, str, sizeof(buf) - 1);
-            char *token = std::strtok(buf, " ,;:");
-            if (token)
-            {
-                m_x_i32 = std::atoi(token);
-                token = std::strtok(nullptr, " ,;:");
-            }
-            if (token)
-            {
-                m_y_i32 = std::atoi(token);
-                token = std::strtok(nullptr, " ,;:");
-            }
-            if (token)
-            {
-                m_z_i32 = std::atoi(token);
-            }
+            data = new double[size];
+            for (int i = 0; i < size; ++i)
+                data[i] = ar[i];
+            length = size;
+        }
+        else
+        {
+            data = nullptr;
+            length = 0;
         }
     }
     /**
-     * @brief Конструктор из массива int
-     * @param[in] arr массив int
+     * @brief Получить указатель на массив
+     * @return double*
      */
-    Vector3D(const int arr[]) : m_x_i32(0), m_y_i32(0), m_z_i32(0)
-    {
-        if (arr)
-        {
-            m_x_i32 = arr[0];
-            m_y_i32 = arr[1];
-            m_z_i32 = arr[2];
-        }
-    }
-    /*** Methods Implementation ***/
+    double *get_data() { return data; }
     /**
-     * @brief Получить координаты
-     * @param[out] a x
-     * @param[out] b y
-     * @param[out] c z
+     * @brief Получить длину массива
+     * @return int
      */
-    void get_coords(int &a, int &b, int &c)
-    {
-        a = m_x_i32;
-        b = m_y_i32;
-        c = m_z_i32;
-    }
+    int get_length() { return length; }
+
+private:
+    double *data;
+    int length;
 };
-/*** Пример использования ***/
-int main()
+
+/*** Main Function ***/
+int main(void)
 {
-    // Разные способы создания объектов
-    Vector3D v1;                // (0, 0, 0)
-    Vector3D v2("10 20 30");    // (10, 20, 30)
-    Vector3D v3("5, -7; 12");   // (5, -7, 12)
-    Vector3D v4("1.5 2.8 3.2"); // (1, 2, 3)
+    // создаём объект gr
+    Graph gr;
+    double coords[] = {5, 0.4, 2.7, -3.2};
+    gr.set_data(coords, sizeof(coords) / sizeof(*coords));
 
-    int arr[] = {15, 25, 35};
-    Vector3D v5(arr); // (15, 25, 35)
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-    Vector3D v6(100, 200, 300); // (100, 200, 300)
-
-    return 0;
+        return 0;
 }

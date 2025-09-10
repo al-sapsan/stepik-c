@@ -1,109 +1,78 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief struct Point, class Line: приватные поля, методы, main
+ * @brief Класс Thing: делегирующий конструктор, геттеры, динамическое создание
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-06
+ * @date 2025-09-08
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-
-struct Point
-{
-    short x, y;
-};
+#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения линии по двум точкам
+ * @brief Класс для хранения информации о предмете
  */
-class Line
+class Thing
 {
-private:
-    short m_x0_i16, m_y0_i16, m_x1_i16, m_y1_i16;
-
 public:
-    /*** Constructors ***/
     /**
-     * @brief Конструктор по умолчанию (все координаты 0)
+     * @brief Конструктор по умолчанию
      */
-    Line() : m_x0_i16(0), m_y0_i16(0), m_x1_i16(0), m_y1_i16(0) {}
+    Thing() { std::cout << "default constructor" << std::endl; }
     /**
-     * @brief Конструктор по координатам
-     * @param[in] a x0
-     * @param[in] b y0
-     * @param[in] c x1
-     * @param[in] d y1
+     * @brief Конструктор с одним параметром
+     * @param[in] name наименование
      */
-    Line(short a, short b, short c, short d) : m_x0_i16(a), m_y0_i16(b), m_x1_i16(c), m_y1_i16(d) {}
+    Thing(const std::string &name) : name(name), weight(0), price(0)
+    {
+        std::cout << "constructor 1" << std::endl;
+    }
     /**
-     * @brief Конструктор по двум точкам
-     * @param[in] sp начальная точка
-     * @param[in] ep конечная точка
+     * @brief Конструктор с тремя параметрами (делегирующий)
+     * @param[in] name наименование
+     * @param[in] weight вес
+     * @param[in] price цена
      */
-    Line(Point sp, Point ep) : m_x0_i16(sp.x), m_y0_i16(sp.y), m_x1_i16(ep.x), m_y1_i16(ep.y) {}
+    Thing(const std::string &name, double weight, int price)
+        : Thing(name)
+    {
+        this->weight = weight;
+        this->price = price;
+        std::cout << "constructor 3" << std::endl;
+    }
+    /**
+     * @brief Получить наименование
+     * @return std::string
+     */
+    std::string get_name() { return name; }
+    /**
+     * @brief Получить вес
+     * @return double
+     */
+    double get_weight() { return weight; }
+    /**
+     * @brief Получить цену
+     * @return int
+     */
+    int get_price() { return price; }
 
-    /*** Methods Implementation ***/
-    /**
-     * @brief Установить координаты по значениям
-     * @param[in] a x0
-     * @param[in] b y0
-     * @param[in] c x1
-     * @param[in] d y1
-     */
-    void set_coords(short a, short b, short c, short d)
-    {
-        m_x0_i16 = a;
-        m_y0_i16 = b;
-        m_x1_i16 = c;
-        m_y1_i16 = d;
-    }
-    /**
-     * @brief Установить координаты по двум точкам
-     * @param[in] sp начальная точка
-     * @param[in] ep конечная точка
-     */
-    void set_coords(Point sp, Point ep)
-    {
-        m_x0_i16 = sp.x;
-        m_y0_i16 = sp.y;
-        m_x1_i16 = ep.x;
-        m_y1_i16 = ep.y;
-    }
-    /**
-     * @brief Получить начальную точку
-     * @return Point (x0, y0)
-     */
-    Point get_start() { return Point{m_x0_i16, m_y0_i16}; }
-    /**
-     * @brief Получить конечную точку
-     * @return Point (x1, y1)
-     */
-    Point get_end() { return Point{m_x1_i16, m_y1_i16}; }
+private:
+    std::string name; ///< наименование предмета
+    double weight{0}; ///< вес предмета
+    int price{0};     ///< цена предмета
 };
 
 /*** Main Function ***/
-/**
- * @brief Точка входа в программу
- * @details Создает объекты Line, выводит координаты, освобождает память
- * @return Код завершения (0 — успешно)
- */
 int main(void)
 {
-    Point sp, ep;
-    short a, b, c, d;
-    std::cin >> a >> b >> c >> d;
-    std::cin >> sp.x >> sp.y >> ep.x >> ep.y;
-    Line *ptr_ln1 = new Line(a, b, c, d);
-    Line *ptr_ln2 = new Line(sp, ep);
-    Point s1 = ptr_ln1->get_start();
-    Point e1 = ptr_ln1->get_end();
-    Point s2 = ptr_ln2->get_start();
-    Point e2 = ptr_ln2->get_end();
-    std::cout << s1.x << " " << s1.y << " " << e1.x << " " << e1.y << " ";
-    std::cout << s2.x << " " << s2.y << " " << e2.x << " " << e2.y << std::endl;
+    // создаём объект через делегирующий конструктор
+    Thing *ptr_th = new Thing("HP Omen", 2.3, 120000);
+
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-        delete ptr_ln1;
-    delete ptr_ln2;
+
+        // освобождаем память
+        delete ptr_th;
+
     return 0;
 }

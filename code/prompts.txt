@@ -1,5 +1,6 @@
 Complete the code according to the task
 Refract the code according to the code conventions with embedded systems implementation
+Write private sections at the end of each class
 Remove `l_` prefix from the code
 Rewrite code according to the task
 Rewrite Doxygen comments in Russian, but leave the section header in English
