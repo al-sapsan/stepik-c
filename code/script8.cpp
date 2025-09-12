@@ -1,104 +1,83 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Класс Notebook: конструкторы, set/get, информация о ноутбуке
+ * @brief Класс Thing: конструкторы, приватные проверки, методы вне класса
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-10
+ * @date 2025-09-12
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения информации о ноутбуке
+ * @brief Класс для хранения информации о товаре
  */
-class Notebook
+class Thing
 {
 public:
     /**
      * @brief Конструктор по умолчанию
      */
-    Notebook() : model(""), cpu_model(""), memory(0), disk_volume(0) {}
+    Thing();
     /**
-     * @brief Конструктор с моделью
-     * @param[in] model модель ноутбука
+     * @brief Конструктор с параметрами
+     * @param[in] id id товара
+     * @param[in] price цена
+     * @param[in] weight вес
      */
-    Notebook(const std::string &model) : model(model), cpu_model(""), memory(0), disk_volume(0) {}
+    Thing(long id, int price, double weight);
     /**
-     * @brief Конструктор с моделью (C-строка)
-     * @param[in] model модель ноутбука (C-строка)
+     * @brief Получить информацию
+     * @param[out] id id
+     * @param[out] price цена
+     * @param[out] weight вес
      */
-    Notebook(const char *model) : model(model), cpu_model(""), memory(0), disk_volume(0) {}
-    /**
-     * @brief Конструктор с моделью и CPU
-     * @param[in] model модель ноутбука
-     * @param[in] cpu модель CPU
-     */
-    Notebook(const std::string &model, const std::string &cpu) : model(model), cpu_model(cpu), memory(0), disk_volume(0) {}
-    /**
-     * @brief Конструктор с моделью, CPU и памятью
-     * @param[in] model модель ноутбука
-     * @param[in] cpu модель CPU
-     * @param[in] mem объем памяти
-     */
-    Notebook(const std::string &model, const std::string &cpu, unsigned mem) : model(model), cpu_model(cpu), memory(mem), disk_volume(0) {}
-    /**
-     * @brief Конструктор с моделью, CPU, памятью и диском
-     * @param[in] model модель ноутбука
-     * @param[in] cpu модель CPU
-     * @param[in] mem объем памяти
-     * @param[in] disk объем диска
-     */
-    Notebook(const std::string &model, const std::string &cpu, unsigned mem, unsigned disk) : model(model), cpu_model(cpu), memory(mem), disk_volume(disk) {}
-    /**
-     * @brief Установить данные
-     * @param[in] model модель ноутбука
-     * @param[in] cpu модель CPU
-     * @param[in] memory объем памяти
-     * @param[in] disk объем диска
-     */
-    void set_data(const std::string &model, const std::string &cpu, unsigned memory, unsigned disk)
-    {
-        this->model = model;
-        this->cpu_model = cpu;
-        this->memory = memory;
-        this->disk_volume = disk;
-    }
-    /**
-     * @brief Получить модель ноутбука
-     * @return std::string&
-     */
-    std::string &get_model() { return model; }
-    /**
-     * @brief Получить модель CPU
-     * @return std::string&
-     */
-    std::string &get_cpu() { return cpu_model; }
-    /**
-     * @brief Получить память и диск
-     * @param[out] mem память
-     * @param[out] disk объем диска
-     */
-    void get_info(unsigned &mem, unsigned &disk)
-    {
-        mem = memory;
-        disk = disk_volume;
-    }
+    void get_info(long &id, int &price, double &weight);
 
 private:
-    std::string model;       ///< модель ноутбука
-    std::string cpu_model;   ///< модель CPU
-    unsigned memory{0};      ///< объем памяти (Мб)
-    unsigned disk_volume{0}; ///< объем диска (Гб)
+    long id{0};         ///< id товара
+    int price{0};       ///< цена товара
+    double weight{0.0}; ///< вес товара
+    /**
+     * @brief Проверить цену
+     * @param[in] x цена
+     * @return true если x >= 0
+     */
+    bool check_price(int x);
+    /**
+     * @brief Проверить вес
+     * @param[in] x вес
+     * @return true если x >= 0
+     */
+    bool check_weight(double x);
 };
+
+/*** Methods Implementation ***/
+Thing::Thing() : id(0), price(0), weight(0.0) {}
+
+Thing::Thing(long id, int price, double weight) : id(id), price(0), weight(0.0)
+{
+    if (check_price(price))
+        this->price = price;
+    if (check_weight(weight))
+        this->weight = weight;
+}
+
+void Thing::get_info(long &id, int &price, double &weight)
+{
+    id = this->id;
+    price = this->price;
+    weight = this->weight;
+}
+
+bool Thing::check_price(int x) { return x >= 0; }
+
+bool Thing::check_weight(double x) { return x >= 0; }
 
 /*** Main Function ***/
 int main(void)
 {
-    // создаём объект note с нужными данными
-    Notebook note;
-    note.set_data("HP", "Core i7", 16000, 512);
+    Thing th(5, 53403, 87.4);
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 

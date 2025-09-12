@@ -1,70 +1,37 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Класс Person: делегирующий конструктор, динамическое создание
+ * @brief Класс Operator: запрет копирования, create_copy разрешён
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-08
+ * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения информации о челе
+ * @brief Класс Operator с запретом копирования
  */
-class Person
+class Operator
 {
+    long a{0}, b{0}, c{0};
+
 public:
     /**
-     * @brief Конструктор по ФИО
-     * @param[in] fio ФИО
+     * @brief Конструктор по умолчанию
      */
-    Person(const std::string &fio) : fio(fio)
-    {
-        std::cout << "Person(string)" << std::endl;
-    }
+    Operator() = default;
     /**
-     * @brief Делегирующий конструктор
-     * @param[in] fio ФИО
-     * @param[in] old возраст
-     * @param[in] salary зарплата
+     * @brief Копирующий конструктор (запрещён)
      */
-    Person(const std::string &fio, short old, long salary)
-        : Person(fio)
-    {
-        this->old = old;
-        this->salary = salary;
-    }
+    Operator(const Operator &) = delete;
     /**
-     * @brief Получить данные
-     * @param[out] fio ФИО
-     * @param[out] old возраст
-     * @param[out] salary зарплата
+     * @brief Метод для создания копии объекта в динамической памяти
+     * @return указатель на копию
      */
-    void get_data(std::string &fio, short &old, long &salary)
+    Operator *create_copy()
     {
-        fio = this->fio;
-        old = this->old;
-        salary = this->salary;
+        Operator *ptr_obj = new Operator(*this);
+        return ptr_obj;
     }
-
-private:
-    std::string fio;
-    short old{0};
-    long salary{0};
 };
-
-/*** Main Function ***/
-int main(void)
-{
-    // создаём объект через делегирующий конструктор
-    Person *ptr_p = new Person("Рахманинов С.В.", 75, 13204);
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-
-        // освобождаем память
-        delete ptr_p;
-
-    return 0;
-}

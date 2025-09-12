@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс StringBuffer: копирующий конструктор и деструктор
+ * @brief Класс Operator: создание только через create_obj, копирование разрешено
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-08
+ * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
@@ -10,60 +10,28 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения строки в динамическом буфере
+ * @brief Класс Operator с приватным конструктором
  */
-class StringBuffer
+class Operator
 {
+    long a{0}, b{0}, c{0};
+    /**
+     * @brief Конструктор по умолчанию (приватный)
+     */
+    Operator() = default;
+
 public:
     /**
-     * @brief Конструктор из C-строки
-     * @param[in] str исходная строка
+     * @brief Копирующий конструктор (разрешён)
      */
-    StringBuffer(const char *str)
+    Operator(const Operator &) = default;
+    /**
+     * @brief Создать объект в динамической памяти
+     * @return указатель на объект
+     */
+    static Operator *create_obj()
     {
-        size = 0;
-        while (str[size] != '\0' && size < max_size - 1)
-            size++;
-        buffer = new char[size + 1];
-        for (int i = 0; i < size; ++i)
-            buffer[i] = str[i];
-        buffer[size] = '\0';
+        Operator *ptr_obj = new Operator();
+        return ptr_obj;
     }
-    /**
-     * @brief Копирующий конструктор
-     * @param[in] other другой объект StringBuffer
-     */
-    StringBuffer(const StringBuffer &other)
-    {
-        size = other.size;
-        buffer = new char[size + 1];
-        for (int i = 0; i < size; ++i)
-            buffer[i] = other.buffer[i];
-        buffer[size] = '\0';
-    }
-    /**
-     * @brief Деструктор: освобождает память
-     */
-    ~StringBuffer()
-    {
-        delete[] buffer;
-    }
-    /**
-     * @brief Получить строку
-     * @return указатель на строку
-     */
-    const char *get_data() { return buffer; }
-    /**
-     * @brief Получить размер строки
-     * @return размер
-     */
-    int get_size() { return size; }
-
-private:
-    enum
-    {
-        max_size = 1024
-    };
-    char *buffer{nullptr};
-    int size{0};
 };

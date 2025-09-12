@@ -1,78 +1,62 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Класс Thing: делегирующий конструктор, геттеры, динамическое создание
+ * @brief Класс Figure: запрет копирования, конструкторы, get_data
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-08
+ * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения информации о предмете
+ * @brief Класс для хранения координат фигуры
  */
-class Thing
+class Figure
 {
 public:
     /**
      * @brief Конструктор по умолчанию
      */
-    Thing() { std::cout << "default constructor" << std::endl; }
+    Figure() : x0(0), y0(0), x1(0), y1(0) {}
     /**
-     * @brief Конструктор с одним параметром
-     * @param[in] name наименование
+     * @brief Конструктор с параметрами
+     * @param[in] x0 x0
+     * @param[in] y0 y0
+     * @param[in] x1 x1
+     * @param[in] y1 y1
      */
-    Thing(const std::string &name) : name(name), weight(0), price(0)
+    Figure(int x0, int y0, int x1, int y1) : x0(x0), y0(y0), x1(x1), y1(y1) {}
+    /**
+     * @brief Получить координаты
+     * @param[out] x0 x0
+     * @param[out] y0 y0
+     * @param[out] x1 x1
+     * @param[out] y1 y1
+     */
+    void get_data(int &x0, int &y0, int &x1, int &y1)
     {
-        std::cout << "constructor 1" << std::endl;
+        x0 = this->x0;
+        y0 = this->y0;
+        x1 = this->x1;
+        y1 = this->y1;
     }
-    /**
-     * @brief Конструктор с тремя параметрами (делегирующий)
-     * @param[in] name наименование
-     * @param[in] weight вес
-     * @param[in] price цена
-     */
-    Thing(const std::string &name, double weight, int price)
-        : Thing(name)
-    {
-        this->weight = weight;
-        this->price = price;
-        std::cout << "constructor 3" << std::endl;
-    }
-    /**
-     * @brief Получить наименование
-     * @return std::string
-     */
-    std::string get_name() { return name; }
-    /**
-     * @brief Получить вес
-     * @return double
-     */
-    double get_weight() { return weight; }
-    /**
-     * @brief Получить цену
-     * @return int
-     */
-    int get_price() { return price; }
+    // Запрет копирования и присваивания
+    Figure(const Figure &) = delete;
+    Figure &operator=(const Figure &) = delete;
+    Figure(Figure &&) = delete;
+    Figure &operator=(Figure &&) = delete;
 
 private:
-    std::string name; ///< наименование предмета
-    double weight{0}; ///< вес предмета
-    int price{0};     ///< цена предмета
+    int x0{0}, y0{0}, x1{0}, y1{0};
 };
 
 /*** Main Function ***/
 int main(void)
 {
-    // создаём объект через делегирующий конструктор
-    Thing *ptr_th = new Thing("HP Omen", 2.3, 120000);
+    Figure fig(-4, 2, 11, 7);
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-        // освобождаем память
-        delete ptr_th;
-
-    return 0;
+        return 0;
 }

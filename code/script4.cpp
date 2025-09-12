@@ -1,64 +1,55 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Класс Complex: конструкторы, копирование с модулем, геттеры
+ * @brief Класс Flower: только конструктор с параметрами, запрет копирования и default
  * @version 1.0 (Embedded C++ style)
  * @date 2025-09-10
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstdlib>
+#include <cstring>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения комплексного числа
+ * @brief Класс для хранения информации о цветке
  */
-class Complex
+class Flower
 {
 public:
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Конструктор с параметрами
+     * @param[in] name название цветка
+     * @param[in] price цена
      */
-    Complex() : re(0), im(0) {}
+    Flower(const char *name, int price) : price(price)
+    {
+        std::strncpy(this->name, name, sizeof(this->name) - 1);
+        this->name[sizeof(this->name) - 1] = '\0';
+    }
     /**
-     * @brief Конструктор с одним параметром
-     * @param[in] r действительная часть
+     * @brief Получить данные
+     * @param[out] name название
+     * @param[out] price цена
      */
-    Complex(short r) : re(r), im(0) {}
-    /**
-     * @brief Конструктор с двумя параметрами
-     * @param[in] r действительная часть
-     * @param[in] i мнимая часть
-     */
-    Complex(short r, short i) : re(r), im(i) {}
-    /**
-     * @brief Конструктор копирования (копирует модули)
-     * @param[in] other другой объект Complex
-     */
-    Complex(const Complex &other) : re(std::abs(other.re)), im(std::abs(other.im)) {}
-    /**
-     * @brief Получить действительную часть
-     * @return short
-     */
-    short real() { return re; }
-    /**
-     * @brief Получить мнимую часть
-     * @return short
-     */
-    short imag() { return im; }
+    void get_data(char *name, int &price)
+    {
+        std::strcpy(name, this->name);
+        price = this->price;
+    }
+    // Запретить конструктор по умолчанию и копирования
+    Flower() = delete;
+    Flower(const Flower &) = delete;
+    Flower &operator=(const Flower &) = delete;
 
 private:
-    short re{0}; ///< действительная часть
-    short im{0}; ///< мнимая часть
+    char name[100] = {0}; ///< название цветка
+    int price{0};         ///< цена цветка
 };
 
 /*** Main Function ***/
 int main(void)
 {
-    // создаём объект с re=-4, im=7
-    Complex digit(-4, 7);
-    // копируем с модулем
-    Complex res = digit;
+    Flower flower("Тюльпан", 120);
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 

@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Класс Graph: динамический массив, конструкторы, деструктор, set/get
+ * @brief Класс Clock: конструкторы, get_time вне класса, динамическое создание
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-10
+ * @date 2025-09-12
  **********************************************************************/
 
 /*** Core ***/
@@ -10,78 +10,48 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения массива вещественных значений
+ * @brief Класс для хранения времени
  */
-class Graph
+class Clock
 {
 public:
     /**
      * @brief Конструктор по умолчанию
      */
-    Graph() : data(nullptr), length(0) {}
+    Clock() : tm(0) {}
     /**
-     * @brief Конструктор с массивом
-     * @param[in] ar массив double
-     * @param[in] size размер массива
+     * @brief Конструктор с параметром
+     * @param[in] t время
      */
-    Graph(const double *ar, int size) : data(nullptr), length(0)
-    {
-        set_data(ar, size);
-    }
+    Clock(unsigned t) : tm(t) {}
     /**
-     * @brief Деструктор: освобождает память
+     * @brief Получить время
+     * @return unsigned
      */
-    ~Graph()
-    {
-        delete[] data;
-    }
-    /**
-     * @brief Передать данные в массив
-     * @param[in] ar массив double
-     * @param[in] size размер массива
-     */
-    void set_data(const double *ar, int size)
-    {
-        if (data)
-            delete[] data;
-        if (ar && size > 0)
-        {
-            data = new double[size];
-            for (int i = 0; i < size; ++i)
-                data[i] = ar[i];
-            length = size;
-        }
-        else
-        {
-            data = nullptr;
-            length = 0;
-        }
-    }
-    /**
-     * @brief Получить указатель на массив
-     * @return double*
-     */
-    double *get_data() { return data; }
-    /**
-     * @brief Получить длину массива
-     * @return int
-     */
-    int get_length() { return length; }
+    unsigned get_time();
 
 private:
-    double *data;
-    int length;
+    unsigned tm{0}; ///< текущее время
 };
+
+/*** Methods Implementation ***/
+/**
+ * @brief Получить время
+ * @return unsigned
+ */
+unsigned Clock::get_time() { return tm; }
 
 /*** Main Function ***/
 int main(void)
 {
-    // создаём объект gr
-    Graph gr;
-    double coords[] = {5, 0.4, 2.7, -3.2};
-    gr.set_data(coords, sizeof(coords) / sizeof(*coords));
+    // создаём объект через new
+    Clock *ptr_cl = new Clock(12643);
+    unsigned res = ptr_cl->get_time();
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-        return 0;
+        // освобождаем память
+        delete ptr_cl;
+
+    return 0;
 }
