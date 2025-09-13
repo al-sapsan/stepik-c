@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Класс Figure: запрет копирования, конструкторы, get_data
+ * @brief Класс Operator: создание только через статический метод create
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-10
+ * @date 2025-09-12
  **********************************************************************/
 
 /*** Core ***/
@@ -10,53 +10,45 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения координат фигуры
+ * @brief Класс Operator с приватными конструкторами
  */
-class Figure
+class Operator
 {
+    int type{0};
+    short operation{-1};
+    /**
+     * @brief Приватный конструктор по умолчанию
+     */
+    Operator() = default;
+    /**
+     * @brief Приватный копирующий конструктор
+     */
+    Operator(const Operator &) = default;
+
 public:
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Создать объект в динамической памяти
+     * @return указатель на объект
      */
-    Figure() : x0(0), y0(0), x1(0), y1(0) {}
+    static Operator *create() { return new Operator(); }
     /**
-     * @brief Конструктор с параметрами
-     * @param[in] x0 x0
-     * @param[in] y0 y0
-     * @param[in] x1 x1
-     * @param[in] y1 y1
+     * @brief Установить состояние
+     * @param[in] t тип
+     * @param[in] o операция
      */
-    Figure(int x0, int y0, int x1, int y1) : x0(x0), y0(y0), x1(x1), y1(y1) {}
-    /**
-     * @brief Получить координаты
-     * @param[out] x0 x0
-     * @param[out] y0 y0
-     * @param[out] x1 x1
-     * @param[out] y1 y1
-     */
-    void get_data(int &x0, int &y0, int &x1, int &y1)
+    void set_state(int t, short o)
     {
-        x0 = this->x0;
-        y0 = this->y0;
-        x1 = this->x1;
-        y1 = this->y1;
+        type = t;
+        operation = o;
     }
-    // Запрет копирования и присваивания
-    Figure(const Figure &) = delete;
-    Figure &operator=(const Figure &) = delete;
-    Figure(Figure &&) = delete;
-    Figure &operator=(Figure &&) = delete;
-
-private:
-    int x0{0}, y0{0}, x1{0}, y1{0};
+    /**
+     * @brief Получить состояние
+     * @param[out] t тип
+     * @param[out] o операция
+     */
+    void get_state(int &t, short &o)
+    {
+        t = type;
+        o = operation;
+    }
 };
-
-/*** Main Function ***/
-int main(void)
-{
-    Figure fig(-4, 2, 11, 7);
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-
-        return 0;
-}

@@ -1,72 +1,63 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Класс Wallet: только конструктор с параметром, приватная проверка, методы вне класса
+ * @brief Класс Student: конструктор, запрет копирования и присваивания
  * @version 1.0 (Embedded C++ style)
  * @date 2025-09-12
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Кошелёк для хранения средств
+ * @brief Класс для хранения информации о студенте
  */
-class Wallet
+class Student
 {
 public:
     /**
-     * @brief Конструктор с параметром
-     * @param[in] vol начальный объём
+     * @brief Конструктор с параметрами
+     * @param[in] fio ФИО
+     * @param[in] old возраст
      */
-    Wallet(int vol);
+    Student(const std::string &fio, short old) : fio(fio), old(old) {}
     /**
-     * @brief Добавить средства
-     * @param[in] vol сумма
+     * @brief Установить данные
+     * @param[in] fio ФИО
+     * @param[in] old возраст
      */
-    void add(int vol);
+    void set_data(const std::string &fio, short old)
+    {
+        this->fio = fio;
+        this->old = old;
+    }
     /**
-     * @brief Получить объём
-     * @return int
+     * @brief Получить ФИО
+     * @return std::string&
      */
-    int get_volume();
-    // Запретить конструктор по умолчанию
-    Wallet() = delete;
+    std::string &get_fio() { return fio; }
+    /**
+     * @brief Получить возраст
+     * @return short
+     */
+    short get_old() { return old; }
+    // Запретить копирование и присваивание
+    Student(const Student &) = delete;
+    Student &operator=(const Student &) = delete;
 
 private:
-    int volume{0}; ///< объём средств
-    /**
-     * @brief Проверить корректность суммы
-     * @param[in] x сумма
-     * @return true если x >= 0
-     */
-    bool check_volume(int x);
+    std::string fio;
+    short old;
 };
-
-/*** Methods Implementation ***/
-Wallet::Wallet(int vol) : volume(0)
-{
-    if (check_volume(vol))
-        volume = vol;
-}
-
-void Wallet::add(int vol)
-{
-    if (check_volume(vol))
-        volume += vol;
-}
-
-int Wallet::get_volume() { return volume; }
-
-bool Wallet::check_volume(int x) { return x >= 0; }
 
 /*** Main Function ***/
 int main(void)
 {
-    Wallet wallet(544653);
-    int vl = wallet.get_volume();
+    Student *ptr_st = new Student("Pushkin", 21);
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-        return 0;
+        delete ptr_st;
+    return 0;
 }

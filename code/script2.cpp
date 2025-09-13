@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс Operator: создание только через create_obj, копирование разрешено
+ * @brief Класс Window: статический счётчик, методы вне класса, только конструктор с параметрами
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-10
+ * @date 2025-09-12
  **********************************************************************/
 
 /*** Core ***/
@@ -10,28 +10,82 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс Operator с приватным конструктором
+ * @brief Класс для хранения параметров окна
  */
-class Operator
+class Window
 {
-    long a{0}, b{0}, c{0};
-    /**
-     * @brief Конструктор по умолчанию (приватный)
-     */
-    Operator() = default;
-
 public:
     /**
-     * @brief Копирующий конструктор (разрешён)
+     * @brief Конструктор с параметрами
+     * @param[in] width ширина
+     * @param[in] height высота
+     * @param[in] color цвет
      */
-    Operator(const Operator &) = default;
+    Window(int width, int height, int color);
     /**
-     * @brief Создать объект в динамической памяти
-     * @return указатель на объект
+     * @brief Установить размер
+     * @param[in] w ширина
+     * @param[in] h высота
      */
-    static Operator *create_obj()
-    {
-        Operator *ptr_obj = new Operator();
-        return ptr_obj;
-    }
+    void set_size(int w, int h);
+    /**
+     * @brief Получить размер
+     * @param[out] w ширина
+     * @param[out] h высота
+     */
+    void get_size(int &w, int &h);
+    /**
+     * @brief Получить цвет
+     * @return int
+     */
+    int get_color();
+    /**
+     * @brief Получить общее число окон (статический)
+     * @return unsigned long
+     */
+    static unsigned long get_total();
+    // Запретить конструктор по умолчанию
+    Window() = delete;
+
+private:
+    static unsigned long total;
+    int width, height, color;
 };
+
+/*** Static Members Initialization ***/
+unsigned long Window::total = 0;
+
+/*** Methods Implementation ***/
+Window::Window(int width, int height, int color)
+    : width(width), height(height), color(color)
+{
+    ++total;
+}
+
+void Window::set_size(int w, int h)
+{
+    width = w;
+    height = h;
+}
+
+void Window::get_size(int &w, int &h)
+{
+    w = width;
+    h = height;
+}
+
+int Window::get_color() { return color; }
+
+unsigned long Window::get_total() { return total; }
+
+/*** Main Function ***/
+int main(void)
+{
+    Window *ptr_wnd = new Window(200, 100, 255);
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
+
+        delete ptr_wnd;
+    ptr_wnd = nullptr;
+    return 0;
+}
