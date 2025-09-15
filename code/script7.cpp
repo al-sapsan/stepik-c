@@ -1,63 +1,94 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Класс Student: конструктор, запрет копирования и присваивания
+ * @brief Класс Rectangle: оператор сложения, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-12
+ * @date 2025-09-15
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения информации о студенте
+ * @brief Класс Rectangle: прямоугольник, оператор сложения
  */
-class Student
+class Rectangle
 {
 public:
     /**
+     * @brief Конструктор по умолчанию
+     */
+    Rectangle();
+    /**
      * @brief Конструктор с параметрами
-     * @param[in] fio ФИО
-     * @param[in] old возраст
+     * @param[in] x0 x0
+     * @param[in] y0 y0
+     * @param[in] x1 x1
+     * @param[in] y1 y1
      */
-    Student(const std::string &fio, short old) : fio(fio), old(old) {}
+    Rectangle(int x0, int y0, int x1, int y1);
     /**
-     * @brief Установить данные
-     * @param[in] fio ФИО
-     * @param[in] old возраст
+     * @brief Получить координаты
+     * @param[out] x0 x0
+     * @param[out] y0 y0
+     * @param[out] x1 x1
+     * @param[out] y1 y1
      */
-    void set_data(const std::string &fio, short old)
-    {
-        this->fio = fio;
-        this->old = old;
-    }
+    void get_coords(int &x0, int &y0, int &x1, int &y1) const;
     /**
-     * @brief Получить ФИО
-     * @return std::string&
+     * @brief Установить координаты
+     * @param[in] x0 x0
+     * @param[in] y0 y0
+     * @param[in] x1 x1
+     * @param[in] y1 y1
      */
-    std::string &get_fio() { return fio; }
+    void set_coords(int x0, int y0, int x1, int y1);
     /**
-     * @brief Получить возраст
-     * @return short
+     * @brief Оператор сложения
+     * @param[in] other другой прямоугольник
+     * @return Rectangle
      */
-    short get_old() { return old; }
-    // Запретить копирование и присваивание
-    Student(const Student &) = delete;
-    Student &operator=(const Student &) = delete;
+    Rectangle operator+(const Rectangle &other) const;
 
 private:
-    std::string fio;
-    short old;
+    int m_x0{0}, m_y0{0}, m_x1{0}, m_y1{0};
 };
+
+/*** Methods Implementation ***/
+Rectangle::Rectangle() : m_x0(0), m_y0(0), m_x1(0), m_y1(0) {}
+Rectangle::Rectangle(int x0, int y0, int x1, int y1)
+    : m_x0(x0), m_y0(y0), m_x1(x1), m_y1(y1) {}
+void Rectangle::get_coords(int &x0, int &y0, int &x1, int &y1) const
+{
+    x0 = m_x0;
+    y0 = m_y0;
+    x1 = m_x1;
+    y1 = m_y1;
+}
+void Rectangle::set_coords(int x0, int y0, int x1, int y1)
+{
+    m_x0 = x0;
+    m_y0 = y0;
+    m_x1 = x1;
+    m_y1 = y1;
+}
+Rectangle Rectangle::operator+(const Rectangle &other) const
+{
+    int nx0 = (m_x0 < other.m_x0) ? m_x0 : other.m_x0;
+    int ny0 = (m_y0 < other.m_y0) ? m_y0 : other.m_y0;
+    int nx1 = (m_x1 > other.m_x1) ? m_x1 : other.m_x1;
+    int ny1 = (m_y1 > other.m_y1) ? m_y1 : other.m_y1;
+    return Rectangle(nx0, ny0, nx1, ny1);
+}
 
 /*** Main Function ***/
 int main(void)
 {
-    Student *ptr_st = new Student("Pushkin", 21);
+    Rectangle rect_1(-5, 0, 10, 12);
+    Rectangle rect_2(1, -2, 7, 14);
+    Rectangle res = rect_1 + rect_2;
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-        delete ptr_st;
-    return 0;
+        return 0;
 }

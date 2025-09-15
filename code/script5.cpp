@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Класс DataThree: максимум три уникальных объекта, get_new_data
+ * @brief Класс BottleWater: оператор сложения, ограничение объёма, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-12
+ * @date 2025-09-13
  **********************************************************************/
 
 /*** Core ***/
@@ -10,65 +10,83 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс DataThree: максимум три уникальных объекта
+ * @brief Класс BottleWater: бутылка с водой, ограничение объёма
  */
-class DataThree
+class BottleWater
 {
 public:
     /**
-     * @brief Получить новый объект (до 3-х уникальных)
-     * @return указатель на объект
+     * @brief Конструктор
+     * @param[in] volume объём воды
      */
-    static DataThree *get_new_data()
-    {
-        if (m_count < 3)
-        {
-            m_objs[m_count] = new DataThree();
-            return m_objs[m_count++];
-        }
-        else
-        {
-            return m_objs[2];
-        }
-    }
+    BottleWater(unsigned volume = 0);
     /**
-     * @brief Удалить все уникальные объекты
+     * @brief Получить объём воды
+     * @return unsigned
      */
-    static void delete_all()
-    {
-        for (int i = 0; i < 3; ++i)
-        {
-            delete m_objs[i];
-            m_objs[i] = nullptr;
-        }
-        m_count = 0;
-    }
-    DataThree(const DataThree &) = delete;
-    DataThree &operator=(const DataThree &) = delete;
+    unsigned get_volume() const;
+    /**
+     * @brief Сложение двух бутылок
+     * @param[in] other другая бутылка
+     * @return BottleWater
+     */
+    BottleWater operator+(const BottleWater &other) const;
+    /**
+     * @brief Сложение с числом (BottleWater + unsigned)
+     * @param[in] v объём
+     * @return BottleWater
+     */
+    BottleWater operator+(unsigned v) const;
+    /**
+     * @brief Сложение с числом (unsigned + BottleWater)
+     * @param[in] v объём
+     * @param[in] b бутылка
+     * @return BottleWater
+     */
+    friend BottleWater operator+(unsigned v, const BottleWater &b);
 
 private:
-    static DataThree *m_objs[3];
-    static int m_count;
-    DataThree() = default;
+    static const unsigned m_max_volume = 320; ///< максимальный объём
+    unsigned m_volume{0};                     ///< объём воды
 };
 
-/*** Static Members Initialization ***/
-DataThree *DataThree::m_objs[3] = {nullptr, nullptr, nullptr};
-int DataThree::m_count = 0;
+/*** Methods Implementation ***/
+BottleWater::BottleWater(unsigned volume)
+    : m_volume(volume > m_max_volume ? m_max_volume : volume) {}
+
+unsigned BottleWater::get_volume() const { return m_volume; }
+
+BottleWater BottleWater::operator+(const BottleWater &other) const
+{
+    unsigned sum = m_volume + other.m_volume;
+    if (sum > m_max_volume)
+        sum = m_max_volume;
+    return BottleWater(sum);
+}
+
+BottleWater BottleWater::operator+(unsigned v) const
+{
+    unsigned sum = m_volume + v;
+    if (sum > m_max_volume)
+        sum = m_max_volume;
+    return BottleWater(sum);
+}
+
+BottleWater operator+(unsigned v, const BottleWater &b)
+{
+    unsigned sum = b.m_volume + v;
+    if (sum > BottleWater::m_max_volume)
+        sum = BottleWater::m_max_volume;
+    return BottleWater(sum);
+}
 
 /*** Main Function ***/
 int main(void)
 {
-    DataThree *ptr_dates[5];
-    for (int i = 0; i < 5; ++i)
-    {
-        ptr_dates[i] = DataThree::get_new_data();
-    }
+    BottleWater bw1(40), bw2(200);
+    BottleWater res = bw1 + bw2;
 
     __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
 
-    // освобождаем только три уникальных объекта через публичный метод
-    DataThree::delete_all();
-
-    return 0;
+        return 0;
 }

@@ -1,86 +1,99 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Класс Array: создание только через статические методы create, деструктор
+ * @brief Класс GamePole: синглтон, запрет копирования, методы const
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-12
+ * @date 2025-09-13
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstddef>
+#include <cstring>
 
 /*** Class Definition ***/
 /**
- * @brief Класс Array с приватными конструкторами и статическими фабриками
+ * @brief Класс для хранения игрового поля (синглтон)
  */
-class Array
+class GamePole
 {
-    double *data{nullptr};
-    size_t size{0};
+public:
     /**
-     * @brief Приватный конструктор по умолчанию
+     * @brief Получить/создать единственный экземпляр
+     * @param[in] rows строки
+     * @param[in] cols столбцы
+     * @return указатель на GamePole
      */
-    Array() = default;
-    /**
-     * @brief Приватный конструктор с размером
-     * @param[in] n размер массива
-     */
-    Array(size_t n) : data(new double[n]{}), size(n) {}
-    /**
-     * @brief Приватный конструктор с массивом
-     * @param[in] d массив
-     * @param[in] n размер
-     */
-    Array(const double *d, size_t n) : data(new double[n]), size(n)
+    static GamePole *init(int rows, int cols)
     {
-        for (size_t i = 0; i < n; ++i)
-            data[i] = d[i];
+        if (!m_instance)
+            m_instance = new GamePole(rows, cols);
+        return m_instance;
     }
     /**
-     * @brief Приватный копирующий конструктор
+     * @brief Установить значение в ячейку
+     * @param[in] row строка
+     * @param[in] col столбец
+     * @param[in] value значение
      */
-    Array(const Array &) = delete;
-    Array &operator=(const Array &) = delete;
-
-public:
+    void set_item(int row, int col, char value)
+    {
+        m_pole[row * m_cols + col] = value;
+    }
+    /**
+     * @brief Получить значение ячейки
+     * @param[in] row строка
+     * @param[in] col столбец
+     * @return char
+     */
+    char get_item(int row, int col) const
+    {
+        return m_pole[row * m_cols + col];
+    }
+    /**
+     * @brief Получить массив поля
+     * @return const char*
+     */
+    const char *get_pole() const { return m_pole; }
+    /**
+     * @brief Получить размеры
+     * @param[out] rows строки
+     * @param[out] cols столбцы
+     */
+    void get_size(int &rows, int &cols) const
+    {
+        rows = m_rows;
+        cols = m_cols;
+    }
+    // Запретить копирование
+    GamePole(const GamePole &) = delete;
+    GamePole &operator=(const GamePole &) = delete;
     /**
      * @brief Деструктор: освобождает память
      */
-    ~Array() { delete[] data; }
-    /**
-     * @brief Создать массив заданной длины
-     * @param[in] n длина
-     * @return указатель на Array
-     */
-    static Array *create(size_t n) { return new Array(n); }
-    /**
-     * @brief Создать массив из данных
-     * @param[in] d массив
-     * @param[in] n длина
-     * @return указатель на Array
-     */
-    static Array *create(const double *d, size_t n) { return new Array(d, n); }
-    /**
-     * @brief Установить данные
-     * @param[in] d массив
-     * @param[in] length длина
-     */
-    void set_data(double *d, size_t length)
+    ~GamePole() { delete[] m_pole; }
+
+private:
+    GamePole(int rows, int cols) : m_rows(rows), m_cols(cols), m_pole(nullptr)
     {
-        delete[] data;
-        size = length;
-        data = new double[size];
-        for (size_t i = 0; i < size; ++i)
-            data[i] = d[i];
+        m_pole = new char[m_rows * m_cols]();
     }
-    /**
-     * @brief Получить данные
-     * @return double*
-     */
-    double *get_data() { return data; }
-    /**
-     * @brief Получить размер
-     * @return size_t
-     */
-    size_t get_size() { return size; }
+    static GamePole *m_instance;
+    int m_rows{0}, m_cols{0};
+    char *m_pole{nullptr};
 };
+
+/*** Static Members Initialization ***/
+GamePole *GamePole::m_instance = nullptr;
+
+/*** Main Function ***/
+int main(void)
+{
+    GamePole *ptr_pl = GamePole::init(5, 10);
+    ptr_pl->set_item(1, 1, '@');
+    ptr_pl->set_item(4, 9, '#');
+    ptr_pl->set_item(3, 2, '*');
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
+
+        // память не освобождается, т.к. синглтон живёт до конца программы
+        return 0;
+}
