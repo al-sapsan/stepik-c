@@ -1,104 +1,57 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Класс StudentMarks: оператор сложения, embedded C++ style
+ * @brief Класс AbsoluteValue, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-15
+ * @date 2025-09-16
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <cstdlib>
 
 /*** Class Definition ***/
 /**
- * @brief Класс StudentMarks: массив оценок, оператор сложения
+ * @brief Класс AbsoluteValue: абсолютное значение
  */
-class StudentMarks
+class AbsoluteValue
 {
 public:
     /**
-     * @brief Конструктор
-     * @param[in] ms массив оценок
-     * @param[in] total количество оценок
+     * @brief Абсолютное значение
      */
-    StudentMarks(short *ms, int total);
+    unsigned long m_value{0};
     /**
-     * @brief Получить массив оценок
-     * @return const short*
+     * @brief Конструктор по умолчанию
      */
-    const short *get_marks() const;
+    AbsoluteValue();
     /**
-     * @brief Получить количество оценок
-     * @return int
+     * @brief Конструктор с параметром
+     * @param[in] val значение
      */
-    int get_count() const;
+    AbsoluteValue(long val);
     /**
-     * @brief Сложение двух объектов StudentMarks
-     * @param[in] other другой объект
-     * @return StudentMarks
+     * @brief Оператор присваивания
+     * @param[in] val значение
+     * @return AbsoluteValue&
      */
-    StudentMarks operator+(const StudentMarks &other) const;
-    /**
-     * @brief Сложение с оценкой (StudentMarks + short)
-     * @param[in] val оценка
-     * @return StudentMarks
-     */
-    StudentMarks operator+(short val) const;
-    /**
-     * @brief Сложение с оценкой (short + StudentMarks)
-     * @param[in] val оценка
-     * @param[in] sm объект StudentMarks
-     * @return StudentMarks
-     */
-    friend StudentMarks operator+(short val, const StudentMarks &sm);
-
-private:
-    enum
-    {
-        m_max_length = 100
-    };
-    short m_marks[m_max_length]{0}; ///< массив оценок
-    int m_count{0};                 ///< количество оценок
+    AbsoluteValue &operator=(long val);
 };
 
 /*** Methods Implementation ***/
-StudentMarks::StudentMarks(short *ms, int total)
+AbsoluteValue::AbsoluteValue() : m_value(0) {}
+AbsoluteValue::AbsoluteValue(long val) : m_value(val < 0 ? static_cast<unsigned long>(-val) : static_cast<unsigned long>(val)) {}
+AbsoluteValue &AbsoluteValue::operator=(long val)
 {
-    m_count = (total > m_max_length) ? m_max_length : total;
-    for (int i = 0; i < m_count; ++i)
-        m_marks[i] = ms[i];
+    m_value = val < 0 ? static_cast<unsigned long>(-val) : static_cast<unsigned long>(val);
+    return *this;
 }
 
-const short *StudentMarks::get_marks() const { return m_marks; }
-int StudentMarks::get_count() const { return m_count; }
-
-StudentMarks StudentMarks::operator+(const StudentMarks &other) const
+/*** Main ***/
+int main(void)
 {
-    short res[m_max_length];
-    int n = 0;
-    for (int i = 0; i < m_count && n < m_max_length; ++i)
-        res[n++] = m_marks[i];
-    for (int i = 0; i < other.m_count && n < m_max_length; ++i)
-        res[n++] = other.m_marks[i];
-    return StudentMarks(res, n);
-}
-
-StudentMarks StudentMarks::operator+(short val) const
-{
-    short res[m_max_length];
-    int n = 0;
-    for (int i = 0; i < m_count && n < m_max_length; ++i)
-        res[n++] = m_marks[i];
-    if (n < m_max_length)
-        res[n++] = val;
-    return StudentMarks(res, n);
-}
-
-StudentMarks operator+(short val, const StudentMarks &sm)
-{
-    short res[StudentMarks::m_max_length];
-    int n = 0;
-    res[n++] = val;
-    for (int i = 0; i < sm.m_count && n < StudentMarks::m_max_length; ++i)
-        res[n++] = sm.m_marks[i];
-    return StudentMarks(res, n);
+    AbsoluteValue *ptr_abv = new AbsoluteValue;
+    *ptr_abv = -512;
+    __ASSERT_TESTS__
+    delete ptr_abv;
+    return 0;
 }

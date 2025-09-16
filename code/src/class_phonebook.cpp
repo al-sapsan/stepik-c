@@ -154,7 +154,6 @@ int main(void)
     phone_lst = phone_lst + PhoneBookItem("П. Гагарина", "+79234694105");
     phone_lst = phone_lst + PhoneBookItem("О. Бузова", "+79041563055");
     phone_lst = phone_lst + PhoneBookItem("Тимати", "+79121000000");
-    __ASSERT_TESTS__
     // память освобождается автоматически деструктором
     return 0;
 }

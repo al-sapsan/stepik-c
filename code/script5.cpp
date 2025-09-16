@@ -1,92 +1,136 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Класс BottleWater: оператор сложения, ограничение объёма, embedded C++ style
+ * @brief Класс Array: динамический массив, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-13
+ * @date 2025-09-15
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <cstddef>
 
 /*** Class Definition ***/
 /**
- * @brief Класс BottleWater: бутылка с водой, ограничение объёма
+ * @brief Класс Array: динамический массив
  */
-class BottleWater
+class Array
 {
 public:
     /**
-     * @brief Конструктор
-     * @param[in] volume объём воды
+     * @brief Конструктор по умолчанию
      */
-    BottleWater(unsigned volume = 0);
+    Array();
     /**
-     * @brief Получить объём воды
-     * @return unsigned
+     * @brief Конструктор копирования из массива
+     * @param[in] d указатель на массив
+     * @param[in] length размер массива
      */
-    unsigned get_volume() const;
+    Array(const int *d, size_t length);
     /**
-     * @brief Сложение двух бутылок
-     * @param[in] other другая бутылка
-     * @return BottleWater
+     * @brief Конструктор копирования
+     * @param[in] other другой объект Array
      */
-    BottleWater operator+(const BottleWater &other) const;
+    Array(const Array &other);
     /**
-     * @brief Сложение с числом (BottleWater + unsigned)
-     * @param[in] v объём
-     * @return BottleWater
+     * @brief Деструктор
      */
-    BottleWater operator+(unsigned v) const;
+    ~Array();
     /**
-     * @brief Сложение с числом (unsigned + BottleWater)
-     * @param[in] v объём
-     * @param[in] b бутылка
-     * @return BottleWater
+     * @brief Оператор присваивания
+     * @param[in] other другой объект Array
+     * @return Array&
      */
-    friend BottleWater operator+(unsigned v, const BottleWater &b);
+    Array &operator=(const Array &other);
+    /**
+     * @brief Оператор сложения
+     * @param[in] other другой объект Array
+     * @return Array
+     */
+    Array operator+(const Array &other) const;
+    /**
+     * @brief Установить данные массива
+     * @param[in] d указатель на массив
+     * @param[in] length размер массива
+     */
+    void set_data(const int *d, size_t length);
+    /**
+     * @brief Получить данные массива
+     * @return int*
+     */
+    int *get_data();
+    /**
+     * @brief Получить размер массива
+     * @return size_t
+     */
+    size_t get_size() const;
 
 private:
-    static const unsigned m_max_volume = 320; ///< максимальный объём
-    unsigned m_volume{0};                     ///< объём воды
+    int *m_data{nullptr};
+    size_t m_size{0};
 };
 
 /*** Methods Implementation ***/
-BottleWater::BottleWater(unsigned volume)
-    : m_volume(volume > m_max_volume ? m_max_volume : volume) {}
-
-unsigned BottleWater::get_volume() const { return m_volume; }
-
-BottleWater BottleWater::operator+(const BottleWater &other) const
+Array::Array() : m_data(nullptr), m_size(0) {}
+Array::Array(const int *d, size_t length) : m_data(nullptr), m_size(0)
 {
-    unsigned sum = m_volume + other.m_volume;
-    if (sum > m_max_volume)
-        sum = m_max_volume;
-    return BottleWater(sum);
+    set_data(d, length);
 }
-
-BottleWater BottleWater::operator+(unsigned v) const
+Array::Array(const Array &other) : m_data(nullptr), m_size(0)
 {
-    unsigned sum = m_volume + v;
-    if (sum > m_max_volume)
-        sum = m_max_volume;
-    return BottleWater(sum);
+    set_data(other.m_data, other.m_size);
 }
-
-BottleWater operator+(unsigned v, const BottleWater &b)
+Array::~Array()
 {
-    unsigned sum = b.m_volume + v;
-    if (sum > BottleWater::m_max_volume)
-        sum = BottleWater::m_max_volume;
-    return BottleWater(sum);
+    delete[] m_data;
 }
-
-/*** Main Function ***/
-int main(void)
+Array &Array::operator=(const Array &other)
 {
-    BottleWater bw1(40), bw2(200);
-    BottleWater res = bw1 + bw2;
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-
-        return 0;
+    if (this != &other)
+    {
+        set_data(other.m_data, other.m_size);
+    }
+    return *this;
+}
+Array Array::operator+(const Array &other) const
+{
+    Array result;
+    result.m_size = m_size + other.m_size;
+    result.m_data = new int[result.m_size];
+    for (size_t i = 0; i < m_size; ++i)
+    {
+        result.m_data[i] = m_data[i];
+    }
+    for (size_t i = 0; i < other.m_size; ++i)
+    {
+        result.m_data[m_size + i] = other.m_data[i];
+    }
+    return result;
+}
+void Array::set_data(const int *d, size_t length)
+{
+    if (m_data != nullptr)
+    {
+        delete[] m_data;
+    }
+    m_size = length;
+    if (m_size > 0)
+    {
+        m_data = new int[m_size];
+        for (size_t i = 0; i < m_size; ++i)
+        {
+            m_data[i] = d[i];
+        }
+    }
+    else
+    {
+        m_data = nullptr;
+    }
+}
+int *Array::get_data()
+{
+    return m_data;
+}
+size_t Array::get_size() const
+{
+    return m_size;
 }

@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Класс CellItem: конструкторы, const-геттеры, set_data
+ * @brief Класс ColorRGB: оператор сложения, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-13
+ * @date 2025-09-15
  **********************************************************************/
 
 /*** Core ***/
@@ -10,56 +10,57 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения элемента ячейки
+ * @brief Класс ColorRGB: цвет в формате RGB, оператор сложения
  */
-class CellItem
+class ColorRGB
 {
 public:
     /**
-     * @brief Конструктор с двумя параметрами
-     * @param[in] row строка
-     * @param[in] col столбец
+     * @brief Конструктор по умолчанию
      */
-    CellItem(int row, int col) : m_row(row), m_col(col), m_data(0.0) {}
+    ColorRGB();
     /**
-     * @brief Конструктор с тремя параметрами
-     * @param[in] row строка
-     * @param[in] col столбец
-     * @param[in] data значение
+     * @brief Конструктор с параметрами
+     * @param[in] r красный
+     * @param[in] g зелёный
+     * @param[in] b синий
      */
-    CellItem(int row, int col, double data) : m_row(row), m_col(col), m_data(data) {}
+    ColorRGB(unsigned char r, unsigned char g, unsigned char b);
     /**
-     * @brief Получить значение
-     * @return double
+     * @brief Получить цвет в виде числа
+     * @return unsigned
      */
-    double get_data() const { return m_data; }
+    unsigned get_color() const;
     /**
-     * @brief Получить строку
-     * @return int
+     * @brief Оператор сложения (дружественный)
+     * @param[in] c1 первый цвет
+     * @param[in] c2 второй цвет
+     * @return ColorRGB
      */
-    int get_row() const { return m_row; }
-    /**
-     * @brief Получить столбец
-     * @return int
-     */
-    int get_col() const { return m_col; }
-    /**
-     * @brief Установить значение
-     * @param[in] d значение
-     */
-    void set_data(double d) { m_data = d; }
+    friend ColorRGB operator+(const ColorRGB &c1, const ColorRGB &c2);
 
 private:
-    int m_row{0}, m_col{0};
-    double m_data{0.0};
+    unsigned char m_r{0}, m_g{0}, m_b{0};
 };
 
-/*** Main Function ***/
-int main(void)
+/*** Methods Implementation ***/
+ColorRGB::ColorRGB() : m_r(0), m_g(0), m_b(0) {}
+ColorRGB::ColorRGB(unsigned char r, unsigned char g, unsigned char b)
+    : m_r(r), m_g(g), m_b(b) {}
+unsigned ColorRGB::get_color() const
 {
-    CellItem cell(5, 7, 0.79);
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-
-        return 0;
+    return static_cast<unsigned>(m_r) + static_cast<unsigned>(m_g) * 256 + static_cast<unsigned>(m_b) * 65536;
+}
+ColorRGB operator+(const ColorRGB &c1, const ColorRGB &c2)
+{
+    unsigned r = static_cast<unsigned>(c1.m_r) + static_cast<unsigned>(c2.m_r);
+    unsigned g = static_cast<unsigned>(c1.m_g) + static_cast<unsigned>(c2.m_g);
+    unsigned b = static_cast<unsigned>(c1.m_b) + static_cast<unsigned>(c2.m_b);
+    if (r > 255)
+        r = 255;
+    if (g > 255)
+        g = 255;
+    if (b > 255)
+        b = 255;
+    return ColorRGB(static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b));
 }

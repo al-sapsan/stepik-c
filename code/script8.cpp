@@ -1,103 +1,67 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Класс StringChars: строка, оператор сложения, embedded C++ style
+ * @brief Класс BankAccount, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-15
+ * @date 2025-09-16
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstring>
+#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс StringChars: строка, оператор сложения
+ * @brief Класс BankAccount: банковский счет
  */
-class StringChars
+class BankAccount
 {
 public:
     /**
-     * @brief Конструктор из C-строки
-     * @param[in] str строка
+     * @brief Конструктор с ФИО
+     * @param[in] fio владелец счета
      */
-    StringChars(const char *str);
+    BankAccount(const std::string &fio);
     /**
-     * @brief Копирующий конструктор
-     * @param[in] other другой объект
+     * @brief Конструктор с ФИО и суммой
+     * @param[in] fio владелец счета
+     * @param[in] volume сумма в рублях
      */
-    StringChars(const StringChars &other);
+    BankAccount(const std::string &fio, long volume);
     /**
-     * @brief Деструктор
+     * @brief Оператор присваивания (только сумма)
+     * @param[in] volume сумма в рублях
+     * @return BankAccount&
      */
-    ~StringChars();
+    BankAccount &operator=(long volume);
     /**
-     * @brief Оператор сложения
-     * @param[in] other другой объект
-     * @return StringChars
+     * @brief Получить ФИО
+     * @return const std::string&
      */
-    StringChars operator+(const StringChars &other) const;
+    const std::string &get_fio() const;
     /**
-     * @brief Получить строку
-     * @return char*
+     * @brief Получить сумму
+     * @return long
      */
-    char *to_str() const;
-    /**
-     * @brief Получить длину
-     * @return size_t
-     */
-    size_t get_length() const;
+    long get_volume_rub() const;
 
 private:
-    char *m_buffer{nullptr}; ///< строка
-    size_t m_length{0};      ///< длина
+    std::string m_fio;
+    long m_volume_rub{0};
 };
 
 /*** Methods Implementation ***/
-StringChars::StringChars(const char *str)
+BankAccount::BankAccount(const std::string &fio) : m_fio(fio), m_volume_rub(0) {}
+BankAccount::BankAccount(const std::string &fio, long volume) : m_fio(fio), m_volume_rub(volume) {}
+BankAccount &BankAccount::operator=(long volume)
 {
-    m_length = std::strlen(str);
-    m_buffer = new char[m_length + 1];
-    std::strcpy(m_buffer, str);
+    m_volume_rub = volume;
+    return *this;
 }
-
-StringChars::StringChars(const StringChars &other)
+const std::string &BankAccount::get_fio() const
 {
-    m_length = other.m_length;
-    m_buffer = new char[m_length + 1];
-    std::strcpy(m_buffer, other.m_buffer);
+    return m_fio;
 }
-
-StringChars::~StringChars()
+long BankAccount::get_volume_rub() const
 {
-    delete[] m_buffer;
-}
-
-StringChars StringChars::operator+(const StringChars &other) const
-{
-    size_t new_len = m_length + other.m_length;
-    char *buf = new char[new_len + 1];
-    std::strcpy(buf, m_buffer);
-    std::strcat(buf, other.m_buffer);
-    StringChars res(buf);
-    delete[] buf;
-    return res;
-}
-
-char *StringChars::to_str() const { return m_buffer; }
-size_t StringChars::get_length() const { return m_length; }
-
-/*** Main Function ***/
-int main(void)
-{
-    StringChars *ptr_str1 = new StringChars("Language");
-    StringChars *ptr_str2 = new StringChars(" C++");
-    StringChars res = *ptr_str1 + *ptr_str2;
-
-    __ASSERT_TESTS__ // макроопределение для тестирования
-
-        delete ptr_str1;
-    ptr_str1 = nullptr;
-    delete ptr_str2;
-    ptr_str2 = nullptr;
-    return 0;
+    return m_volume_rub;
 }

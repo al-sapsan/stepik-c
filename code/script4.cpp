@@ -1,99 +1,106 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Класс GamePole: синглтон, запрет копирования, методы const
+ * @brief Класс Memory и дружественные функции, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-13
+ * @date 2025-09-15
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstring>
+
+/*** Types ***/
+/**
+ * @brief Тип памяти (производитель)
+ */
+enum type_memory
+{
+    mem_none = -1,
+    mem_corsair = 1,
+    mem_adata = 2,
+    mem_kingston = 3
+};
 
 /*** Class Definition ***/
 /**
- * @brief Класс для хранения игрового поля (синглтон)
+ * @brief Класс Memory: оперативная память
  */
-class GamePole
+class Memory
 {
 public:
     /**
-     * @brief Получить/создать единственный экземпляр
-     * @param[in] rows строки
-     * @param[in] cols столбцы
-     * @return указатель на GamePole
+     * @brief Конструктор по умолчанию
      */
-    static GamePole *init(int rows, int cols)
-    {
-        if (!m_instance)
-            m_instance = new GamePole(rows, cols);
-        return m_instance;
-    }
+    Memory();
     /**
-     * @brief Установить значение в ячейку
-     * @param[in] row строка
-     * @param[in] col столбец
-     * @param[in] value значение
+     * @brief Конструктор с объёмом
+     * @param[in] vol объём памяти
      */
-    void set_item(int row, int col, char value)
-    {
-        m_pole[row * m_cols + col] = value;
-    }
+    Memory(unsigned vol);
     /**
-     * @brief Получить значение ячейки
-     * @param[in] row строка
-     * @param[in] col столбец
-     * @return char
+     * @brief Конструктор с объёмом и типом
+     * @param[in] vol объём памяти
+     * @param[in] tp тип памяти
      */
-    char get_item(int row, int col) const
-    {
-        return m_pole[row * m_cols + col];
-    }
+    Memory(unsigned vol, type_memory tp);
     /**
-     * @brief Получить массив поля
-     * @return const char*
+     * @brief Дружественная функция: установить данные памяти
+     * @param[in,out] mem объект Memory
+     * @param[in] vol объём
+     * @param[in] tp тип
      */
-    const char *get_pole() const { return m_pole; }
+    friend void set_memory_data(Memory &mem, unsigned vol, type_memory tp);
     /**
-     * @brief Получить размеры
-     * @param[out] rows строки
-     * @param[out] cols столбцы
+     * @brief Дружественная функция: получить данные памяти
+     * @param[in] mem объект Memory
+     * @param[out] vol объём
+     * @param[out] tp тип
      */
-    void get_size(int &rows, int &cols) const
-    {
-        rows = m_rows;
-        cols = m_cols;
-    }
-    // Запретить копирование
-    GamePole(const GamePole &) = delete;
-    GamePole &operator=(const GamePole &) = delete;
+    friend void get_memory_data(const Memory &mem, unsigned &vol, type_memory &tp);
     /**
-     * @brief Деструктор: освобождает память
+     * @brief Оператор сложения двух Memory
+     * @param[in] m1 первый объект
+     * @param[in] m2 второй объект
+     * @return Memory
      */
-    ~GamePole() { delete[] m_pole; }
+    friend Memory operator+(const Memory &m1, const Memory &m2);
 
 private:
-    GamePole(int rows, int cols) : m_rows(rows), m_cols(cols), m_pole(nullptr)
-    {
-        m_pole = new char[m_rows * m_cols]();
-    }
-    static GamePole *m_instance;
-    int m_rows{0}, m_cols{0};
-    char *m_pole{nullptr};
+    type_memory m_type{mem_none};
+    unsigned m_volume{0};
 };
 
-/*** Static Members Initialization ***/
-GamePole *GamePole::m_instance = nullptr;
+/*** Methods Implementation ***/
+Memory::Memory() : m_type(mem_none), m_volume(0) {}
+Memory::Memory(unsigned vol) : m_type(mem_none), m_volume(vol) {}
+Memory::Memory(unsigned vol, type_memory tp) : m_type(tp), m_volume(vol) {}
+void set_memory_data(Memory &mem, unsigned vol, type_memory tp)
+{
+    mem.m_volume = vol;
+    mem.m_type = tp;
+}
+void get_memory_data(const Memory &mem, unsigned &vol, type_memory &tp)
+{
+    vol = mem.m_volume;
+    tp = mem.m_type;
+}
+Memory operator+(const Memory &m1, const Memory &m2)
+{
+    if (m1.m_type == m2.m_type)
+    {
+        return Memory(m1.m_volume + m2.m_volume, m1.m_type);
+    }
+    else
+    {
+        return m1;
+    }
+}
 
-/*** Main Function ***/
+/*** Main ***/
 int main(void)
 {
-    GamePole *ptr_pl = GamePole::init(5, 10);
-    ptr_pl->set_item(1, 1, '@');
-    ptr_pl->set_item(4, 9, '#');
-    ptr_pl->set_item(3, 2, '*');
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0 или перед освобождением памяти)
-
-        // память не освобождается, т.к. синглтон живёт до конца программы
-        return 0;
+    Memory mem_1(8000, mem_adata);
+    Memory mem_2(4000, mem_adata);
+    Memory res = mem_1 + mem_2;
+    __ASSERT_TESTS__
+    return 0;
 }
