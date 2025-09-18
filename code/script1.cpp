@@ -1,66 +1,82 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Класс ColorRGB: оператор сложения, embedded C++ style
+ * @brief Класс Vector3D, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-15
+ * @date 2025-09-18
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <cmath>
 
 /*** Class Definition ***/
 /**
- * @brief Класс ColorRGB: цвет в формате RGB, оператор сложения
+ * @brief Класс Vector3D: трёхмерный вектор
  */
-class ColorRGB
+class Vector3D
 {
 public:
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Конструктор
+     * @param[in] a x
+     * @param[in] b y
+     * @param[in] c z
      */
-    ColorRGB();
+    Vector3D(int a = 0, int b = 0, int c = 0);
     /**
-     * @brief Конструктор с параметрами
-     * @param[in] r красный
-     * @param[in] g зелёный
-     * @param[in] b синий
+     * @brief Установить значения
+     * @param[in] a x
+     * @param[in] b y
+     * @param[in] c z
      */
-    ColorRGB(unsigned char r, unsigned char g, unsigned char b);
+    void set_data(int a, int b, int c);
     /**
-     * @brief Получить цвет в виде числа
-     * @return unsigned
+     * @brief Оператор доступа по индексу
+     * @param[in] idx индекс (0-x, 1-y, 2-z)
+     * @return int&
      */
-    unsigned get_color() const;
+    int &operator[](size_t idx);
     /**
-     * @brief Оператор сложения (дружественный)
-     * @param[in] c1 первый цвет
-     * @param[in] c2 второй цвет
-     * @return ColorRGB
+     * @brief Оператор доступа по индексу (const)
+     * @param[in] idx индекс (0-x, 1-y, 2-z)
+     * @return int
      */
-    friend ColorRGB operator+(const ColorRGB &c1, const ColorRGB &c2);
+    int operator[](size_t idx) const;
+    /**
+     * @brief Оператор преобразования к double (евклидово расстояние)
+     * @return double
+     */
+    operator double() const;
 
 private:
-    unsigned char m_r{0}, m_g{0}, m_b{0};
+    int x{0}, y{0}, z{0};
 };
 
 /*** Methods Implementation ***/
-ColorRGB::ColorRGB() : m_r(0), m_g(0), m_b(0) {}
-ColorRGB::ColorRGB(unsigned char r, unsigned char g, unsigned char b)
-    : m_r(r), m_g(g), m_b(b) {}
-unsigned ColorRGB::get_color() const
+Vector3D::Vector3D(int a, int b, int c) : x(a), y(b), z(c) {}
+void Vector3D::set_data(int a, int b, int c)
 {
-    return static_cast<unsigned>(m_r) + static_cast<unsigned>(m_g) * 256 + static_cast<unsigned>(m_b) * 65536;
+    x = a;
+    y = b;
+    z = c;
 }
-ColorRGB operator+(const ColorRGB &c1, const ColorRGB &c2)
+int &Vector3D::operator[](size_t idx)
 {
-    unsigned r = static_cast<unsigned>(c1.m_r) + static_cast<unsigned>(c2.m_r);
-    unsigned g = static_cast<unsigned>(c1.m_g) + static_cast<unsigned>(c2.m_g);
-    unsigned b = static_cast<unsigned>(c1.m_b) + static_cast<unsigned>(c2.m_b);
-    if (r > 255)
-        r = 255;
-    if (g > 255)
-        g = 255;
-    if (b > 255)
-        b = 255;
-    return ColorRGB(static_cast<unsigned char>(r), static_cast<unsigned char>(g), static_cast<unsigned char>(b));
+    if (idx == 0)
+        return x;
+    if (idx == 1)
+        return y;
+    return z;
+}
+int Vector3D::operator[](size_t idx) const
+{
+    if (idx == 0)
+        return x;
+    if (idx == 1)
+        return y;
+    return z;
+}
+Vector3D::operator double() const
+{
+    return std::sqrt(static_cast<double>(x * x + y * y + z * z));
 }

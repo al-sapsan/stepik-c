@@ -1,84 +1,123 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс FilterWater и дружественные функции, embedded C++ style
+ * @brief Класс PointND, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-15
+ * @date 2025-09-18
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-
-/*** Types ***/
-/**
- * @brief Тип фильтра воды
- */
-enum type_filter
-{
-    flt_aragon = 1,
-    flt_calcium = 2
-};
+#include <cstddef>
 
 /*** Class Definition ***/
 /**
- * @brief Класс FilterWater: фильтр воды
+ * @brief Класс PointND: точка в N-мерном пространстве
  */
-class FilterWater
+class PointND
 {
 public:
     /**
-     * @brief Конструктор с параметрами
-     * @param[in] t тип фильтра
-     * @param[in] d дата установки
-     * @param[in] v объём фильтра
+     * @brief Конструктор по умолчанию
      */
-    FilterWater(type_filter t, unsigned d, unsigned short v);
+    PointND();
     /**
-     * @brief Дружественная функция: получить тип фильтра
-     * @param[in] flt фильтр
-     * @return type_filter
+     * @brief Конструктор с координатами
+     * @param[in] cds массив координат
+     * @param[in] len размерность
      */
-    friend type_filter get_type_filter(const FilterWater &flt);
+    PointND(const short *cds, size_t len);
     /**
-     * @brief Дружественная функция: получить дату установки
-     * @param[in] flt фильтр
-     * @return unsigned
+     * @brief Конструктор копирования
+     * @param[in] other другой объект PointND
      */
-    friend unsigned get_date_filter(const FilterWater &flt);
+    PointND(const PointND &other);
     /**
-     * @brief Дружественная функция: получить объём фильтра
-     * @param[in] flt фильтр
-     * @return unsigned short
+     * @brief Деструктор
      */
-    friend unsigned short get_volume_filter(const FilterWater &flt);
+    ~PointND();
+    /**
+     * @brief Оператор присваивания (глубокое копирование)
+     * @param[in] other другой объект PointND
+     * @return PointND&
+     */
+    PointND &operator=(const PointND &other);
+    /**
+     * @brief Оператор доступа по индексу
+     * @param[in] idx индекс
+     * @return short&
+     */
+    short &operator[](size_t idx);
+    /**
+     * @brief Оператор доступа по индексу (const)
+     * @param[in] idx индекс
+     * @return short
+     */
+    short operator[](size_t idx) const;
+    /**
+     * @brief Получить размерность
+     * @return size_t
+     */
+    size_t get_dims() const;
 
 private:
-    type_filter m_type;
-    unsigned m_date;
-    unsigned short m_volume;
+    short *coords{nullptr};
+    size_t dims{0};
 };
 
 /*** Methods Implementation ***/
-FilterWater::FilterWater(type_filter t, unsigned d, unsigned short v)
-    : m_type(t), m_date(d), m_volume(v) {}
-
-type_filter get_type_filter(const FilterWater &flt)
+PointND::PointND() : coords(nullptr), dims(0) {}
+PointND::PointND(const short *cds, size_t len) : coords(nullptr), dims(len)
 {
-    return flt.m_type;
+    if (dims > 0)
+    {
+        coords = new short[dims];
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] = cds[i];
+    }
 }
-unsigned get_date_filter(const FilterWater &flt)
+PointND::PointND(const PointND &other) : coords(nullptr), dims(other.dims)
 {
-    return flt.m_date;
+    if (dims > 0)
+    {
+        coords = new short[dims];
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] = other.coords[i];
+    }
 }
-unsigned short get_volume_filter(const FilterWater &flt)
+PointND::~PointND()
 {
-    return flt.m_volume;
+    delete[] coords;
 }
-
-/*** Main ***/
-int main(void)
+PointND &PointND::operator=(const PointND &other)
 {
-    FilterWater filter(flt_calcium, 153564646, 108);
-    std::cout << get_type_filter(filter) << ' ' << get_date_filter(filter) << ' ' << get_volume_filter(filter) << std::endl;
-    __ASSERT_TESTS__
+    if (this != &other)
+    {
+        delete[] coords;
+        dims = other.dims;
+        if (dims > 0)
+        {
+            coords = new short[dims];
+            for (size_t i = 0; i < dims; ++i)
+                coords[i] = other.coords[i];
+        }
+        else
+        {
+            coords = nullptr;
+        }
+    }
+    return *this;
+}
+short &PointND::operator[](size_t idx)
+{
+    static short dummy = 0;
+    if (idx < dims)
+        return coords[idx];
+    return dummy;
+}
+short PointND::operator[](size_t idx) const
+{
+    if (idx < dims)
+        return coords[idx];
     return 0;
 }
+size_t PointND::get_dims() const { return dims; }
