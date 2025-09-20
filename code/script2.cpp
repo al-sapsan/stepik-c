@@ -1,123 +1,165 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс PointND, embedded C++ style
+ * @brief Класс BottleWater, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-18
+ * @date 2025-09-19
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstddef>
 
 /*** Class Definition ***/
 /**
- * @brief Класс PointND: точка в N-мерном пространстве
+ * @brief Класс BottleWater: бутылка воды
  */
-class PointND
+class BottleWater
 {
 public:
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Конструктор
+     * @param[in] volume объем воды
      */
-    PointND();
+    BottleWater(short volume = 0);
     /**
-     * @brief Конструктор с координатами
-     * @param[in] cds массив координат
-     * @param[in] len размерность
-     */
-    PointND(const short *cds, size_t len);
-    /**
-     * @brief Конструктор копирования
-     * @param[in] other другой объект PointND
-     */
-    PointND(const PointND &other);
-    /**
-     * @brief Деструктор
-     */
-    ~PointND();
-    /**
-     * @brief Оператор присваивания (глубокое копирование)
-     * @param[in] other другой объект PointND
-     * @return PointND&
-     */
-    PointND &operator=(const PointND &other);
-    /**
-     * @brief Оператор доступа по индексу
-     * @param[in] idx индекс
-     * @return short&
-     */
-    short &operator[](size_t idx);
-    /**
-     * @brief Оператор доступа по индексу (const)
-     * @param[in] idx индекс
+     * @brief Получить объем воды
      * @return short
      */
-    short operator[](size_t idx) const;
+    short get_volume() const;
     /**
-     * @brief Получить размерность
-     * @return size_t
+     * @brief Оператор +
+     * @param[in] other
+     * @return BottleWater
      */
-    size_t get_dims() const;
+    BottleWater operator+(const BottleWater &other) const;
+    /**
+     * @brief Оператор += (short)
+     * @param[in] val
+     * @return BottleWater&
+     */
+    BottleWater &operator+=(short val);
+    /**
+     * @brief Оператор -= (short)
+     * @param[in] val
+     * @return BottleWater&
+     */
+    BottleWater &operator-=(short val);
+    /**
+     * @brief Оператор *= (short)
+     * @param[in] val
+     * @return BottleWater&
+     */
+    BottleWater &operator*=(short val);
+    /**
+     * @brief Оператор /= (short)
+     * @param[in] val
+     * @return BottleWater&
+     */
+    BottleWater &operator/=(short val);
+    /**
+     * @brief Оператор += (BottleWater)
+     * @param[in] other
+     * @return BottleWater&
+     */
+    BottleWater &operator+=(const BottleWater &other);
+    /**
+     * @brief Оператор -= (BottleWater)
+     * @param[in] other
+     * @return BottleWater&
+     */
+    BottleWater &operator-=(const BottleWater &other);
+    /**
+     * @brief Оператор *= (BottleWater)
+     * @param[in] other
+     * @return BottleWater&
+     */
+    BottleWater &operator*=(const BottleWater &other);
+    /**
+     * @brief Оператор /= (BottleWater)
+     * @param[in] other
+     * @return BottleWater&
+     */
+    BottleWater &operator/=(const BottleWater &other);
 
 private:
-    short *coords{nullptr};
-    size_t dims{0};
+    enum
+    {
+        max_volume = 640
+    };
+    short volume{0};
+    void clamp();
 };
 
 /*** Methods Implementation ***/
-PointND::PointND() : coords(nullptr), dims(0) {}
-PointND::PointND(const short *cds, size_t len) : coords(nullptr), dims(len)
+BottleWater::BottleWater(short volume_) : volume(volume_) { clamp(); }
+short BottleWater::get_volume() const { return volume; }
+void BottleWater::clamp()
 {
-    if (dims > 0)
-    {
-        coords = new short[dims];
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] = cds[i];
-    }
+    if (volume < 0)
+        volume = 0;
+    if (volume > max_volume)
+        volume = max_volume;
 }
-PointND::PointND(const PointND &other) : coords(nullptr), dims(other.dims)
+BottleWater BottleWater::operator+(const BottleWater &other) const
 {
-    if (dims > 0)
-    {
-        coords = new short[dims];
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] = other.coords[i];
-    }
+    BottleWater res(volume + other.volume);
+    return res;
 }
-PointND::~PointND()
+BottleWater &BottleWater::operator+=(short val)
 {
-    delete[] coords;
-}
-PointND &PointND::operator=(const PointND &other)
-{
-    if (this != &other)
-    {
-        delete[] coords;
-        dims = other.dims;
-        if (dims > 0)
-        {
-            coords = new short[dims];
-            for (size_t i = 0; i < dims; ++i)
-                coords[i] = other.coords[i];
-        }
-        else
-        {
-            coords = nullptr;
-        }
-    }
+    volume += val;
+    clamp();
     return *this;
 }
-short &PointND::operator[](size_t idx)
+BottleWater &BottleWater::operator-=(short val)
 {
-    static short dummy = 0;
-    if (idx < dims)
-        return coords[idx];
-    return dummy;
+    volume -= val;
+    clamp();
+    return *this;
 }
-short PointND::operator[](size_t idx) const
+BottleWater &BottleWater::operator*=(short val)
 {
-    if (idx < dims)
-        return coords[idx];
+    volume *= val;
+    clamp();
+    return *this;
+}
+BottleWater &BottleWater::operator/=(short val)
+{
+    if (val != 0)
+        volume /= val;
+    clamp();
+    return *this;
+}
+BottleWater &BottleWater::operator+=(const BottleWater &other)
+{
+    volume += other.volume;
+    clamp();
+    return *this;
+}
+BottleWater &BottleWater::operator-=(const BottleWater &other)
+{
+    volume -= other.volume;
+    clamp();
+    return *this;
+}
+BottleWater &BottleWater::operator*=(const BottleWater &other)
+{
+    volume *= other.volume;
+    clamp();
+    return *this;
+}
+BottleWater &BottleWater::operator/=(const BottleWater &other)
+{
+    if (other.volume != 0)
+        volume /= other.volume;
+    clamp();
+    return *this;
+}
+
+/*** Main ***/
+int main(void)
+{
+    BottleWater bw1(40), bw2(200);
+    BottleWater res = bw1 + bw2;
+    __ASSERT_TESTS__
     return 0;
 }
-size_t PointND::get_dims() const { return dims; }

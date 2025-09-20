@@ -1,160 +1,181 @@
 /**********************************************************************
  * @file script9.cpp
- * @brief Класс PhoneBook, embedded C++ style
+ * @brief Класс LineDouble, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-16
+ * @date 2025-09-20
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
-
-/*** Struct Definition ***/
-/**
- * @brief Структура PhoneBookItem: контакт
- */
-struct PhoneBookItem
-{
-    std::string fio;
-    std::string phone_number;
-    PhoneBookItem() = default;
-    PhoneBookItem(const std::string &fio_, const std::string &phone_number_)
-        : fio(fio_), phone_number(phone_number_) {}
-};
 
 /*** Class Definition ***/
 /**
- * @brief Класс PhoneBook: телефонная книжка
+ * @brief Класс LineDouble: линия с координатами double
  */
-class PhoneBook
+class LineDouble
 {
 public:
     /**
      * @brief Конструктор по умолчанию
      */
-    PhoneBook();
+    LineDouble();
     /**
-     * @brief Конструктор копирования из массива
-     * @param[in] lst массив контактов
-     * @param[in] size количество контактов
+     * @brief Конструктор с координатами
+     * @param[in] a x0
+     * @param[in] b y0
+     * @param[in] c x1
+     * @param[in] d y1
      */
-    PhoneBook(const PhoneBookItem *lst, size_t size);
+    LineDouble(double a, double b, double c, double d);
     /**
-     * @brief Конструктор копирования
-     * @param[in] other другой объект PhoneBook
+     * @brief Установить координаты
+     * @param[in] a x0
+     * @param[in] b y0
+     * @param[in] c x1
+     * @param[in] d y1
      */
-    PhoneBook(const PhoneBook &other);
+    void set_coords(double a, double b, double c, double d);
     /**
-     * @brief Деструктор
+     * @brief Получить координаты
+     * @param[out] a x0
+     * @param[out] b y0
+     * @param[out] c x1
+     * @param[out] d y1
      */
-    ~PhoneBook();
+    void get_coords(double &a, double &b, double &c, double &d) const;
     /**
-     * @brief Оператор присваивания
-     * @param[in] other другой объект PhoneBook
-     * @return PhoneBook&
+     * @brief Оператор + (сложение координат)
+     * @param[in] other
+     * @return LineDouble
      */
-    PhoneBook &operator=(const PhoneBook &other);
+    LineDouble operator+(const LineDouble &other) const;
     /**
-     * @brief Оператор сложения (добавляет контакт)
-     * @param[in] item контакт
-     * @return PhoneBook
+     * @brief Оператор += (double)
+     * @param[in] val
+     * @return LineDouble&
      */
-    PhoneBook operator+(const PhoneBookItem &item) const;
+    LineDouble &operator+=(double val);
     /**
-     * @brief Получить массив контактов
-     * @return const PhoneBookItem*
+     * @brief Оператор -= (double)
+     * @param[in] val
+     * @return LineDouble&
      */
-    const PhoneBookItem *get_phone_book() const;
+    LineDouble &operator-=(double val);
     /**
-     * @brief Получить количество контактов
-     * @return size_t
+     * @brief Оператор += (LineDouble)
+     * @param[in] other
+     * @return LineDouble&
      */
-    size_t get_count() const;
+    LineDouble &operator+=(const LineDouble &other);
     /**
-     * @brief Добавить контакт
-     * @param[in] item контакт
-     * @return bool
+     * @brief Оператор -= (LineDouble)
+     * @param[in] other
+     * @return LineDouble&
      */
-    bool append(const PhoneBookItem &item);
+    LineDouble &operator-=(const LineDouble &other);
+    /**
+     * @brief Оператор постфиксного инкремента
+     * @return LineDouble (старое значение)
+     */
+    LineDouble operator++(int);
+    /**
+     * @brief Оператор префиксного инкремента
+     * @return LineDouble&
+     */
+    LineDouble &operator++();
+    /**
+     * @brief Оператор постфиксного декремента
+     * @return LineDouble (старое значение)
+     */
+    LineDouble operator--(int);
+    /**
+     * @brief Оператор префиксного декремента
+     * @return LineDouble&
+     */
+    LineDouble &operator--();
 
 private:
-    enum
-    {
-        max_phone_book = 100
-    };
-    PhoneBookItem *phone_book{nullptr};
-    size_t count{0};
+    double x0{0}, y0{0}, x1{0}, y1{0};
 };
 
 /*** Methods Implementation ***/
-PhoneBook::PhoneBook() : phone_book(new PhoneBookItem[max_phone_book]), count(0) {}
-PhoneBook::PhoneBook(const PhoneBookItem *lst, size_t size)
-    : phone_book(new PhoneBookItem[max_phone_book]), count(size > max_phone_book ? max_phone_book : size)
+LineDouble::LineDouble() : x0(0), y0(0), x1(0), y1(0) {}
+LineDouble::LineDouble(double a, double b, double c, double d) : x0(a), y0(b), x1(c), y1(d) {}
+void LineDouble::set_coords(double a, double b, double c, double d)
 {
-    for (size_t i = 0; i < count; ++i)
-    {
-        phone_book[i] = lst[i];
-    }
+    x0 = a;
+    y0 = b;
+    x1 = c;
+    y1 = d;
 }
-PhoneBook::PhoneBook(const PhoneBook &other)
-    : phone_book(new PhoneBookItem[max_phone_book]), count(other.count)
+void LineDouble::get_coords(double &a, double &b, double &c, double &d) const
 {
-    for (size_t i = 0; i < count; ++i)
-    {
-        phone_book[i] = other.phone_book[i];
-    }
+    a = x0;
+    b = y0;
+    c = x1;
+    d = y1;
 }
-PhoneBook::~PhoneBook()
+LineDouble LineDouble::operator+(const LineDouble &other) const
 {
-    delete[] phone_book;
+    return LineDouble(x0 + other.x0, y0 + other.y0, x1 + other.x1, y1 + other.y1);
 }
-PhoneBook &PhoneBook::operator=(const PhoneBook &other)
+LineDouble &LineDouble::operator+=(double val)
 {
-    if (this != &other)
-    {
-        delete[] phone_book;
-        phone_book = new PhoneBookItem[max_phone_book];
-        count = other.count;
-        for (size_t i = 0; i < count; ++i)
-        {
-            phone_book[i] = other.phone_book[i];
-        }
-    }
+    x0 += val;
+    y0 += val;
+    x1 += val;
+    y1 += val;
     return *this;
 }
-PhoneBook PhoneBook::operator+(const PhoneBookItem &item) const
+LineDouble &LineDouble::operator-=(double val)
 {
-    PhoneBook result(*this);
-    result.append(item);
-    return result;
+    x0 -= val;
+    y0 -= val;
+    x1 -= val;
+    y1 -= val;
+    return *this;
 }
-const PhoneBookItem *PhoneBook::get_phone_book() const
+LineDouble &LineDouble::operator+=(const LineDouble &other)
 {
-    return phone_book;
+    x0 += other.x0;
+    y0 += other.y0;
+    x1 += other.x1;
+    y1 += other.y1;
+    return *this;
 }
-size_t PhoneBook::get_count() const
+LineDouble &LineDouble::operator-=(const LineDouble &other)
 {
-    return count;
+    x0 -= other.x0;
+    y0 -= other.y0;
+    x1 -= other.x1;
+    y1 -= other.y1;
+    return *this;
 }
-bool PhoneBook::append(const PhoneBookItem &item)
+LineDouble LineDouble::operator++(int)
 {
-    if (count < max_phone_book)
-    {
-        phone_book[count++] = item;
-        return true;
-    }
-    return false;
+    LineDouble temp(*this);
+    ++(*this);
+    return temp;
 }
-
-/*** Main ***/
-int main(void)
+LineDouble &LineDouble::operator++()
 {
-    PhoneBook phone_lst;
-    phone_lst = phone_lst + PhoneBookItem("А. Дзюба", "+71237694401");
-    phone_lst = phone_lst + PhoneBookItem("П. Гагарина", "+79234694105");
-    phone_lst = phone_lst + PhoneBookItem("О. Бузова", "+79041563055");
-    phone_lst = phone_lst + PhoneBookItem("Тимати", "+79121000000");
-    __ASSERT_TESTS__
-    // память освобождается автоматически деструктором
-    return 0;
+    x0 += 0.1;
+    y0 += 0.1;
+    x1 += 0.1;
+    y1 += 0.1;
+    return *this;
+}
+LineDouble LineDouble::operator--(int)
+{
+    LineDouble temp(*this);
+    --(*this);
+    return temp;
+}
+LineDouble &LineDouble::operator--()
+{
+    x0 -= 0.1;
+    y0 -= 0.1;
+    x1 -= 0.1;
+    y1 -= 0.1;
+    return *this;
 }

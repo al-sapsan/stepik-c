@@ -1,82 +1,83 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Класс Vector3D, embedded C++ style
+ * @brief Класс Distance, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-18
+ * @date 2025-09-19
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cmath>
 
 /*** Class Definition ***/
 /**
- * @brief Класс Vector3D: трёхмерный вектор
+ * @brief Класс Distance: расстояние
  */
-class Vector3D
+class Distance
 {
 public:
     /**
      * @brief Конструктор
-     * @param[in] a x
-     * @param[in] b y
-     * @param[in] c z
+     * @param[in] d расстояние
      */
-    Vector3D(int a = 0, int b = 0, int c = 0);
+    Distance(int d);
     /**
-     * @brief Установить значения
-     * @param[in] a x
-     * @param[in] b y
-     * @param[in] c z
+     * @brief Оператор +=
+     * @param[in] val
+     * @return Distance&
      */
-    void set_data(int a, int b, int c);
+    Distance &operator+=(int val);
     /**
-     * @brief Оператор доступа по индексу
-     * @param[in] idx индекс (0-x, 1-y, 2-z)
-     * @return int&
+     * @brief Оператор -=
+     * @param[in] val
+     * @return Distance&
      */
-    int &operator[](size_t idx);
+    Distance &operator-=(int val);
     /**
-     * @brief Оператор доступа по индексу (const)
-     * @param[in] idx индекс (0-x, 1-y, 2-z)
+     * @brief Оператор *=
+     * @param[in] val
+     * @return Distance&
+     */
+    Distance &operator*=(int val);
+    /**
+     * @brief Оператор /=
+     * @param[in] val
+     * @return Distance&
+     */
+    Distance &operator/=(int val);
+    /**
+     * @brief Оператор преобразования к int
      * @return int
      */
-    int operator[](size_t idx) const;
-    /**
-     * @brief Оператор преобразования к double (евклидово расстояние)
-     * @return double
-     */
-    operator double() const;
+    operator int() const;
 
 private:
-    int x{0}, y{0}, z{0};
+    int dist{0};
 };
 
 /*** Methods Implementation ***/
-Vector3D::Vector3D(int a, int b, int c) : x(a), y(b), z(c) {}
-void Vector3D::set_data(int a, int b, int c)
+Distance::Distance(int d) : dist(d) {}
+Distance &Distance::operator+=(int val)
 {
-    x = a;
-    y = b;
-    z = c;
+    dist += val;
+    return *this;
 }
-int &Vector3D::operator[](size_t idx)
+Distance &Distance::operator-=(int val)
 {
-    if (idx == 0)
-        return x;
-    if (idx == 1)
-        return y;
-    return z;
+    dist -= val;
+    return *this;
 }
-int Vector3D::operator[](size_t idx) const
+Distance &Distance::operator*=(int val)
 {
-    if (idx == 0)
-        return x;
-    if (idx == 1)
-        return y;
-    return z;
+    dist *= val;
+    return *this;
 }
-Vector3D::operator double() const
+Distance &Distance::operator/=(int val)
 {
-    return std::sqrt(static_cast<double>(x * x + y * y + z * z));
+    if (val != 0)
+        dist /= val;
+    return *this;
+}
+Distance::operator int() const
+{
+    return dist;
 }

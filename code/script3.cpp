@@ -1,125 +1,111 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Класс Box3D, embedded C++ style
+ * @brief Класс BankAccount, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-18
+ * @date 2025-09-19
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс Box3D: габаритная коробка
+ * @brief Класс BankAccount: банковский счет
  */
-class Box3D
+class BankAccount
 {
 public:
     /**
-     * @brief Прокси для безопасного присваивания
+     * @brief Конструктор с ФИО
+     * @param[in] fio владелец счета
      */
-    class DimProxy
-    {
-    public:
-        DimProxy(short &ref) : ref_(ref) {}
-        DimProxy &operator=(short val)
-        {
-            if (val > 0)
-                ref_ = val;
-            return *this;
-        }
-        operator short() const { return ref_; }
-
-    private:
-        short &ref_;
-    };
+    BankAccount(const std::string &fio);
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Конструктор с ФИО и суммой
+     * @param[in] fio владелец счета
+     * @param[in] volume сумма в рублях
      */
-    Box3D();
+    BankAccount(const std::string &fio, long volume);
     /**
-     * @brief Конструктор с параметрами
-     * @param[in] a длина
-     * @param[in] b ширина
-     * @param[in] c высота
+     * @brief Оператор присваивания (только сумма)
+     * @param[in] volume сумма в рублях
+     * @return BankAccount&
      */
-    Box3D(short a, short b, short c);
+    BankAccount &operator=(long volume);
     /**
-     * @brief Получить габариты
-     * @param[out] a
-     * @param[out] b
-     * @param[out] c
+     * @brief Оператор += (long)
+     * @param[in] volume сумма
+     * @return BankAccount&
      */
-    void get_dims(short &a, short &b, short &c) const;
+    BankAccount &operator+=(long volume);
     /**
-     * @brief Установить габариты
-     * @param[in] a
-     * @param[in] b
-     * @param[in] c
+     * @brief Оператор -= (long)
+     * @param[in] volume сумма
+     * @return BankAccount&
      */
-    void set_dims(short a, short b, short c);
+    BankAccount &operator-=(long volume);
     /**
-     * @brief Оператор доступа по индексу
-     * @param[in] idx индекс (0-a, 1-b, 2-c)
-     * @return DimProxy
+     * @brief Оператор += (BankAccount)
+     * @param[in] other
+     * @return BankAccount&
      */
-    DimProxy operator[](size_t idx);
+    BankAccount &operator+=(const BankAccount &other);
     /**
-     * @brief Оператор доступа по индексу (const)
-     * @param[in] idx индекс (0-a, 1-b, 2-c)
-     * @return short
+     * @brief Оператор -= (BankAccount)
+     * @param[in] other
+     * @return BankAccount&
      */
-    short operator[](size_t idx) const;
+    BankAccount &operator-=(const BankAccount &other);
     /**
-     * @brief Оператор преобразования к int (объем)
-     * @return int
+     * @brief Получить ФИО
+     * @return const std::string&
      */
-    operator int() const;
+    const std::string &get_fio() const;
+    /**
+     * @brief Получить сумму
+     * @return long
+     */
+    long get_volume_rub() const;
 
 private:
-    short a{0}, b{0}, c{0};
+    std::string fio;
+    long volume_rub{0};
 };
 
 /*** Methods Implementation ***/
-Box3D::Box3D() : a(0), b(0), c(0) {}
-Box3D::Box3D(short a_, short b_, short c_) : a(a_ > 0 ? a_ : 0), b(b_ > 0 ? b_ : 0), c(c_ > 0 ? c_ : 0) {}
-void Box3D::get_dims(short &a_, short &b_, short &c_) const
+BankAccount::BankAccount(const std::string &fio_) : fio(fio_), volume_rub(0) {}
+BankAccount::BankAccount(const std::string &fio_, long volume) : fio(fio_), volume_rub(volume) {}
+BankAccount &BankAccount::operator=(long volume)
 {
-    a_ = a;
-    b_ = b;
-    c_ = c;
+    volume_rub = volume;
+    return *this;
 }
-void Box3D::set_dims(short a_, short b_, short c_)
+BankAccount &BankAccount::operator+=(long volume)
 {
-    if (a_ > 0)
-        a = a_;
-    if (b_ > 0)
-        b = b_;
-    if (c_ > 0)
-        c = c_;
+    volume_rub += volume;
+    return *this;
 }
-Box3D::DimProxy Box3D::operator[](size_t idx)
+BankAccount &BankAccount::operator-=(long volume)
 {
-    if (idx == 0)
-        return DimProxy(a);
-    if (idx == 1)
-        return DimProxy(b);
-    if (idx == 2)
-        return DimProxy(c);
-    static short dummy = 0;
-    return DimProxy(dummy);
+    volume_rub -= volume;
+    return *this;
 }
-short Box3D::operator[](size_t idx) const
+BankAccount &BankAccount::operator+=(const BankAccount &other)
 {
-    if (idx == 0)
-        return a;
-    if (idx == 1)
-        return b;
-    if (idx == 2)
-        return c;
-    return 0;
+    volume_rub += other.volume_rub;
+    return *this;
 }
-Box3D::operator int() const
+BankAccount &BankAccount::operator-=(const BankAccount &other)
 {
-    return static_cast<int>(a) * static_cast<int>(b) * static_cast<int>(c);
+    volume_rub -= other.volume_rub;
+    return *this;
+}
+const std::string &BankAccount::get_fio() const
+{
+    return fio;
+}
+long BankAccount::get_volume_rub() const
+{
+    return volume_rub;
 }

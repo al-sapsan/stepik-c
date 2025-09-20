@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Класс Rectangle, embedded C++ style
+ * @brief Класс Clock, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-16
+ * @date 2025-09-20
  **********************************************************************/
 
 /*** Core ***/
@@ -10,115 +10,154 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс Rectangle: прямоугольник
+ * @brief Класс Clock: время
  */
-class Rectangle
+class Clock
 {
 public:
     /**
      * @brief Конструктор по умолчанию
      */
-    Rectangle();
+    Clock();
     /**
-     * @brief Конструктор с координатами
-     * @param[in] x0 левый верхний x
-     * @param[in] y0 левый верхний y
-     * @param[in] x1 правый нижний x
-     * @param[in] y1 правый нижний y
+     * @brief Конструктор с параметром
+     * @param[in] t время
      */
-    Rectangle(short x0, short y0, short x1, short y1);
+    Clock(unsigned t);
     /**
-     * @brief Оператор присваивания (копирует только координаты)
-     * @param[in] other другой объект Rectangle
-     * @return Rectangle&
+     * @brief Получить время
+     * @return unsigned
      */
-    Rectangle &operator=(const Rectangle &other);
+    unsigned get_time() const;
     /**
-     * @brief Получить цвет границы
-     * @return int
+     * @brief Оператор +
+     * @param[in] other
+     * @return Clock
      */
-    int get_border_color() const;
+    Clock operator+(const Clock &other) const;
     /**
-     * @brief Получить цвет заливки
-     * @return int
+     * @brief Оператор += (unsigned)
+     * @param[in] val
+     * @return Clock&
      */
-    int get_fill_color() const;
+    Clock &operator+=(unsigned val);
     /**
-     * @brief Получить координаты
-     * @param[out] x0
-     * @param[out] y0
-     * @param[out] x1
-     * @param[out] y1
+     * @brief Оператор -= (unsigned)
+     * @param[in] val
+     * @return Clock&
      */
-    void get_coords(short &x0, short &y0, short &x1, short &y1) const;
+    Clock &operator-=(unsigned val);
     /**
-     * @brief Установить координаты
-     * @param[in] x0
-     * @param[in] y0
-     * @param[in] x1
-     * @param[in] y1
+     * @brief Оператор += (Clock)
+     * @param[in] other
+     * @return Clock&
      */
-    void set_coords(short x0, short y0, short x1, short y1);
+    Clock &operator+=(const Clock &other);
     /**
-     * @brief Установить цвет границы
-     * @param[in] color
+     * @brief Оператор -= (Clock)
+     * @param[in] other
+     * @return Clock&
      */
-    void set_border_color(int color);
+    Clock &operator-=(const Clock &other);
     /**
-     * @brief Установить цвет заливки
-     * @param[in] color
+     * @brief Оператор постфиксного инкремента
+     * @return unsigned (старое значение)
      */
-    void set_fill_color(int color);
+    unsigned operator++(int);
+    /**
+     * @brief Оператор префиксного инкремента
+     * @return unsigned (новое значение)
+     */
+    unsigned operator++();
+    /**
+     * @brief Оператор постфиксного декремента
+     * @return unsigned (старое значение)
+     */
+    unsigned operator--(int);
+    /**
+     * @brief Оператор префиксного декремента
+     * @return unsigned (новое значение)
+     */
+    unsigned operator--();
 
 private:
-    short m_x0{0}, m_y0{0}, m_x1{0}, m_y1{0};
-    int m_border_color{0};
-    int m_fill_color{255};
+    unsigned tm{0};
+    void clamp();
 };
 
 /*** Methods Implementation ***/
-Rectangle::Rectangle() : m_x0(0), m_y0(0), m_x1(0), m_y1(0), m_border_color(0), m_fill_color(255) {}
-Rectangle::Rectangle(short x0, short y0, short x1, short y1)
-    : m_x0(x0), m_y0(y0), m_x1(x1), m_y1(y1), m_border_color(0), m_fill_color(255) {}
-Rectangle &Rectangle::operator=(const Rectangle &other)
+Clock::Clock() : tm(0) {}
+Clock::Clock(unsigned t) : tm(t) {}
+unsigned Clock::get_time() const { return tm; }
+void Clock::clamp()
 {
-    if (this != &other)
-    {
-        m_x0 = other.m_x0;
-        m_y0 = other.m_y0;
-        m_x1 = other.m_x1;
-        m_y1 = other.m_y1;
-        // Цвета не копируются
-    }
+    if (tm > 0xFFFFFFFF)
+        tm = 0xFFFFFFFF;
+}
+Clock Clock::operator+(const Clock &other) const
+{
+    return Clock(tm + other.tm);
+}
+Clock &Clock::operator+=(unsigned val)
+{
+    tm += val;
+    clamp();
     return *this;
 }
-int Rectangle::get_border_color() const
+Clock &Clock::operator-=(unsigned val)
 {
-    return m_border_color;
+    if (tm < val)
+        tm = 0;
+    else
+        tm -= val;
+    return *this;
 }
-int Rectangle::get_fill_color() const
+Clock &Clock::operator+=(const Clock &other)
 {
-    return m_fill_color;
+    tm += other.tm;
+    clamp();
+    return *this;
 }
-void Rectangle::get_coords(short &x0, short &y0, short &x1, short &y1) const
+Clock &Clock::operator-=(const Clock &other)
 {
-    x0 = m_x0;
-    y0 = m_y0;
-    x1 = m_x1;
-    y1 = m_y1;
+    if (tm < other.tm)
+        tm = 0;
+    else
+        tm -= other.tm;
+    return *this;
 }
-void Rectangle::set_coords(short x0, short y0, short x1, short y1)
+unsigned Clock::operator++(int)
 {
-    m_x0 = x0;
-    m_y0 = y0;
-    m_x1 = x1;
-    m_y1 = y1;
+    unsigned old = tm;
+    ++tm;
+    clamp();
+    return old;
 }
-void Rectangle::set_border_color(int color)
+unsigned Clock::operator++()
 {
-    m_border_color = color;
+    ++tm;
+    clamp();
+    return tm;
 }
-void Rectangle::set_fill_color(int color)
+unsigned Clock::operator--(int)
 {
-    m_fill_color = color;
+    unsigned old = tm;
+    if (tm > 0)
+        --tm;
+    return old;
+}
+unsigned Clock::operator--()
+{
+    if (tm > 0)
+        --tm;
+    return tm;
+}
+
+/*** Main ***/
+int main(void)
+{
+    Clock clock_1(100), clock_2(430);
+    Clock res = clock_1 + clock_2;
+    __ASSERT_TESTS__
+    return 0;
 }

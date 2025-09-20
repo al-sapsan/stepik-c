@@ -1,67 +1,197 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Класс BankAccount, embedded C++ style
+ * @brief Класс PointND, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-16
+ * @date 2025-09-20
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
+#include <cstddef>
 
 /*** Class Definition ***/
 /**
- * @brief Класс BankAccount: банковский счет
+ * @brief Класс PointND: точка в N-мерном пространстве
  */
-class BankAccount
+class PointND
 {
 public:
     /**
-     * @brief Конструктор с ФИО
-     * @param[in] fio владелец счета
+     * @brief Конструктор по умолчанию
      */
-    BankAccount(const std::string &fio);
+    PointND();
     /**
-     * @brief Конструктор с ФИО и суммой
-     * @param[in] fio владелец счета
-     * @param[in] volume сумма в рублях
+     * @brief Конструктор с координатами
+     * @param[in] cds массив координат
+     * @param[in] len размерность
      */
-    BankAccount(const std::string &fio, long volume);
+    PointND(const short *cds, size_t len);
     /**
-     * @brief Оператор присваивания (только сумма)
-     * @param[in] volume сумма в рублях
-     * @return BankAccount&
+     * @brief Конструктор копирования
+     * @param[in] other другой объект PointND
      */
-    BankAccount &operator=(long volume);
+    PointND(const PointND &other);
     /**
-     * @brief Получить ФИО
-     * @return const std::string&
+     * @brief Деструктор
      */
-    const std::string &get_fio() const;
+    ~PointND();
     /**
-     * @brief Получить сумму
-     * @return long
+     * @brief Оператор присваивания (глубокое копирование)
+     * @param[in] other другой объект PointND
+     * @return PointND&
      */
-    long get_volume_rub() const;
+    PointND &operator=(const PointND &other);
+    /**
+     * @brief Оператор доступа по индексу
+     * @param[in] idx индекс
+     * @return short&
+     */
+    short &operator[](size_t idx);
+    /**
+     * @brief Оператор доступа по индексу (const)
+     * @param[in] idx индекс
+     * @return short
+     */
+    short operator[](size_t idx) const;
+    /**
+     * @brief Оператор постфиксного инкремента
+     * @return PointND&
+     */
+    PointND &operator++(int);
+    /**
+     * @brief Оператор префиксного инкремента
+     * @return PointND&
+     */
+    PointND &operator++();
+    /**
+     * @brief Оператор постфиксного декремента
+     * @return PointND&
+     */
+    PointND &operator--(int);
+    /**
+     * @brief Оператор префиксного декремента
+     * @return PointND&
+     */
+    PointND &operator--();
+    /**
+     * @brief Оператор += (PointND)
+     * @param[in] other
+     * @return PointND&
+     */
+    PointND &operator+=(const PointND &other);
+    /**
+     * @brief Оператор -= (PointND)
+     * @param[in] other
+     * @return PointND&
+     */
+    PointND &operator-=(const PointND &other);
+    /**
+     * @brief Получить размерность
+     * @return size_t
+     */
+    size_t get_dims() const;
 
 private:
-    std::string m_fio;
-    long m_volume_rub{0};
+    short *coords{nullptr};
+    size_t dims{0};
 };
 
 /*** Methods Implementation ***/
-BankAccount::BankAccount(const std::string &fio) : m_fio(fio), m_volume_rub(0) {}
-BankAccount::BankAccount(const std::string &fio, long volume) : m_fio(fio), m_volume_rub(volume) {}
-BankAccount &BankAccount::operator=(long volume)
+PointND::PointND() : coords(nullptr), dims(0) {}
+PointND::PointND(const short *cds, size_t len) : coords(nullptr), dims(len)
 {
-    m_volume_rub = volume;
+    if (dims > 0)
+    {
+        coords = new short[dims];
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] = cds[i];
+    }
+}
+PointND::PointND(const PointND &other) : coords(nullptr), dims(other.dims)
+{
+    if (dims > 0)
+    {
+        coords = new short[dims];
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] = other.coords[i];
+    }
+}
+PointND::~PointND()
+{
+    delete[] coords;
+}
+PointND &PointND::operator=(const PointND &other)
+{
+    if (this != &other)
+    {
+        delete[] coords;
+        dims = other.dims;
+        if (dims > 0)
+        {
+            coords = new short[dims];
+            for (size_t i = 0; i < dims; ++i)
+                coords[i] = other.coords[i];
+        }
+        else
+        {
+            coords = nullptr;
+        }
+    }
     return *this;
 }
-const std::string &BankAccount::get_fio() const
+short &PointND::operator[](size_t idx)
 {
-    return m_fio;
+    static short dummy = 0;
+    if (idx < dims)
+        return coords[idx];
+    return dummy;
 }
-long BankAccount::get_volume_rub() const
+short PointND::operator[](size_t idx) const
 {
-    return m_volume_rub;
+    if (idx < dims)
+        return coords[idx];
+    return 0;
 }
+PointND &PointND::operator++(int)
+{
+    for (size_t i = 0; i < dims; ++i)
+        ++coords[i];
+    return *this;
+}
+PointND &PointND::operator++()
+{
+    for (size_t i = 0; i < dims; ++i)
+        ++coords[i];
+    return *this;
+}
+PointND &PointND::operator--(int)
+{
+    for (size_t i = 0; i < dims; ++i)
+        --coords[i];
+    return *this;
+}
+PointND &PointND::operator--()
+{
+    for (size_t i = 0; i < dims; ++i)
+        --coords[i];
+    return *this;
+}
+PointND &PointND::operator+=(const PointND &other)
+{
+    if (dims == other.dims)
+    {
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] += other.coords[i];
+    }
+    return *this;
+}
+PointND &PointND::operator-=(const PointND &other)
+{
+    if (dims == other.dims)
+    {
+        for (size_t i = 0; i < dims; ++i)
+            coords[i] -= other.coords[i];
+    }
+    return *this;
+}
+size_t PointND::get_dims() const { return dims; }

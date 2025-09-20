@@ -1,57 +1,143 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Класс AbsoluteValue, embedded C++ style
+ * @brief Класс LimitLength, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-16
+ * @date 2025-09-19
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <cstdlib>
 
 /*** Class Definition ***/
 /**
- * @brief Класс AbsoluteValue: абсолютное значение
+ * @brief Класс LimitLength: ограниченная длина
  */
-class AbsoluteValue
+class LimitLength
 {
 public:
     /**
-     * @brief Абсолютное значение
+     * @brief Конструктор
+     * @param[in] len длина
      */
-    unsigned long m_value{0};
+    LimitLength(int len = 0);
     /**
-     * @brief Конструктор по умолчанию
+     * @brief Получить длину
+     * @return int
      */
-    AbsoluteValue();
+    int get_length() const;
     /**
-     * @brief Конструктор с параметром
-     * @param[in] val значение
+     * @brief Оператор постфиксного инкремента
+     * @return int (старое значение)
      */
-    AbsoluteValue(long val);
+    int operator++(int);
     /**
-     * @brief Оператор присваивания
-     * @param[in] val значение
-     * @return AbsoluteValue&
+     * @brief Оператор префиксного инкремента
+     * @return int (новое значение)
      */
-    AbsoluteValue &operator=(long val);
+    int operator++();
+    /**
+     * @brief Оператор постфиксного декремента
+     * @return int (старое значение)
+     */
+    int operator--(int);
+    /**
+     * @brief Оператор префиксного декремента
+     * @return int (новое значение)
+     */
+    int operator--();
+    /**
+     * @brief Оператор +=
+     * @param[in] val
+     * @return int (новое значение)
+     */
+    int operator+=(int val);
+    /**
+     * @brief Оператор -=
+     * @param[in] val
+     * @return int (новое значение)
+     */
+    int operator-=(int val);
+    /**
+     * @brief Оператор *=
+     * @param[in] val
+     * @return int (новое значение)
+     */
+    int operator*=(int val);
+    /**
+     * @brief Оператор /=
+     * @param[in] val
+     * @return int (новое значение)
+     */
+    int operator/=(int val);
+
+private:
+    enum
+    {
+        min_length = -10,
+        max_length = 10
+    };
+    int length{0};
+    void clamp();
 };
 
 /*** Methods Implementation ***/
-AbsoluteValue::AbsoluteValue() : m_value(0) {}
-AbsoluteValue::AbsoluteValue(long val) : m_value(val < 0 ? static_cast<unsigned long>(-val) : static_cast<unsigned long>(val)) {}
-AbsoluteValue &AbsoluteValue::operator=(long val)
+LimitLength::LimitLength(int len) : length(len) { clamp(); }
+int LimitLength::get_length() const { return length; }
+void LimitLength::clamp()
 {
-    m_value = val < 0 ? static_cast<unsigned long>(-val) : static_cast<unsigned long>(val);
-    return *this;
+    if (length < min_length)
+        length = min_length;
+    if (length > max_length)
+        length = max_length;
 }
-
-/*** Main ***/
-int main(void)
+int LimitLength::operator++(int)
 {
-    AbsoluteValue *ptr_abv = new AbsoluteValue;
-    *ptr_abv = -512;
-    __ASSERT_TESTS__
-    delete ptr_abv;
-    return 0;
+    int old = length;
+    ++length;
+    clamp();
+    return old;
+}
+int LimitLength::operator++()
+{
+    ++length;
+    clamp();
+    return length;
+}
+int LimitLength::operator--(int)
+{
+    int old = length;
+    --length;
+    clamp();
+    return old;
+}
+int LimitLength::operator--()
+{
+    --length;
+    clamp();
+    return length;
+}
+int LimitLength::operator+=(int val)
+{
+    length += val;
+    clamp();
+    return length;
+}
+int LimitLength::operator-=(int val)
+{
+    length -= val;
+    clamp();
+    return length;
+}
+int LimitLength::operator*=(int val)
+{
+    length *= val;
+    clamp();
+    return length;
+}
+int LimitLength::operator/=(int val)
+{
+    if (val != 0)
+        length /= val;
+    clamp();
+    return length;
 }
