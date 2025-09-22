@@ -1,165 +1,132 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс BottleWater, embedded C++ style
+ * @brief ConvertToInt, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-19
+ * @date 2025-09-22
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <string>
+#include <cstdint>
+
+/*** Data Types ***/
+typedef int32_t i32_t;
+typedef int16_t i16_t;
+typedef uint32_t u32_t;
 
 /*** Class Definition ***/
+
 /**
- * @brief Класс BottleWater: бутылка воды
+ * @brief Класс конвертации C-строк в целые числа типа i32_t
+ *
+ * Разрешённые символы:
+ * - ведущий знак '+' или '-';
+ * - цифры '0'..'9';
+ * - один символ '.' (точка) — дробная часть игнорируется.
+ * Любой другой символ приводит к ошибке конвертации и результату 0.
  */
-class BottleWater
+class ConvertToInt
 {
 public:
     /**
-     * @brief Конструктор
-     * @param[in] volume объем воды
+     * @brief Преобразует C-строку в i32_t
+     * @param str_ptr Указатель на нуль-терминированную строку
+     * @return Сконвертированное число или 0 при ошибке
      */
-    BottleWater(short volume = 0);
+    i32_t operator()(const char* str_ptr);
+
     /**
-     * @brief Получить объем воды
-     * @return short
+     * @brief Признак ошибки последней конвертации
+     * @return false — без ошибок; true — была ошибка
      */
-    short get_volume() const;
-    /**
-     * @brief Оператор +
-     * @param[in] other
-     * @return BottleWater
-     */
-    BottleWater operator+(const BottleWater &other) const;
-    /**
-     * @brief Оператор += (short)
-     * @param[in] val
-     * @return BottleWater&
-     */
-    BottleWater &operator+=(short val);
-    /**
-     * @brief Оператор -= (short)
-     * @param[in] val
-     * @return BottleWater&
-     */
-    BottleWater &operator-=(short val);
-    /**
-     * @brief Оператор *= (short)
-     * @param[in] val
-     * @return BottleWater&
-     */
-    BottleWater &operator*=(short val);
-    /**
-     * @brief Оператор /= (short)
-     * @param[in] val
-     * @return BottleWater&
-     */
-    BottleWater &operator/=(short val);
-    /**
-     * @brief Оператор += (BottleWater)
-     * @param[in] other
-     * @return BottleWater&
-     */
-    BottleWater &operator+=(const BottleWater &other);
-    /**
-     * @brief Оператор -= (BottleWater)
-     * @param[in] other
-     * @return BottleWater&
-     */
-    BottleWater &operator-=(const BottleWater &other);
-    /**
-     * @brief Оператор *= (BottleWater)
-     * @param[in] other
-     * @return BottleWater&
-     */
-    BottleWater &operator*=(const BottleWater &other);
-    /**
-     * @brief Оператор /= (BottleWater)
-     * @param[in] other
-     * @return BottleWater&
-     */
-    BottleWater &operator/=(const BottleWater &other);
+    bool is_error() const;
 
 private:
-    enum
-    {
-        max_volume = 640
-    };
-    short volume{0};
-    void clamp();
+    bool m_error_b {false};
 };
 
 /*** Methods Implementation ***/
-BottleWater::BottleWater(short volume_) : volume(volume_) { clamp(); }
-short BottleWater::get_volume() const { return volume; }
-void BottleWater::clamp()
+
+i32_t ConvertToInt::operator()(const char* str_ptr)
 {
-    if (volume < 0)
-        volume = 0;
-    if (volume > max_volume)
-        volume = max_volume;
+    m_error_b = false;
+    if (str_ptr == nullptr)
+    {
+        m_error_b = true;
+        return 0;
+    }
+
+    // Парсинг знака
+    i32_t sign = 1;
+    const char* p = str_ptr;
+    if (*p == '+')
+    {
+        ++p;
+    }
+    else if (*p == '-')
+    {
+        sign = -1;
+        ++p;
+    }
+
+    // Должна быть хотя бы одна цифра до возможной точки
+    bool has_digit_before_dot = false;
+    i32_t value = 0;
+
+    while (*p >= '0' && *p <= '9')
+    {
+        has_digit_before_dot = true;
+        value = value * 10 + static_cast<i32_t>(*p - '0');
+        ++p;
+    }
+
+    // Обработка дробной части (после первой точки)
+    if (*p == '.')
+    {
+        ++p; // пропускаем точку
+        // после точки допускаются только цифры; дробная часть отбрасывается
+        while (*p >= '0' && *p <= '9')
+        {
+            ++p;
+        }
+    }
+
+    // Если первая часть не содержит цифр — ошибка
+    if (!has_digit_before_dot)
+    {
+        m_error_b = true;
+        return 0;
+    }
+
+    // Любой оставшийся символ — ошибка
+    if (*p != '\0')
+    {
+        m_error_b = true;
+        return 0;
+    }
+
+    return sign * value;
 }
-BottleWater BottleWater::operator+(const BottleWater &other) const
+
+bool ConvertToInt::is_error() const
 {
-    BottleWater res(volume + other.volume);
-    return res;
-}
-BottleWater &BottleWater::operator+=(short val)
-{
-    volume += val;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator-=(short val)
-{
-    volume -= val;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator*=(short val)
-{
-    volume *= val;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator/=(short val)
-{
-    if (val != 0)
-        volume /= val;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator+=(const BottleWater &other)
-{
-    volume += other.volume;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator-=(const BottleWater &other)
-{
-    volume -= other.volume;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator*=(const BottleWater &other)
-{
-    volume *= other.volume;
-    clamp();
-    return *this;
-}
-BottleWater &BottleWater::operator/=(const BottleWater &other)
-{
-    if (other.volume != 0)
-        volume /= other.volume;
-    clamp();
-    return *this;
+    return m_error_b;
 }
 
 /*** Main ***/
-int main(void)
+int main()
 {
-    BottleWater bw1(40), bw2(200);
-    BottleWater res = bw1 + bw2;
-    __ASSERT_TESTS__
+    std::string digit;
+    getline(std::cin, digit);
+
+    const char* str = digit.c_str(); // массив символов char с прочитанной строкой
+
+    ConvertToInt str_to_int;
+    i32_t result = str_to_int(str);
+    std::cout << result << std::endl;
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+
     return 0;
 }

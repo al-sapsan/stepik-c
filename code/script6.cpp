@@ -1,143 +1,124 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Класс LimitLength, embedded C++ style
+ * @brief Класс Stack и Object, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-19
+ * @date 2025-09-22
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
+#include <memory>
+#include <vector>
 
 /*** Class Definition ***/
 /**
- * @brief Класс LimitLength: ограниченная длина
+ * @brief Класс Object: элемент стека
  */
-class LimitLength
+class Object
+{
+    int data{0};
+    std::shared_ptr<Object> next{nullptr};
+
+public:
+    Object(int d);
+    int get_data() const;
+    std::shared_ptr<Object> &get_next();
+};
+using shared_obj_ptr = std::shared_ptr<Object>;
+
+/**
+ * @brief Класс Stack: стек
+ */
+class Stack
 {
 public:
-    /**
-     * @brief Конструктор
-     * @param[in] len длина
-     */
-    LimitLength(int len = 0);
-    /**
-     * @brief Получить длину
-     * @return int
-     */
-    int get_length() const;
-    /**
-     * @brief Оператор постфиксного инкремента
-     * @return int (старое значение)
-     */
-    int operator++(int);
-    /**
-     * @brief Оператор префиксного инкремента
-     * @return int (новое значение)
-     */
-    int operator++();
-    /**
-     * @brief Оператор постфиксного декремента
-     * @return int (старое значение)
-     */
-    int operator--(int);
-    /**
-     * @brief Оператор префиксного декремента
-     * @return int (новое значение)
-     */
-    int operator--();
-    /**
-     * @brief Оператор +=
-     * @param[in] val
-     * @return int (новое значение)
-     */
-    int operator+=(int val);
-    /**
-     * @brief Оператор -=
-     * @param[in] val
-     * @return int (новое значение)
-     */
-    int operator-=(int val);
-    /**
-     * @brief Оператор *=
-     * @param[in] val
-     * @return int (новое значение)
-     */
-    int operator*=(int val);
-    /**
-     * @brief Оператор /=
-     * @param[in] val
-     * @return int (новое значение)
-     */
-    int operator/=(int val);
-
+    Stack();
+    Stack(const Stack &other);
+    Stack &operator=(const Stack &other);
+    shared_obj_ptr get_top();
+    void push(int data);
+    shared_obj_ptr pop();
+    Stack &operator+=(int data);
+    Stack &operator--();   // prefix
+    Stack operator--(int); // postfix
 private:
-    enum
-    {
-        min_length = -10,
-        max_length = 10
-    };
-    int length{0};
-    void clamp();
+    shared_obj_ptr top{nullptr};
+    void clear();
 };
 
 /*** Methods Implementation ***/
-LimitLength::LimitLength(int len) : length(len) { clamp(); }
-int LimitLength::get_length() const { return length; }
-void LimitLength::clamp()
+Object::Object(int d) : data(d), next(nullptr) {}
+int Object::get_data() const { return data; }
+std::shared_ptr<Object> &Object::get_next() { return next; }
+
+Stack::Stack() : top(nullptr) {}
+Stack::Stack(const Stack &other) : top(nullptr)
 {
-    if (length < min_length)
-        length = min_length;
-    if (length > max_length)
-        length = max_length;
+    if (!other.top)
+        return;
+    // Copy all nodes
+    std::vector<int> vals;
+    shared_obj_ptr cur = other.top;
+    while (cur)
+    {
+        vals.push_back(cur->get_data());
+        cur = cur->get_next();
+    }
+    for (auto it = vals.rbegin(); it != vals.rend(); ++it)
+        push(*it);
 }
-int LimitLength::operator++(int)
+Stack &Stack::operator=(const Stack &other)
 {
-    int old = length;
-    ++length;
-    clamp();
-    return old;
+    if (this != &other)
+    {
+        clear();
+        if (!other.top)
+            return *this;
+        std::vector<int> vals;
+        shared_obj_ptr cur = other.top;
+        while (cur)
+        {
+            vals.push_back(cur->get_data());
+            cur = cur->get_next();
+        }
+        for (auto it = vals.rbegin(); it != vals.rend(); ++it)
+            push(*it);
+    }
+    return *this;
 }
-int LimitLength::operator++()
+void Stack::clear()
 {
-    ++length;
-    clamp();
-    return length;
+    while (top)
+        pop();
 }
-int LimitLength::operator--(int)
+shared_obj_ptr Stack::get_top() { return top; }
+void Stack::push(int data)
 {
-    int old = length;
-    --length;
-    clamp();
-    return old;
+    shared_obj_ptr node = std::make_shared<Object>(data);
+    node->get_next() = top;
+    top = node;
 }
-int LimitLength::operator--()
+shared_obj_ptr Stack::pop()
 {
-    --length;
-    clamp();
-    return length;
+    if (!top)
+        return nullptr;
+    shared_obj_ptr ptr = top;
+    top = top->get_next();
+    return ptr;
 }
-int LimitLength::operator+=(int val)
+Stack &Stack::operator+=(int data)
 {
-    length += val;
-    clamp();
-    return length;
+    push(data);
+    return *this;
 }
-int LimitLength::operator-=(int val)
+Stack &Stack::operator--()
 {
-    length -= val;
-    clamp();
-    return length;
+    pop();
+    return *this;
 }
-int LimitLength::operator*=(int val)
+Stack Stack::operator--(int)
 {
-    length *= val;
-    clamp();
-    return length;
-}
-int LimitLength::operator/=(int val)
-{
-    if (val != 0)
-        length /= val;
-    clamp();
-    return length;
+    Stack temp(*this);
+    pop();
+    return temp;
 }
