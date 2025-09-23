@@ -1,132 +1,61 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief ConvertToInt, embedded C++ style
+ * @brief Класс SquareValue, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-22
+ * @date 2025-09-23
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
 #include <string>
-#include <cstdint>
-
-/*** Data Types ***/
-typedef int32_t i32_t;
-typedef int16_t i16_t;
-typedef uint32_t u32_t;
 
 /*** Class Definition ***/
-
 /**
- * @brief Класс конвертации C-строк в целые числа типа i32_t
- *
- * Разрешённые символы:
- * - ведущий знак '+' или '-';
- * - цифры '0'..'9';
- * - один символ '.' (точка) — дробная часть игнорируется.
- * Любой другой символ приводит к ошибке конвертации и результату 0.
+ * @brief Класс SquareValue
  */
-class ConvertToInt
+class SquareValue
 {
+private:
+    unsigned m_value; ///< Квадрат числа
 public:
     /**
-     * @brief Преобразует C-строку в i32_t
-     * @param str_ptr Указатель на нуль-терминированную строку
-     * @return Сконвертированное число или 0 при ошибке
+     * @brief Конструктор по умолчанию
      */
-    i32_t operator()(const char* str_ptr);
-
+    SquareValue() : m_value(0) {}
     /**
-     * @brief Признак ошибки последней конвертации
-     * @return false — без ошибок; true — была ошибка
+     * @brief Конструктор с параметром
+     * @param[in] val Число
      */
-    bool is_error() const;
-
-private:
-    bool m_error_b {false};
+    SquareValue(int val) : m_value(static_cast<unsigned>(val * val)) {}
+    /**
+     * @brief Оператор присваивания
+     * @param[in] val Число
+     * @return Ссылка на объект
+     */
+    SquareValue &operator=(int val)
+    {
+        m_value = static_cast<unsigned>(val * val);
+        return *this;
+    }
+    /**
+     * @brief Оператор преобразования к unsigned
+     * @return Квадрат числа
+     */
+    operator unsigned() const { return m_value; }
+    /**
+     * @brief Получить значение
+     * @return Квадрат числа
+     */
+    unsigned get_value() const { return m_value; }
 };
 
-/*** Methods Implementation ***/
-
-i32_t ConvertToInt::operator()(const char* str_ptr)
-{
-    m_error_b = false;
-    if (str_ptr == nullptr)
-    {
-        m_error_b = true;
-        return 0;
-    }
-
-    // Парсинг знака
-    i32_t sign = 1;
-    const char* p = str_ptr;
-    if (*p == '+')
-    {
-        ++p;
-    }
-    else if (*p == '-')
-    {
-        sign = -1;
-        ++p;
-    }
-
-    // Должна быть хотя бы одна цифра до возможной точки
-    bool has_digit_before_dot = false;
-    i32_t value = 0;
-
-    while (*p >= '0' && *p <= '9')
-    {
-        has_digit_before_dot = true;
-        value = value * 10 + static_cast<i32_t>(*p - '0');
-        ++p;
-    }
-
-    // Обработка дробной части (после первой точки)
-    if (*p == '.')
-    {
-        ++p; // пропускаем точку
-        // после точки допускаются только цифры; дробная часть отбрасывается
-        while (*p >= '0' && *p <= '9')
-        {
-            ++p;
-        }
-    }
-
-    // Если первая часть не содержит цифр — ошибка
-    if (!has_digit_before_dot)
-    {
-        m_error_b = true;
-        return 0;
-    }
-
-    // Любой оставшийся символ — ошибка
-    if (*p != '\0')
-    {
-        m_error_b = true;
-        return 0;
-    }
-
-    return sign * value;
-}
-
-bool ConvertToInt::is_error() const
-{
-    return m_error_b;
-}
-
-/*** Main ***/
 int main()
 {
-    std::string digit;
-    getline(std::cin, digit);
+    // Создание объекта и ссылок
+    SquareValue sq(9);
+    SquareValue &lnk_sq = sq;
+    SquareValue &&lnk_r_sq = SquareValue(9);
 
-    const char* str = digit.c_str(); // массив символов char с прочитанной строкой
-
-    ConvertToInt str_to_int;
-    i32_t result = str_to_int(str);
-    std::cout << result << std::endl;
-
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
-
-    return 0;
+    __ASSERT_TESTS__ // макроопределение для тестирования
+        return 0;
 }

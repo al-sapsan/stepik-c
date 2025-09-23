@@ -1,120 +1,140 @@
-/************************************************************************
- * 1. General Information (filename, purpose, platform, version, date)
+/**********************************************************************
  * @file script3.cpp
- * @brief RandomPassword class implementation (embedded-style, no I/O, no main)
- * @version 1.0 (Generic Embedded C++)
- * @date 2025-09-22
- *
- * @warning Uses rand(); seed externally with srand() before generating
- * @note Fixed-size internal buffers, no dynamic containers
- *************************************************************************/
+ * @brief Класс Distance, embedded C++ style
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-09-23
+ **********************************************************************/
 
-//==============================================================================
-// 2. Libraries used (grouped by purpose)
-//==============================================================================
-/* *** Core *** */
-#include "emb_style_cpp.h"
-
-/* *** C stdlib *** */
-#include <cstdlib>
-
-/* *** C++ stdlib (task API) *** */
+/*** Core ***/
+#include <iostream>
 #include <string>
 
-//==============================================================================
-// 3. Data types
-//==============================================================================
-/* *** Typedefs ***
- * Types are provided by emb_style_cpp.h: i16_t, u16_t, ch_t, etc.
- */
-
-//==============================================================================
-// 4. Constants
-//==============================================================================
-/* *** Constants *** */
-constexpr u16_t MAX_CHARSET_SIZE = 128U;
-
-//==============================================================================
-// 5. Function Prototypes (Doxygen)
-//==============================================================================
-/* Not applicable: class is defined below with inline methods */
-
-//==============================================================================
-// 6. Main function
-//==============================================================================
-/* Not applicable per task: no main() and no I/O */
-
-//==============================================================================
-// 7. Function implementations
-//==============================================================================
-/*** RandomPassword class ***/
+/*** Class Definition ***/
 /**
- * @brief Random password generator (embedded-style, no I/O, no main)
+ * @brief Класс Distance
  */
-class RandomPassword
+class Distance
 {
 public:
-	//============================================================================
-	// Public API
-	//============================================================================
 	/**
-	 * @brief Construct a new RandomPassword object
-	 * @param psw_chars Allowed characters (std::string as per task)
-	 * @param min_length Minimal password length (inclusive)
-	 * @param max_length Maximal password length (inclusive)
+	 * @brief Конструктор по умолчанию
 	 */
-	RandomPassword(const std::string &psw_chars, int min_length, int max_length)
-	{
-		if (min_length < 0) { min_length = 0; }
-		if (max_length < 0) { max_length = 0; }
-		if (min_length > max_length) { int t = min_length; min_length = max_length; max_length = t; }
-		m_min_len_i16 = static_cast<i16_t>(min_length);
-		m_max_len_i16 = static_cast<i16_t>(max_length);
-
-		i16_t copy_len = static_cast<i16_t>(psw_chars.size());
-		if (copy_len > static_cast<i16_t>(MAX_CHARSET_SIZE)) { copy_len = static_cast<i16_t>(MAX_CHARSET_SIZE); }
-		for (i16_t i = 0; i < copy_len; ++i)
-		{
-			m_charset_buf[i] = psw_chars[static_cast<size_t>(i)];
-		}
-		m_charset_len_i16 = copy_len;
-
-		if (m_charset_len_i16 == 0)
-		{
-			m_charset_buf[0] = 'a';
-			m_charset_len_i16 = 1;
-		}
-		if (m_min_len_i16 <= 0 && m_max_len_i16 <= 0)
-		{
-			m_min_len_i16 = 1;
-			m_max_len_i16 = 1;
-		}
-	}
-
+	Distance() : m_dist(0) {}
 	/**
-	 * @brief Generate a random password
-	 * @return std::string password
+	 * @brief Конструктор с параметром
+	 * @param[in] d Дистанция
 	 */
-	std::string operator()() const
+	Distance(int d) : m_dist(d) {}
+	/**
+	 * @brief Деструктор
+	 */
+	~Distance() {}
+	/**
+	 * @brief Конструктор копирования
+	 * @param[in] other Другой объект
+	 */
+	Distance(const Distance &other) : m_dist(other.m_dist) {}
+	/**
+	 * @brief Оператор копирующего присваивания
+	 * @param[in] other Другой объект
+	 * @return Ссылка на объект
+	 */
+	Distance &operator=(const Distance &other)
 	{
-		i16_t range = static_cast<i16_t>(m_max_len_i16 - m_min_len_i16 + 1);
-		i16_t psw_len = static_cast<i16_t>(m_min_len_i16 + (range > 0 ? (std::rand() % range) : 0));
-		std::string psw;
-		psw.reserve(static_cast<size_t>(psw_len));
-		for (i16_t i = 0; i < psw_len; ++i)
-		{
-			i16_t idx = static_cast<i16_t>(std::rand() % m_charset_len_i16);
-			psw.push_back(m_charset_buf[static_cast<size_t>(idx)]);
-		}
-		return psw;
+		if (this != &other)
+			m_dist = other.m_dist;
+		return *this;
 	}
+	/**
+	 * @brief Оператор перемещающего присваивания
+	 * @param[in] other Другой объект
+	 * @return Ссылка на объект
+	 */
+	Distance &operator=(Distance &&other) noexcept
+	{
+		if (this != &other)
+			m_dist = other.m_dist;
+		return *this;
+	}
+	/**
+	 * @brief Конструктор перемещения
+	 * @param[in] other Другой объект
+	 */
+	Distance(Distance &&other) noexcept : m_dist(other.m_dist) {}
+	/**
+	 * @brief Оператор присваивания int
+	 * @param[in] d Дистанция
+	 * @return Ссылка на объект
+	 */
+	Distance &operator=(int d)
+	{
+		m_dist = d;
+		return *this;
+	}
+	/**
+	 * @brief Оператор +=
+	 * @param[in] d Дистанция
+	 * @return Ссылка на объект
+	 */
+	Distance &operator+=(int d)
+	{
+		m_dist += d;
+		return *this;
+	}
+	/**
+	 * @brief Оператор -=
+	 * @param[in] d Дистанция
+	 * @return Ссылка на объект
+	 */
+	Distance &operator-=(int d)
+	{
+		m_dist -= d;
+		return *this;
+	}
+	/**
+	 * @brief Оператор *=
+	 * @param[in] d Множитель
+	 * @return Ссылка на объект
+	 */
+	Distance &operator*=(int d)
+	{
+		m_dist *= d;
+		return *this;
+	}
+	/**
+	 * @brief Оператор /=
+	 * @param[in] d Делитель
+	 * @return Ссылка на объект
+	 */
+	Distance &operator/=(int d)
+	{
+		m_dist /= d;
+		return *this;
+	}
+	/**
+	 * @brief Оператор вызова
+	 * @return Значение дистанции
+	 */
+	int operator()() const { return m_dist; }
+	/**
+	 * @brief Получить значение
+	 * @return Значение дистанции
+	 */
+	int get_dist() const { return m_dist; }
 
 private:
-	//============================================================================
-	// Private data
-	//============================================================================
-	ch_t m_charset_buf[MAX_CHARSET_SIZE] = {0};
-	i16_t m_charset_len_i16 = 0;
-	i16_t m_min_len_i16 = 1;
-	i16_t m_max_len_i16 = 1;
+	int m_dist; ///< Дистанция
 };
+
+/*** Main ***/
+int main()
+{
+	// Создание объекта и ссылок
+	Distance d(547);
+	Distance &lnk_d = d;
+	Distance &&lnk_r_d = static_cast<Distance &&>(d);
+	lnk_r_d += 100;
+
+	__ASSERT_TESTS__ // макроопределение для тестирования
+		return 0;
+}

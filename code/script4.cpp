@@ -1,55 +1,100 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Класс RandomPassword, embedded C++ style
+ * @brief Класс CoordsND, embedded C++ style
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-22
+ * @date 2025-09-23
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
 
 /*** Class Definition ***/
 /**
- * @brief Класс RandomPassword: генератор случайных паролей
+ * @brief Класс CoordsND (координаты в N-мерном пространстве)
  */
-class RandomPassword
+class CoordsND
 {
 public:
+    enum
+    {
+        max_coords = 10
+    };
     /**
-     * @brief Конструктор
-     * @param[in] chars разрешенные символы
-     * @param[in] min_len минимальная длина
-     * @param[in] max_len максимальная длина
+     * @brief Конструктор по списку
+     * @param[in] lst Массив координат
+     * @param[in] sz Количество координат
      */
-    RandomPassword(const std::string &chars, int min_len, int max_len);
+    CoordsND(int *lst, int sz);
     /**
-     * @brief Генерация пароля
-     * @return std::string
+     * @brief Деструктор
      */
-    std::string operator()() const;
+    ~CoordsND();
+    /**
+     * @brief Конструктор копирования
+     * @param[in] other Другой объект
+     */
+    CoordsND(const CoordsND &other);
+    /**
+     * @brief Конструктор перемещения
+     * @param[in] other Другой объект
+     */
+    CoordsND(CoordsND &&other) noexcept;
+    /**
+     * @brief Оператор присваивания копированием
+     * @param[in] other Другой объект
+     * @return Ссылка на объект
+     */
+    CoordsND &operator=(const CoordsND &other);
+    /**
+     * @brief Получить координаты
+     * @return Указатель на массив координат
+     */
+    int *get_coords();
+    /**
+     * @brief Получить размер
+     * @return Количество координат
+     */
+    int get_size() const;
 
 private:
-    std::string psw_chars;
-    int min_length{0}, max_length{0};
+    int *coords; ///< Массив координат
+    int size;    ///< Количество координат
 };
 
 /*** Methods Implementation ***/
-RandomPassword::RandomPassword(const std::string &chars, int min_len, int max_len)
-    : psw_chars(chars), min_length(min_len), max_length(max_len)
+CoordsND::CoordsND(int *lst, int sz)
 {
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    size = (sz > max_coords) ? max_coords : sz;
+    coords = new int[size];
+    for (int i = 0; i < size; ++i)
+        coords[i] = lst[i];
 }
-std::string RandomPassword::operator()() const
+CoordsND::~CoordsND() { delete[] coords; }
+CoordsND::CoordsND(const CoordsND &other)
 {
-    int len = min_length + std::rand() % (max_length - min_length + 1);
-    std::string result;
-    for (int i = 0; i < len; ++i)
+    size = other.size;
+    coords = new int[size];
+    for (int i = 0; i < size; ++i)
+        coords[i] = other.coords[i];
+}
+CoordsND::CoordsND(CoordsND &&other) noexcept
+{
+    size = other.size;
+    coords = other.coords;
+    other.coords = nullptr;
+    other.size = 0;
+}
+CoordsND &CoordsND::operator=(const CoordsND &other)
+{
+    if (this != &other)
     {
-        int idx = std::rand() % psw_chars.size();
-        result += psw_chars[idx];
+        delete[] coords;
+        size = other.size;
+        coords = new int[size];
+        for (int i = 0; i < size; ++i)
+            coords[i] = other.coords[i];
     }
-    return result;
+    return *this;
 }
+int *CoordsND::get_coords() { return coords; }
+int CoordsND::get_size() const { return size; }

@@ -1,74 +1,133 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Класс ExtensionFilter, embedded C++ style
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-22
+ * @brief Класс CoordsND, embedded C++ style
+ * @version 1.1 (Embedded C++ style)
+ * @date 2025-09-23
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
-#include <vector>
-#include <sstream>
 
 /*** Class Definition ***/
 /**
- * @brief Класс ExtensionFilter: фильтр по расширениям файлов
+ * @brief Класс CoordsND (координаты в N-мерном пространстве)
  */
-class ExtensionFilter
+class CoordsND
 {
 public:
+    enum
+    {
+        max_coords = 10
+    };
     /**
-     * @brief Конструктор
-     * @param[in] ext_str строка расширений через '|'
+     * @brief Конструктор по умолчанию
      */
-    ExtensionFilter(const std::string &ext_str);
+    CoordsND();
     /**
-     * @brief Фильтрация файлов по расширениям
-     * @param[in] lst массив файлов
-     * @param[in] size_lst размер массива lst
-     * @param[out] flt_lst массив для результата
-     * @param[in] max_count максимальный размер flt_lst
-     * @return int число отобранных файлов
+     * @brief Конструктор по списку
+     * @param[in] lst Массив координат
+     * @param[in] sz Количество координат
      */
-    int operator()(const std::string *lst, int size_lst, std::string *flt_lst, int max_count) const;
+    CoordsND(int *lst, int sz);
+    /**
+     * @brief Деструктор
+     */
+    ~CoordsND();
+    /**
+     * @brief Конструктор копирования
+     * @param[in] other Другой объект
+     */
+    CoordsND(const CoordsND &other);
+    /**
+     * @brief Конструктор перемещения
+     * @param[in] other Другой объект
+     */
+    CoordsND(CoordsND &&other) noexcept;
+    /**
+     * @brief Оператор присваивания копированием
+     * @param[in] other Другой объект
+     * @return Ссылка на объект
+     */
+    CoordsND &operator=(const CoordsND &other);
+    /**
+     * @brief Оператор присваивания перемещением
+     * @param[in] other Другой объект
+     * @return Ссылка на объект
+     */
+    CoordsND &operator=(CoordsND &&other) noexcept;
+    /**
+     * @brief Получить координаты
+     * @return Указатель на массив координат
+     */
+    int *get_coords();
+    /**
+     * @brief Получить размер
+     * @return Количество координат
+     */
+    int get_size() const;
 
 private:
-    std::vector<std::string> extensions;
-    static std::string get_extension(const std::string &filename);
+    int *coords; ///< Массив координат
+    int size;    ///< Количество координат
 };
 
 /*** Methods Implementation ***/
-ExtensionFilter::ExtensionFilter(const std::string &ext_str)
+CoordsND::CoordsND() : coords(nullptr), size(0) {}
+CoordsND::CoordsND(int *lst, int sz)
 {
-    std::stringstream ss(ext_str);
-    std::string ext;
-    while (std::getline(ss, ext, '|'))
-    {
-        extensions.push_back(ext);
-    }
+    size = (sz > max_coords) ? max_coords : sz;
+    coords = new int[size];
+    for (int i = 0; i < size; ++i)
+        coords[i] = lst[i];
 }
-std::string ExtensionFilter::get_extension(const std::string &filename)
+CoordsND::~CoordsND() { delete[] coords; }
+CoordsND::CoordsND(const CoordsND &other)
 {
-    size_t pos = filename.rfind('.');
-    if (pos == std::string::npos || pos == filename.length() - 1)
-        return "";
-    return filename.substr(pos + 1);
+    size = other.size;
+    coords = new int[size];
+    for (int i = 0; i < size; ++i)
+        coords[i] = other.coords[i];
 }
-int ExtensionFilter::operator()(const std::string *lst, int size_lst, std::string *flt_lst, int max_count) const
+CoordsND::CoordsND(CoordsND &&other) noexcept
 {
-    int count = 0;
-    for (int i = 0; i < size_lst && count < max_count; ++i)
+    size = other.size;
+    coords = other.coords;
+    other.coords = nullptr;
+    other.size = 0;
+}
+CoordsND &CoordsND::operator=(const CoordsND &other)
+{
+    if (this != &other)
     {
-        std::string ext = get_extension(lst[i]);
-        for (const auto &allowed : extensions)
-        {
-            if (ext == allowed)
-            {
-                flt_lst[count++] = lst[i];
-                break;
-            }
-        }
+        delete[] coords;
+        size = other.size;
+        coords = new int[size];
+        for (int i = 0; i < size; ++i)
+            coords[i] = other.coords[i];
     }
-    return count;
+    return *this;
+}
+CoordsND &CoordsND::operator=(CoordsND &&other) noexcept
+{
+    if (this != &other)
+    {
+        delete[] coords;
+        size = other.size;
+        coords = other.coords;
+        other.coords = nullptr;
+        other.size = 0;
+    }
+    return *this;
+}
+int *CoordsND::get_coords() { return coords; }
+int CoordsND::get_size() const { return size; }
+
+/*** Main ***/
+int main()
+{
+    int arr[] = {-4, 10, 0, 77, 14};
+    CoordsND coords(arr, 5);
+
+    __ASSERT_TESTS__ // макроопределение для тестирования
+        return 0;
 }
