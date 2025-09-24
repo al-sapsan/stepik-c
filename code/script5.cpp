@@ -1,8 +1,8 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Класс CoordsND, embedded C++ style
- * @version 1.1 (Embedded C++ style)
- * @date 2025-09-23
+ * @brief Класс Wallet (embedded C++ style)
+ * @version 1.0 (Embedded C++ style)
+ * @date 2025-09-24
  **********************************************************************/
 
 /*** Core ***/
@@ -10,123 +10,35 @@
 
 /*** Class Definition ***/
 /**
- * @brief Класс CoordsND (координаты в N-мерном пространстве)
+ * @brief Класс Wallet
  */
-class CoordsND
+class Wallet
 {
-public:
-    enum
-    {
-        max_coords = 10
-    };
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    CoordsND();
-    /**
-     * @brief Конструктор по списку
-     * @param[in] lst Массив координат
-     * @param[in] sz Количество координат
-     */
-    CoordsND(int *lst, int sz);
-    /**
-     * @brief Деструктор
-     */
-    ~CoordsND();
-    /**
-     * @brief Конструктор копирования
-     * @param[in] other Другой объект
-     */
-    CoordsND(const CoordsND &other);
-    /**
-     * @brief Конструктор перемещения
-     * @param[in] other Другой объект
-     */
-    CoordsND(CoordsND &&other) noexcept;
-    /**
-     * @brief Оператор присваивания копированием
-     * @param[in] other Другой объект
-     * @return Ссылка на объект
-     */
-    CoordsND &operator=(const CoordsND &other);
-    /**
-     * @brief Оператор присваивания перемещением
-     * @param[in] other Другой объект
-     * @return Ссылка на объект
-     */
-    CoordsND &operator=(CoordsND &&other) noexcept;
-    /**
-     * @brief Получить координаты
-     * @return Указатель на массив координат
-     */
-    int *get_coords();
-    /**
-     * @brief Получить размер
-     * @return Количество координат
-     */
-    int get_size() const;
-
 private:
-    int *coords; ///< Массив координат
-    int size;    ///< Количество координат
+    int volume;
+    bool check_volume(int x);
+
+public:
+    explicit Wallet(int vol);
+    void add(int vol);
+    int get_volume();
 };
 
 /*** Methods Implementation ***/
-CoordsND::CoordsND() : coords(nullptr), size(0) {}
-CoordsND::CoordsND(int *lst, int sz)
+Wallet::Wallet(int vol) : volume(vol) {}
+bool Wallet::check_volume(int x) { return x >= 0; }
+void Wallet::add(int vol)
 {
-    size = (sz > max_coords) ? max_coords : sz;
-    coords = new int[size];
-    for (int i = 0; i < size; ++i)
-        coords[i] = lst[i];
+    if (check_volume(vol))
+        volume += vol;
 }
-CoordsND::~CoordsND() { delete[] coords; }
-CoordsND::CoordsND(const CoordsND &other)
-{
-    size = other.size;
-    coords = new int[size];
-    for (int i = 0; i < size; ++i)
-        coords[i] = other.coords[i];
-}
-CoordsND::CoordsND(CoordsND &&other) noexcept
-{
-    size = other.size;
-    coords = other.coords;
-    other.coords = nullptr;
-    other.size = 0;
-}
-CoordsND &CoordsND::operator=(const CoordsND &other)
-{
-    if (this != &other)
-    {
-        delete[] coords;
-        size = other.size;
-        coords = new int[size];
-        for (int i = 0; i < size; ++i)
-            coords[i] = other.coords[i];
-    }
-    return *this;
-}
-CoordsND &CoordsND::operator=(CoordsND &&other) noexcept
-{
-    if (this != &other)
-    {
-        delete[] coords;
-        size = other.size;
-        coords = other.coords;
-        other.coords = nullptr;
-        other.size = 0;
-    }
-    return *this;
-}
-int *CoordsND::get_coords() { return coords; }
-int CoordsND::get_size() const { return size; }
+int Wallet::get_volume() { return volume; }
 
 /*** Main ***/
-int main()
+int main(void)
 {
-    int arr[] = {-4, 10, 0, 77, 14};
-    CoordsND coords(arr, 5);
+    Wallet wallet(544653);
+    int vl = wallet.get_volume();
 
     __ASSERT_TESTS__ // макроопределение для тестирования
         return 0;

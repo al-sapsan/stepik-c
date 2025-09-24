@@ -1,60 +1,59 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Класс SquareValue, embedded C++ style
+ * @brief Классы ValidatorInteger, ValidatorRange, ValidatorPositive (embedded C++ style)
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-23
+ * @date 2025-09-24
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс SquareValue
+ * @brief Класс ValidatorInteger
  */
-class SquareValue
+class ValidatorInteger
 {
 private:
-    unsigned m_value; ///< Квадрат числа
+    int err_no = 0;
+
 public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    SquareValue() : m_value(0) {}
-    /**
-     * @brief Конструктор с параметром
-     * @param[in] val Число
-     */
-    SquareValue(int val) : m_value(static_cast<unsigned>(val * val)) {}
-    /**
-     * @brief Оператор присваивания
-     * @param[in] val Число
-     * @return Ссылка на объект
-     */
-    SquareValue &operator=(int val)
-    {
-        m_value = static_cast<unsigned>(val * val);
-        return *this;
-    }
-    /**
-     * @brief Оператор преобразования к unsigned
-     * @return Квадрат числа
-     */
-    operator unsigned() const { return m_value; }
-    /**
-     * @brief Получить значение
-     * @return Квадрат числа
-     */
-    unsigned get_value() const { return m_value; }
+    ValidatorInteger() = default;
+    int get_errno() const { return err_no; }
+    virtual bool is_valid(int x) const { return true; }
 };
 
+/**
+ * @brief Класс ValidatorRange (наследник ValidatorInteger)
+ */
+class ValidatorRange : public ValidatorInteger
+{
+private:
+    int min_value = 0, max_value = 0;
+
+public:
+    ValidatorRange(int min_v, int max_v) : min_value(min_v), max_value(max_v) {}
+    bool is_valid(int x) const override { return x >= min_value && x <= max_value; }
+};
+
+/**
+ * @brief Класс ValidatorPositive (наследник ValidatorInteger)
+ */
+class ValidatorPositive : public ValidatorInteger
+{
+public:
+    ValidatorPositive() = default;
+    bool is_valid(int x) const override { return x >= 0; }
+};
+
+/*** Main ***/
 int main()
 {
-    // Создание объекта и ссылок
-    SquareValue sq(9);
-    SquareValue &lnk_sq = sq;
-    SquareValue &&lnk_r_sq = SquareValue(9);
+    ValidatorRange vr(-5, 7);
+    ValidatorPositive v_positive;
+    int value;
+    std::cin >> value;
+    std::cout << vr.is_valid(value) << " " << v_positive.is_valid(value) << std::endl;
 
     __ASSERT_TESTS__ // макроопределение для тестирования
         return 0;

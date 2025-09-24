@@ -1,100 +1,81 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Класс CoordsND, embedded C++ style
+ * @brief Классы Thing, ThingPhisical, ThingElectro (embedded C++ style)
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-23
+ * @date 2025-09-24
  **********************************************************************/
 
 /*** Core ***/
-#include <iostream>
+#include <string>
 
 /*** Class Definition ***/
 /**
- * @brief Класс CoordsND (координаты в N-мерном пространстве)
+ * @brief Класс Thing
  */
-class CoordsND
+class Thing
 {
-public:
-    enum
-    {
-        max_coords = 10
-    };
-    /**
-     * @brief Конструктор по списку
-     * @param[in] lst Массив координат
-     * @param[in] sz Количество координат
-     */
-    CoordsND(int *lst, int sz);
-    /**
-     * @brief Деструктор
-     */
-    ~CoordsND();
-    /**
-     * @brief Конструктор копирования
-     * @param[in] other Другой объект
-     */
-    CoordsND(const CoordsND &other);
-    /**
-     * @brief Конструктор перемещения
-     * @param[in] other Другой объект
-     */
-    CoordsND(CoordsND &&other) noexcept;
-    /**
-     * @brief Оператор присваивания копированием
-     * @param[in] other Другой объект
-     * @return Ссылка на объект
-     */
-    CoordsND &operator=(const CoordsND &other);
-    /**
-     * @brief Получить координаты
-     * @return Указатель на массив координат
-     */
-    int *get_coords();
-    /**
-     * @brief Получить размер
-     * @return Количество координат
-     */
-    int get_size() const;
-
 private:
-    int *coords; ///< Массив координат
-    int size;    ///< Количество координат
+    unsigned id = 0;
+
+protected:
+    std::string name;
+    int price = 0;
+
+public:
+    Thing() = default;
+    Thing(const std::string &n, int p) : name(n), price(p) {}
+    void set_data(const std::string &n, int p)
+    {
+        name = n;
+        price = p;
+    }
+    unsigned get_id() const { return id; }
+    std::string get_name() const { return name; }
+    int get_price() const { return price; }
 };
 
-/*** Methods Implementation ***/
-CoordsND::CoordsND(int *lst, int sz)
+/**
+ * @brief Класс ThingPhisical (материальный товар)
+ */
+class ThingPhisical : public Thing
 {
-    size = (sz > max_coords) ? max_coords : sz;
-    coords = new int[size];
-    for (int i = 0; i < size; ++i)
-        coords[i] = lst[i];
-}
-CoordsND::~CoordsND() { delete[] coords; }
-CoordsND::CoordsND(const CoordsND &other)
-{
-    size = other.size;
-    coords = new int[size];
-    for (int i = 0; i < size; ++i)
-        coords[i] = other.coords[i];
-}
-CoordsND::CoordsND(CoordsND &&other) noexcept
-{
-    size = other.size;
-    coords = other.coords;
-    other.coords = nullptr;
-    other.size = 0;
-}
-CoordsND &CoordsND::operator=(const CoordsND &other)
-{
-    if (this != &other)
+private:
+    unsigned width = 0, height = 0, depth = 0;
+    double weight = 0.0;
+
+public:
+    ThingPhisical() = default;
+    ThingPhisical(const std::string &n, int p) : Thing(n, p) {}
+    ThingPhisical(const std::string &n, int p, unsigned w, unsigned h, unsigned d, double wt)
+        : Thing(n, p), width(w), height(h), depth(d), weight(wt) {}
+    void set_dims(unsigned w, unsigned h, unsigned d)
     {
-        delete[] coords;
-        size = other.size;
-        coords = new int[size];
-        for (int i = 0; i < size; ++i)
-            coords[i] = other.coords[i];
+        width = w;
+        height = h;
+        depth = d;
     }
-    return *this;
-}
-int *CoordsND::get_coords() { return coords; }
-int CoordsND::get_size() const { return size; }
+    void set_weight(double wt) { weight = wt; }
+    void get_dims(unsigned &w, unsigned &h, unsigned &d) const
+    {
+        w = width;
+        h = height;
+        d = depth;
+    }
+    double get_weight() const { return weight; }
+};
+
+/**
+ * @brief Класс ThingElectro (электронный товар)
+ */
+class ThingElectro : public Thing
+{
+private:
+    unsigned volume = 0;
+
+public:
+    ThingElectro() = default;
+    ThingElectro(const std::string &n, int p) : Thing(n, p) {}
+    ThingElectro(const std::string &n, int p, unsigned v) : Thing(n, p), volume(v) {}
+    void set_volume(unsigned v) { volume = v; }
+    unsigned get_volume() const { return volume; }
+};

@@ -1,139 +1,88 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Класс Distance, embedded C++ style
+ * @brief Классы Clock, ClockShow (embedded C++ style)
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-23
+ * @date 2025-09-24
  **********************************************************************/
 
 /*** Core ***/
 #include <iostream>
-#include <string>
+#include <iomanip>
 
 /*** Class Definition ***/
 /**
- * @brief Класс Distance
+ * @brief Класс Clock
  */
-class Distance
+class Clock
+{
+protected:
+	unsigned time_current = 0;
+
+public:
+	Clock() = default;
+	Clock(unsigned tm) : time_current(tm) {}
+	void set_time(unsigned tm) { time_current = tm; }
+	unsigned get_hours() const { return time_current / 3600; }
+	unsigned get_minutes() const { return (time_current / 60) % 60; }
+	unsigned get_seconds() const { return time_current % 60; }
+};
+
+/**
+ * @brief Класс ClockShow (наследник Clock)
+ */
+class ClockShow : public Clock
 {
 public:
-	/**
-	 * @brief Конструктор по умолчанию
-	 */
-	Distance() : m_dist(0) {}
-	/**
-	 * @brief Конструктор с параметром
-	 * @param[in] d Дистанция
-	 */
-	Distance(int d) : m_dist(d) {}
-	/**
-	 * @brief Деструктор
-	 */
-	~Distance() {}
-	/**
-	 * @brief Конструктор копирования
-	 * @param[in] other Другой объект
-	 */
-	Distance(const Distance &other) : m_dist(other.m_dist) {}
-	/**
-	 * @brief Оператор копирующего присваивания
-	 * @param[in] other Другой объект
-	 * @return Ссылка на объект
-	 */
-	Distance &operator=(const Distance &other)
+	enum time_format
 	{
-		if (this != &other)
-			m_dist = other.m_dist;
-		return *this;
-	}
-	/**
-	 * @brief Оператор перемещающего присваивания
-	 * @param[in] other Другой объект
-	 * @return Ссылка на объект
-	 */
-	Distance &operator=(Distance &&other) noexcept
-	{
-		if (this != &other)
-			m_dist = other.m_dist;
-		return *this;
-	}
-	/**
-	 * @brief Конструктор перемещения
-	 * @param[in] other Другой объект
-	 */
-	Distance(Distance &&other) noexcept : m_dist(other.m_dist) {}
-	/**
-	 * @brief Оператор присваивания int
-	 * @param[in] d Дистанция
-	 * @return Ссылка на объект
-	 */
-	Distance &operator=(int d)
-	{
-		m_dist = d;
-		return *this;
-	}
-	/**
-	 * @brief Оператор +=
-	 * @param[in] d Дистанция
-	 * @return Ссылка на объект
-	 */
-	Distance &operator+=(int d)
-	{
-		m_dist += d;
-		return *this;
-	}
-	/**
-	 * @brief Оператор -=
-	 * @param[in] d Дистанция
-	 * @return Ссылка на объект
-	 */
-	Distance &operator-=(int d)
-	{
-		m_dist -= d;
-		return *this;
-	}
-	/**
-	 * @brief Оператор *=
-	 * @param[in] d Множитель
-	 * @return Ссылка на объект
-	 */
-	Distance &operator*=(int d)
-	{
-		m_dist *= d;
-		return *this;
-	}
-	/**
-	 * @brief Оператор /=
-	 * @param[in] d Делитель
-	 * @return Ссылка на объект
-	 */
-	Distance &operator/=(int d)
-	{
-		m_dist /= d;
-		return *this;
-	}
-	/**
-	 * @brief Оператор вызова
-	 * @return Значение дистанции
-	 */
-	int operator()() const { return m_dist; }
-	/**
-	 * @brief Получить значение
-	 * @return Значение дистанции
-	 */
-	int get_dist() const { return m_dist; }
+		tm_hhmmss = 1,
+		tm_hms = 2,
+		tm_ssmmhh = 3,
+		tm_smh = 4
+	};
 
 private:
-	int m_dist; ///< Дистанция
+	time_format format = tm_hhmmss;
+
+public:
+	ClockShow() = default;
+	ClockShow(unsigned tm) : Clock(tm), format(tm_hhmmss) {}
+	ClockShow(unsigned tm, time_format fmt) : Clock(tm), format(fmt) {}
+	/**
+	 * @brief Отображает время в заданном формате
+	 */
+	void show_time() const
+	{
+		unsigned h = get_hours(), m = get_minutes(), s = get_seconds();
+		switch (format)
+		{
+		case tm_hhmmss:
+			std::cout << std::setw(2) << std::setfill('0') << h << ":"
+					  << std::setw(2) << std::setfill('0') << m << ":"
+					  << std::setw(2) << std::setfill('0') << s << std::endl;
+			break;
+		case tm_hms:
+			std::cout << h << ":" << m << ":" << s << std::endl;
+			break;
+		case tm_ssmmhh:
+			std::cout << std::setw(2) << std::setfill('0') << s << ":"
+					  << std::setw(2) << std::setfill('0') << m << ":"
+					  << std::setw(2) << std::setfill('0') << h << std::endl;
+			break;
+		case tm_smh:
+			std::cout << s << ":" << m << ":" << h << std::endl;
+			break;
+		}
+	}
 };
 
 /*** Main ***/
 int main()
 {
-	// Создание объекта и ссылок
-	Distance d(547);
-	Distance &lnk_d = d;
-	Distance &&lnk_r_d = static_cast<Distance &&>(d);
-	lnk_r_d += 100;
+	unsigned t;
+	std::cin >> t;
+	ClockShow clock(t, ClockShow::tm_hms);
+	clock.show_time();
 
 	__ASSERT_TESTS__ // макроопределение для тестирования
 		return 0;
