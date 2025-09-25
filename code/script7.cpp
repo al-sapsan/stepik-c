@@ -1,163 +1,97 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Класс Clock, embedded C++ style
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-20
+ * @brief Airplane and MS21 class implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-25
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
+#include <string>
 
-/*** Class Definition ***/
+/************ Class Prototypes ***********/
+/// < Класс Airplane > ///
 /**
- * @brief Класс Clock: время
+ * @brief Класс самолета
+ * @param model Модель самолета
+ * @param max_speed Максимальная скорость
+ * @param length Длина самолета
  */
-class Clock
+class Airplane
 {
-public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    Clock();
-    /**
-     * @brief Конструктор с параметром
-     * @param[in] t время
-     */
-    Clock(unsigned t);
-    /**
-     * @brief Получить время
-     * @return unsigned
-     */
-    unsigned get_time() const;
-    /**
-     * @brief Оператор +
-     * @param[in] other
-     * @return Clock
-     */
-    Clock operator+(const Clock &other) const;
-    /**
-     * @brief Оператор += (unsigned)
-     * @param[in] val
-     * @return Clock&
-     */
-    Clock &operator+=(unsigned val);
-    /**
-     * @brief Оператор -= (unsigned)
-     * @param[in] val
-     * @return Clock&
-     */
-    Clock &operator-=(unsigned val);
-    /**
-     * @brief Оператор += (Clock)
-     * @param[in] other
-     * @return Clock&
-     */
-    Clock &operator+=(const Clock &other);
-    /**
-     * @brief Оператор -= (Clock)
-     * @param[in] other
-     * @return Clock&
-     */
-    Clock &operator-=(const Clock &other);
-    /**
-     * @brief Оператор постфиксного инкремента
-     * @return unsigned (старое значение)
-     */
-    unsigned operator++(int);
-    /**
-     * @brief Оператор префиксного инкремента
-     * @return unsigned (новое значение)
-     */
-    unsigned operator++();
-    /**
-     * @brief Оператор постфиксного декремента
-     * @return unsigned (старое значение)
-     */
-    unsigned operator--(int);
-    /**
-     * @brief Оператор префиксного декремента
-     * @return unsigned (новое значение)
-     */
-    unsigned operator--();
+protected:
+    std::string m_model;
+    unsigned m_max_speed{0};
+    int m_length{0};
 
-private:
-    unsigned tm{0};
-    void clamp();
+public:
+    Airplane(const std::string &model, unsigned max_speed, int length);
+    Airplane() = delete;
+
+    const std::string &get_model() const;
+    unsigned get_max_speed() const;
+    int get_length() const;
 };
 
-/*** Methods Implementation ***/
-Clock::Clock() : tm(0) {}
-Clock::Clock(unsigned t) : tm(t) {}
-unsigned Clock::get_time() const { return tm; }
-void Clock::clamp()
+/// < Класс MS21 > ///
+/**
+ * @brief Класс MS21 (дочерний от Airplane)
+ * @param drive_model Модель двигателя
+ * @param weight Вес самолета
+ */
+class MS21 : public Airplane
 {
-    if (tm > 0xFFFFFFFF)
-        tm = 0xFFFFFFFF;
-}
-Clock Clock::operator+(const Clock &other) const
-{
-    return Clock(tm + other.tm);
-}
-Clock &Clock::operator+=(unsigned val)
-{
-    tm += val;
-    clamp();
-    return *this;
-}
-Clock &Clock::operator-=(unsigned val)
-{
-    if (tm < val)
-        tm = 0;
-    else
-        tm -= val;
-    return *this;
-}
-Clock &Clock::operator+=(const Clock &other)
-{
-    tm += other.tm;
-    clamp();
-    return *this;
-}
-Clock &Clock::operator-=(const Clock &other)
-{
-    if (tm < other.tm)
-        tm = 0;
-    else
-        tm -= other.tm;
-    return *this;
-}
-unsigned Clock::operator++(int)
-{
-    unsigned old = tm;
-    ++tm;
-    clamp();
-    return old;
-}
-unsigned Clock::operator++()
-{
-    ++tm;
-    clamp();
-    return tm;
-}
-unsigned Clock::operator--(int)
-{
-    unsigned old = tm;
-    if (tm > 0)
-        --tm;
-    return old;
-}
-unsigned Clock::operator--()
-{
-    if (tm > 0)
-        --tm;
-    return tm;
-}
+private:
+    std::string m_drive_model;
+    double m_weight{0.0};
 
-/*** Main ***/
+public:
+    MS21(const std::string &model, unsigned max_speed, int length,
+         const std::string &drive_model, double weight);
+
+    void get_info(std::string &drive, double &weight) const;
+};
+
+/************ Main Function ***********/
 int main(void)
 {
-    Clock clock_1(100), clock_2(430);
-    Clock res = clock_1 + clock_2;
+    MS21 ms21("MS 21", 1000, 212, "PD-14", 11.3);
+
     __ASSERT_TESTS__
+
     return 0;
+}
+
+/************ Function Implementations ***********/
+/// < Airplane Implementation > ///
+Airplane::Airplane(const std::string &model, unsigned max_speed, int length)
+    : m_model(model), m_max_speed(max_speed), m_length(length)
+{
+}
+
+const std::string &Airplane::get_model() const
+{
+    return m_model;
+}
+
+unsigned Airplane::get_max_speed() const
+{
+    return m_max_speed;
+}
+
+int Airplane::get_length() const
+{
+    return m_length;
+}
+
+/// < MS21 Implementation > ///
+MS21::MS21(const std::string &model, unsigned max_speed, int length,
+           const std::string &drive_model, double weight)
+    : Airplane(model, max_speed, length), m_drive_model(drive_model), m_weight(weight)
+{
+}
+
+void MS21::get_info(std::string &drive, double &weight) const
+{
+    drive = m_drive_model;
+    weight = m_weight;
 }

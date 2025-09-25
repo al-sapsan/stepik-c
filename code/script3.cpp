@@ -1,89 +1,154 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief Классы Clock, ClockShow (embedded C++ style)
+ * @brief Классы фильтров воды и GeyserClassic (embedded C++ style)
  * @version 1.0 (Embedded C++ style)
- * @date 2025-09-24
+ * @date 2025-09-25
  **********************************************************************/
 
 /*** Core ***/
-#include <iostream>
-#include <iomanip>
+#include <cstddef>
 
 /*** Class Definition ***/
 /**
- * @brief Класс Clock
+ * @brief Типы фильтров воды
  */
-class Clock
+enum class type_filter_water : int
 {
-protected:
-	unsigned time_current = 0;
-
-public:
-	Clock() = default;
-	Clock(unsigned tm) : time_current(tm) {}
-	void set_time(unsigned tm) { time_current = tm; }
-	unsigned get_hours() const { return time_current / 3600; }
-	unsigned get_minutes() const { return (time_current / 60) % 60; }
-	unsigned get_seconds() const { return time_current % 60; }
+	flt_none = 0,
+	flt_mechanical = 1,
+	flt_aragon = 2,
+	flt_calcium = 3
 };
 
 /**
- * @brief Класс ClockShow (наследник Clock)
+ * @brief Базовый класс фильтра воды
  */
-class ClockShow : public Clock
+class FilterWater
+{
+protected:
+	unsigned date;
+	type_filter_water type;
+
+public:
+	FilterWater() : date(0), type(type_filter_water::flt_none) {}
+	FilterWater(unsigned d, type_filter_water t) : date(d), type(t) {}
+	unsigned get_date() const { return date; }
+	type_filter_water get_type() const { return type; }
+	virtual ~FilterWater() {}
+};
+
+/**
+ * @brief Механический фильтр
+ */
+class Mechanical : public FilterWater
 {
 public:
-	enum time_format
+	Mechanical(unsigned d) : FilterWater(d, type_filter_water::flt_mechanical) {}
+};
+
+/**
+ * @brief Арагоновый фильтр
+ */
+class Aragon : public FilterWater
+{
+public:
+	Aragon(unsigned d) : FilterWater(d, type_filter_water::flt_aragon) {}
+};
+
+/**
+ * @brief Кальциевый фильтр
+ */
+class Calcium : public FilterWater
+{
+public:
+	Calcium(unsigned d) : FilterWater(d, type_filter_water::flt_calcium) {}
+};
+
+/**
+ * @brief Класс GeyserClassic: набор фильтров для очистки воды
+ */
+class GeyserClassic
+{
+public:
+	enum
 	{
-		tm_hhmmss = 1,
-		tm_hms = 2,
-		tm_ssmmhh = 3,
-		tm_smh = 4
+		total_slots = 3
 	};
 
 private:
-	time_format format = tm_hhmmss;
+	FilterWater *slots[total_slots]{nullptr};
 
 public:
-	ClockShow() = default;
-	ClockShow(unsigned tm) : Clock(tm), format(tm_hhmmss) {}
-	ClockShow(unsigned tm, time_format fmt) : Clock(tm), format(fmt) {}
-	/**
-	 * @brief Отображает время в заданном формате
-	 */
-	void show_time() const
+	GeyserClassic() = default;
+	GeyserClassic(FilterWater *f1) { add_filter(1, f1); }
+	GeyserClassic(FilterWater *f1, FilterWater *f2)
 	{
-		unsigned h = get_hours(), m = get_minutes(), s = get_seconds();
-		switch (format)
+		add_filter(1, f1);
+		add_filter(2, f2);
+	}
+	GeyserClassic(FilterWater *f1, FilterWater *f2, FilterWater *f3)
+	{
+		add_filter(1, f1);
+		add_filter(2, f2);
+		add_filter(3, f3);
+	}
+	// Rule of Five
+	~GeyserClassic()
+	{
+		for (int i = 0; i < total_slots; ++i)
+			delete slots[i];
+	}
+	GeyserClassic(const GeyserClassic &) = delete;
+	GeyserClassic &operator=(const GeyserClassic &) = delete;
+	GeyserClassic(GeyserClassic &&other) noexcept
+	{
+		for (int i = 0; i < total_slots; ++i)
 		{
-		case tm_hhmmss:
-			std::cout << std::setw(2) << std::setfill('0') << h << ":"
-					  << std::setw(2) << std::setfill('0') << m << ":"
-					  << std::setw(2) << std::setfill('0') << s << std::endl;
-			break;
-		case tm_hms:
-			std::cout << h << ":" << m << ":" << s << std::endl;
-			break;
-		case tm_ssmmhh:
-			std::cout << std::setw(2) << std::setfill('0') << s << ":"
-					  << std::setw(2) << std::setfill('0') << m << ":"
-					  << std::setw(2) << std::setfill('0') << h << std::endl;
-			break;
-		case tm_smh:
-			std::cout << s << ":" << m << ":" << h << std::endl;
-			break;
+			slots[i] = other.slots[i];
+			other.slots[i] = nullptr;
+		}
+	}
+	GeyserClassic &operator=(GeyserClassic &&other) noexcept
+	{
+		if (this != &other)
+		{
+			for (int i = 0; i < total_slots; ++i)
+			{
+				delete slots[i];
+				slots[i] = other.slots[i];
+				other.slots[i] = nullptr;
+			}
+		}
+		return *this;
+	}
+	/**
+	 * @brief Получить фильтр по индексу (0-based)
+	 * @param index Индекс слота
+	 * @return Указатель на фильтр или nullptr
+	 */
+	const FilterWater *operator[](int index) const
+	{
+		if (index < 0 || index >= total_slots)
+			return nullptr;
+		return slots[index];
+	}
+	/**
+	 * @brief Добавить фильтр в слот
+	 * @param slot_num Номер слота (1-based)
+	 * @param filter Указатель на фильтр
+	 */
+	void add_filter(int slot_num, FilterWater *filter)
+	{
+		if (slot_num < 1 || slot_num > total_slots || !filter)
+			return;
+		int idx = slot_num - 1;
+		if (slots[idx] != nullptr)
+			return;
+		if ((idx == 0 && filter->get_type() == type_filter_water::flt_mechanical) ||
+			(idx == 1 && filter->get_type() == type_filter_water::flt_aragon) ||
+			(idx == 2 && filter->get_type() == type_filter_water::flt_calcium))
+		{
+			slots[idx] = filter;
 		}
 	}
 };
-
-/*** Main ***/
-int main()
-{
-	unsigned t;
-	std::cin >> t;
-	ClockShow clock(t, ClockShow::tm_hms);
-	clock.show_time();
-
-	__ASSERT_TESTS__ // макроопределение для тестирования
-		return 0;
-}

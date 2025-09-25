@@ -1,181 +1,138 @@
 /**********************************************************************
  * @file script9.cpp
- * @brief Класс LineDouble, embedded C++ style
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-20
+ * @brief Furniture, Table, Chair class implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-25
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
+#include <string>
 
-/*** Class Definition ***/
+/********** Class Prototypes **********/
+// == < Furniture > == //
 /**
- * @brief Класс LineDouble: линия с координатами double
+ * @brief Класс мебели
+ * @param width Ширина
+ * @param height Высота
+ * @param depth Глубина
+ * @param type Тип мебели
  */
-class LineDouble
+class Furniture
 {
 public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    LineDouble();
-    /**
-     * @brief Конструктор с координатами
-     * @param[in] a x0
-     * @param[in] b y0
-     * @param[in] c x1
-     * @param[in] d y1
-     */
-    LineDouble(double a, double b, double c, double d);
-    /**
-     * @brief Установить координаты
-     * @param[in] a x0
-     * @param[in] b y0
-     * @param[in] c x1
-     * @param[in] d y1
-     */
-    void set_coords(double a, double b, double c, double d);
-    /**
-     * @brief Получить координаты
-     * @param[out] a x0
-     * @param[out] b y0
-     * @param[out] c x1
-     * @param[out] d y1
-     */
-    void get_coords(double &a, double &b, double &c, double &d) const;
-    /**
-     * @brief Оператор + (сложение координат)
-     * @param[in] other
-     * @return LineDouble
-     */
-    LineDouble operator+(const LineDouble &other) const;
-    /**
-     * @brief Оператор += (double)
-     * @param[in] val
-     * @return LineDouble&
-     */
-    LineDouble &operator+=(double val);
-    /**
-     * @brief Оператор -= (double)
-     * @param[in] val
-     * @return LineDouble&
-     */
-    LineDouble &operator-=(double val);
-    /**
-     * @brief Оператор += (LineDouble)
-     * @param[in] other
-     * @return LineDouble&
-     */
-    LineDouble &operator+=(const LineDouble &other);
-    /**
-     * @brief Оператор -= (LineDouble)
-     * @param[in] other
-     * @return LineDouble&
-     */
-    LineDouble &operator-=(const LineDouble &other);
-    /**
-     * @brief Оператор постфиксного инкремента
-     * @return LineDouble (старое значение)
-     */
-    LineDouble operator++(int);
-    /**
-     * @brief Оператор префиксного инкремента
-     * @return LineDouble&
-     */
-    LineDouble &operator++();
-    /**
-     * @brief Оператор постфиксного декремента
-     * @return LineDouble (старое значение)
-     */
-    LineDouble operator--(int);
-    /**
-     * @brief Оператор префиксного декремента
-     * @return LineDouble&
-     */
-    LineDouble &operator--();
+    enum type_furniture
+    {
+        fr_none = 0,
+        fr_table = 1,
+        fr_chair = 2,
+        fr_closet = 3
+    };
 
-private:
-    double x0{0}, y0{0}, x1{0}, y1{0};
+protected:
+    short m_width{0}, m_height{0}, m_depth{0};
+    type_furniture m_type{fr_none};
+
+public:
+    Furniture(short width, short height, short depth, type_furniture type);
+    Furniture() = delete;
+
+    void get_dims(short &width, short &height, short &depth) const;
+    type_furniture get_type() const;
 };
 
-/*** Methods Implementation ***/
-LineDouble::LineDouble() : x0(0), y0(0), x1(0), y1(0) {}
-LineDouble::LineDouble(double a, double b, double c, double d) : x0(a), y0(b), x1(c), y1(d) {}
-void LineDouble::set_coords(double a, double b, double c, double d)
+// == < Table > == //
+/**
+ * @brief Класс стола
+ * @param model Модель стола
+ */
+class Table : public Furniture
 {
-    x0 = a;
-    y0 = b;
-    x1 = c;
-    y1 = d;
+private:
+    std::string m_model;
+
+public:
+    Table(const std::string &model, short width, short height, short depth);
+
+    const std::string &get_model() const;
+};
+
+// == < Chair > == //
+/**
+ * @brief Класс стула
+ * @param color Цвет
+ * @param weight Вес
+ */
+class Chair : public Furniture
+{
+private:
+    int m_color{0};
+    int m_weight{0};
+
+public:
+    Chair(short width, short height, short depth, int color, int weight);
+
+    void get_data(int &color, int &weight) const;
+};
+
+/********** Main Function **********/
+int main(void)
+{
+    Furniture *fr_lst[5];
+
+    fr_lst[0] = new Table("Черноземья стол 10", 10, 20, 30);
+    fr_lst[1] = new Table("Белоземья стол 21", 6, 5, 22);
+    fr_lst[2] = new Chair(3, 5, 7, 132, 1650);
+    fr_lst[3] = new Chair(3, 6, 5, 200, 1750);
+    fr_lst[4] = new Table("Бурый стол", 11, 6, 8);
+
+    __ASSERT_TESTS__
+
+    for (int i = 0; i < 5; ++i)
+    {
+        delete fr_lst[i];
+    }
+
+    return 0;
 }
-void LineDouble::get_coords(double &a, double &b, double &c, double &d) const
+
+/********** Function Implementations **********/
+// == < Furniture Implementation > == //
+Furniture::Furniture(short width, short height, short depth, type_furniture type)
+    : m_width(width), m_height(height), m_depth(depth), m_type(type)
 {
-    a = x0;
-    b = y0;
-    c = x1;
-    d = y1;
 }
-LineDouble LineDouble::operator+(const LineDouble &other) const
+
+void Furniture::get_dims(short &width, short &height, short &depth) const
 {
-    return LineDouble(x0 + other.x0, y0 + other.y0, x1 + other.x1, y1 + other.y1);
+    width = m_width;
+    height = m_height;
+    depth = m_depth;
 }
-LineDouble &LineDouble::operator+=(double val)
+
+Furniture::type_furniture Furniture::get_type() const
 {
-    x0 += val;
-    y0 += val;
-    x1 += val;
-    y1 += val;
-    return *this;
+    return m_type;
 }
-LineDouble &LineDouble::operator-=(double val)
+
+// == < Table Implementation > == //
+Table::Table(const std::string &model, short width, short height, short depth)
+    : Furniture(width, height, depth, fr_table), m_model(model)
 {
-    x0 -= val;
-    y0 -= val;
-    x1 -= val;
-    y1 -= val;
-    return *this;
 }
-LineDouble &LineDouble::operator+=(const LineDouble &other)
+
+const std::string &Table::get_model() const
 {
-    x0 += other.x0;
-    y0 += other.y0;
-    x1 += other.x1;
-    y1 += other.y1;
-    return *this;
+    return m_model;
 }
-LineDouble &LineDouble::operator-=(const LineDouble &other)
+
+// == < Chair Implementation > == //
+Chair::Chair(short width, short height, short depth, int color, int weight)
+    : Furniture(width, height, depth, fr_chair), m_color(color), m_weight(weight)
 {
-    x0 -= other.x0;
-    y0 -= other.y0;
-    x1 -= other.x1;
-    y1 -= other.y1;
-    return *this;
 }
-LineDouble LineDouble::operator++(int)
+
+void Chair::get_data(int &color, int &weight) const
 {
-    LineDouble temp(*this);
-    ++(*this);
-    return temp;
-}
-LineDouble &LineDouble::operator++()
-{
-    x0 += 0.1;
-    y0 += 0.1;
-    x1 += 0.1;
-    y1 += 0.1;
-    return *this;
-}
-LineDouble LineDouble::operator--(int)
-{
-    LineDouble temp(*this);
-    --(*this);
-    return temp;
-}
-LineDouble &LineDouble::operator--()
-{
-    x0 -= 0.1;
-    y0 -= 0.1;
-    x1 -= 0.1;
-    y1 -= 0.1;
-    return *this;
+    color = m_color;
+    weight = m_weight;
 }

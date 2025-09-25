@@ -1,197 +1,141 @@
 /**********************************************************************
  * @file script8.cpp
- * @brief Класс PointND, embedded C++ style
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-20
+ * @brief Printer, PrinterJet, PrinterLaser class implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-25
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
-#include <cstddef>
+#include <string>
 
-/*** Class Definition ***/
+/********** Class Prototypes **********/
+// == < Printer > == //
 /**
- * @brief Класс PointND: точка в N-мерном пространстве
+ * @brief Класс принтера
+ * @param model Модель принтера
+ * @param type Тип принтера
  */
-class PointND
+class Printer
 {
 public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    PointND();
-    /**
-     * @brief Конструктор с координатами
-     * @param[in] cds массив координат
-     * @param[in] len размерность
-     */
-    PointND(const short *cds, size_t len);
-    /**
-     * @brief Конструктор копирования
-     * @param[in] other другой объект PointND
-     */
-    PointND(const PointND &other);
-    /**
-     * @brief Деструктор
-     */
-    ~PointND();
-    /**
-     * @brief Оператор присваивания (глубокое копирование)
-     * @param[in] other другой объект PointND
-     * @return PointND&
-     */
-    PointND &operator=(const PointND &other);
-    /**
-     * @brief Оператор доступа по индексу
-     * @param[in] idx индекс
-     * @return short&
-     */
-    short &operator[](size_t idx);
-    /**
-     * @brief Оператор доступа по индексу (const)
-     * @param[in] idx индекс
-     * @return short
-     */
-    short operator[](size_t idx) const;
-    /**
-     * @brief Оператор постфиксного инкремента
-     * @return PointND&
-     */
-    PointND &operator++(int);
-    /**
-     * @brief Оператор префиксного инкремента
-     * @return PointND&
-     */
-    PointND &operator++();
-    /**
-     * @brief Оператор постфиксного декремента
-     * @return PointND&
-     */
-    PointND &operator--(int);
-    /**
-     * @brief Оператор префиксного декремента
-     * @return PointND&
-     */
-    PointND &operator--();
-    /**
-     * @brief Оператор += (PointND)
-     * @param[in] other
-     * @return PointND&
-     */
-    PointND &operator+=(const PointND &other);
-    /**
-     * @brief Оператор -= (PointND)
-     * @param[in] other
-     * @return PointND&
-     */
-    PointND &operator-=(const PointND &other);
-    /**
-     * @brief Получить размерность
-     * @return size_t
-     */
-    size_t get_dims() const;
+    enum type_printer
+    {
+        pr_none = 0,
+        pr_needle = 1,
+        pr_jet = 2,
+        pr_laser = 3
+    };
 
-private:
-    short *coords{nullptr};
-    size_t dims{0};
+protected:
+    std::string m_model;
+    type_printer m_type{pr_none};
+
+public:
+    Printer(const std::string &model, type_printer type);
+    Printer() = delete;
+
+    const std::string &get_model() const;
+    type_printer get_type() const;
 };
 
-/*** Methods Implementation ***/
-PointND::PointND() : coords(nullptr), dims(0) {}
-PointND::PointND(const short *cds, size_t len) : coords(nullptr), dims(len)
+// == < PrinterJet > == //
+/**
+ * @brief Класс струйного принтера
+ * @param color Цветной принтер
+ * @param speed Скорость печати
+ */
+class PrinterJet : public Printer
 {
-    if (dims > 0)
+private:
+    bool m_color{false};
+    short m_speed{0};
+
+public:
+    PrinterJet(const std::string &model, bool color, short speed);
+
+    void get_data(std::string &model, type_printer &type, bool &color, short &speed) const;
+};
+
+// == < PrinterLaser > == //
+/**
+ * @brief Класс лазерного принтера
+ * @param color Цветной принтер
+ * @param speed Скорость печати
+ */
+class PrinterLaser : public Printer
+{
+private:
+    bool m_color{false};
+    short m_speed{0};
+
+public:
+    PrinterLaser(const std::string &model, bool color, short speed);
+
+    void get_data(std::string &model, type_printer &type, bool &color, short &speed) const;
+};
+
+/********** Main Function **********/
+int main(void)
+{
+    Printer *pr_lst[4];
+
+    pr_lst[0] = new PrinterJet("Brother Jet 600", true, 5);
+    pr_lst[1] = new PrinterLaser("Canon Laser 10", false, 10);
+    pr_lst[2] = new PrinterJet("Samsung Jet 100", true, 7);
+    pr_lst[3] = new PrinterLaser("BaLaser 1 Pro", true, 21);
+
+    __ASSERT_TESTS__
+
+    for (int i = 0; i < 4; ++i)
     {
-        coords = new short[dims];
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] = cds[i];
+        delete pr_lst[i];
     }
-}
-PointND::PointND(const PointND &other) : coords(nullptr), dims(other.dims)
-{
-    if (dims > 0)
-    {
-        coords = new short[dims];
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] = other.coords[i];
-    }
-}
-PointND::~PointND()
-{
-    delete[] coords;
-}
-PointND &PointND::operator=(const PointND &other)
-{
-    if (this != &other)
-    {
-        delete[] coords;
-        dims = other.dims;
-        if (dims > 0)
-        {
-            coords = new short[dims];
-            for (size_t i = 0; i < dims; ++i)
-                coords[i] = other.coords[i];
-        }
-        else
-        {
-            coords = nullptr;
-        }
-    }
-    return *this;
-}
-short &PointND::operator[](size_t idx)
-{
-    static short dummy = 0;
-    if (idx < dims)
-        return coords[idx];
-    return dummy;
-}
-short PointND::operator[](size_t idx) const
-{
-    if (idx < dims)
-        return coords[idx];
+
     return 0;
 }
-PointND &PointND::operator++(int)
+
+/********** Function Implementations **********/
+// == < Printer Implementation > == //
+Printer::Printer(const std::string &model, type_printer type)
+    : m_model(model),
+      m_type(type)
 {
-    for (size_t i = 0; i < dims; ++i)
-        ++coords[i];
-    return *this;
 }
-PointND &PointND::operator++()
+
+const std::string &Printer::get_model() const
 {
-    for (size_t i = 0; i < dims; ++i)
-        ++coords[i];
-    return *this;
+    return m_model;
 }
-PointND &PointND::operator--(int)
+
+Printer::type_printer Printer::get_type() const
 {
-    for (size_t i = 0; i < dims; ++i)
-        --coords[i];
-    return *this;
+    return m_type;
 }
-PointND &PointND::operator--()
+
+// == < PrinterJet Implementation > == //
+PrinterJet::PrinterJet(const std::string &model, bool color, short speed)
+    : Printer(model, pr_jet), m_color(color), m_speed(speed)
 {
-    for (size_t i = 0; i < dims; ++i)
-        --coords[i];
-    return *this;
 }
-PointND &PointND::operator+=(const PointND &other)
+
+void PrinterJet::get_data(std::string &model, type_printer &type, bool &color, short &speed) const
 {
-    if (dims == other.dims)
-    {
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] += other.coords[i];
-    }
-    return *this;
+    model = m_model;
+    type = m_type;
+    color = m_color;
+    speed = m_speed;
 }
-PointND &PointND::operator-=(const PointND &other)
+
+// == < PrinterLaser Implementation > == //
+PrinterLaser::PrinterLaser(const std::string &model, bool color, short speed)
+    : Printer(model, pr_laser), m_color(color), m_speed(speed)
 {
-    if (dims == other.dims)
-    {
-        for (size_t i = 0; i < dims; ++i)
-            coords[i] -= other.coords[i];
-    }
-    return *this;
 }
-size_t PointND::get_dims() const { return dims; }
+
+void PrinterLaser::get_data(std::string &model, type_printer &type, bool &color, short &speed) const
+{
+    model = m_model;
+    type = m_type;
+    color = m_color;
+    speed = m_speed;
+}
