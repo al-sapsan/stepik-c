@@ -1,6 +1,6 @@
 Complete the code according to the task
-Refract the code according to the code conventions with embedded systems implementation
-Explain the code in detail by describing the purpose of main elements and point out critical code improvements
+Refractor the code according to the code conventions with embedded systems implementation
+Explain the code in detail by describing the purpose of main elements and suggest only critical code improvements
 Write private sections at the end of each class
 Remove `l_` prefix from the code
 Rewrite Doxygen comments in Russian, but leave the section header in English

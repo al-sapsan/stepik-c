@@ -1,165 +1,102 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Классы фильтров воды и GeyserClassic (embedded C++ style)
- * @version 1.1 (Embedded C++ style)
- * @date 2025-09-25
+ * @brief Dish, FishDish, MeatDish implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-30
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
+#include <string>
 
-/*** Class Definition ***/
-
+/********** Class Definition **********/
+// == < Dish > == //
 /**
- * @brief Типы фильтров воды
+ * @brief Класс блюда
+ * @param name Наименование
+ * @param price Цена
  */
-enum type_filter_water
-{
-    flt_none = 0,
-    flt_mechanical = 1,
-    flt_aragon = 2,
-    flt_calcium = 3
-};
-
-/**
- * @brief Базовый класс фильтра воды
- */
-class FilterWater
+class Dish
 {
 protected:
-    unsigned date{0};
-    type_filter_water type{flt_none};
+    std::string m_name;
+    int m_price{0};
 
 public:
-    FilterWater() = default;
-    FilterWater(unsigned d, type_filter_water t) : date(d), type(t) {}
-    /**
-     * @brief Получить дату установки фильтра
-     */
-    unsigned get_date() const { return date; }
-    /**
-     * @brief Получить тип фильтра
-     */
-    type_filter_water get_type() const { return type; }
-};
+    Dish(const std::string &name, int price)
+        : m_name(name), m_price(price) {}
 
-/**
- * @brief Механический фильтр
- */
-class Mechanical : public FilterWater
-{
-public:
-    Mechanical(unsigned date) : FilterWater(date, flt_mechanical) {}
-};
-
-/**
- * @brief Арагоновый фильтр
- */
-class Aragon : public FilterWater
-{
-public:
-    Aragon(unsigned date) : FilterWater(date, flt_aragon) {}
-};
-
-/**
- * @brief Кальциевый фильтр
- */
-class Calcium : public FilterWater
-{
-public:
-    Calcium(unsigned date) : FilterWater(date, flt_calcium) {}
-};
-
-/**
- * @brief Класс GeyserClassic: набор фильтров для очистки воды
- */
-class GeyserClassic
-{
-public:
-    enum
+    virtual void print_dish()
     {
-        total_slots = 3
-    };
+        std::cout << "Dish: " << m_name << "; " << m_price << std::endl;
+    }
+    virtual ~Dish() {}
+};
 
+// == < FishDish > == //
+/**
+ * @brief Класс рыбного блюда
+ * @param weight Вес
+ */
+class FishDish : public Dish
+{
 private:
-    FilterWater *slots[total_slots]{nullptr};
-    /**
-     * @brief Проверить валидность фильтра для слота
-     */
-    bool isValidSlot(int slot_num, FilterWater *filter)
-    {
-        {
-            if (slot_num < 1 || slot_num > total_slots)
-                return false;
-            if (!filter)
-                return false;
-            switch (slot_num)
-            {
-            case 1:
-                return filter->get_type() == flt_mechanical;
-            case 2:
-                return filter->get_type() == flt_aragon;
-            case 3:
-                return filter->get_type() == flt_calcium;
-            }
-            return false;
-        }
-    }
+    int m_weight{0};
 
 public:
-    GeyserClassic() = default;
-    /**
-     * @brief Конструктор с одним фильтром
-     */
-    GeyserClassic(FilterWater *f1)
+    FishDish(const std::string &name, int price, int weight)
+        : Dish(name, price), m_weight(weight) {}
+
+    virtual void print_dish() override
     {
-        if (f1 && f1->get_type() == flt_mechanical)
-            slots[0] = f1;
-    }
-    /**
-     * @brief Конструктор с двумя фильтрами
-     */
-    GeyserClassic(FilterWater *f1, FilterWater *f2)
-    {
-        if (f1 && f1->get_type() == flt_mechanical)
-            slots[0] = f1;
-        if (f2 && f2->get_type() == flt_aragon)
-            slots[1] = f2;
-    }
-    /**
-     * @brief Конструктор с тремя фильтрами
-     */
-    GeyserClassic(FilterWater *f1, FilterWater *f2, FilterWater *f3)
-    {
-        if (f1 && f1->get_type() == flt_mechanical)
-            slots[0] = f1;
-        if (f2 && f2->get_type() == flt_aragon)
-            slots[1] = f2;
-        if (f3 && f3->get_type() == flt_calcium)
-            slots[2] = f3;
-    }
-    /**
-     * @brief Получить фильтр по индексу
-     */
-    const FilterWater *operator[](int index) const
-    {
-        if (index < 0 || index >= total_slots)
-            return nullptr;
-        return slots[index];
-    }
-    /**
-     * @brief Добавить фильтр в слот
-     */
-    void add_filter(int slot_num, FilterWater *filter)
-    {
-        {
-            if (slot_num < 1 || slot_num > total_slots)
-                return;
-            if (slots[slot_num - 1] != nullptr)
-                return;
-            if (!isValidSlot(slot_num, filter))
-                return;
-            slots[slot_num - 1] = filter;
-        }
+        std::cout << "FishDish: " << m_name << "; " << m_price << "; " << m_weight << std::endl;
     }
 };
+
+// == < MeatDish > == //
+/**
+ * @brief Класс мясного блюда
+ * @param fry_type Тип прожарки
+ * @param weight Вес
+ */
+class MeatDish : public Dish
+{
+private:
+    short m_fry_type{1};
+    int m_weight{0};
+
+public:
+    MeatDish(const std::string &name, int price, short fry_type, int weight)
+        : Dish(name, price), m_fry_type(fry_type), m_weight(weight) {}
+
+    virtual void print_dish() override
+    {
+        std::cout << "MeatDish: " << m_name << "; " << m_price << "; " << m_fry_type << "; " << m_weight << std::endl;
+    }
+};
+
+/********** Main Function **********/
+int main(void)
+{
+    FishDish *ptr_fd_1 = new FishDish("Устрицы", 900, 300);
+    MeatDish *ptr_md_1 = new MeatDish("Бекон", 800, 2, 420);
+    FishDish *ptr_fd_2 = new FishDish("Форель", 400, 210);
+
+    Dish *dishes[3];
+    dishes[0] = ptr_fd_1;
+    dishes[1] = ptr_md_1;
+    dishes[2] = ptr_fd_2;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        dishes[i]->print_dish();
+    }
+
+    __ASSERT_TESTS__
+
+    for (int i = 0; i < 3; ++i)
+    {
+        delete dishes[i];
+    }
+
+    return 0;
+}

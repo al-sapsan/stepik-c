@@ -1,54 +1,68 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief Классы SmartPhone и IPhone (embedded C++ style)
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-25
+ * @brief Equipment, PC class implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-10-01
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
 #include <string>
 
-/*** Class Definition ***/
-/**
- * @brief Класс SmartPhone
- */
-class SmartPhone
-{
-protected:
-    std::string model;
-    double weight;
+/********** Class Definition **********/
 
-public:
-    SmartPhone(const std::string &m, double w) : model(m), weight(w) {}
-    const std::string &get_model() const { return model; }
-    double get_weight() const { return weight; }
-};
-
+// == < Equipment > == //
 /**
- * @brief Класс IPhone (наследник SmartPhone)
+ * @brief Класс оборудования
+ * @param uid Идентификатор
+ * @param is_exists Наличие оборудования
  */
-class IPhone : public SmartPhone
+class Equipment
 {
 private:
-    int memory_volume;
-    int display_size;
+    unsigned long m_uid{0};
+    static unsigned long s_uid_counter;
+
+protected:
+    bool m_is_exists{false};
 
 public:
-    IPhone(const std::string &m, double w, int mem, int size)
-        : SmartPhone(m, w), memory_volume(mem), display_size(size) {}
-    void get_info(int &memory, int &size)
-    {
-        memory = memory_volume;
-        size = display_size;
-    }
+    Equipment() : m_is_exists(false), m_uid(++s_uid_counter) {}
+    Equipment(bool is_exists) : m_is_exists(is_exists), m_uid(++s_uid_counter) {}
+
+    unsigned long get_uid() const { return m_uid; }
+    virtual void print() const {}
+    virtual ~Equipment() {}
 };
 
-/*** Main ***/
-int main(void)
-{
-    IPhone iPhone12("iPhone12", 0.17, 64000, 11);
+unsigned long Equipment::s_uid_counter = 0;
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
-}
+// == < PC > == //
+/**
+ * @brief Класс компьютера
+ * @param model Модель компьютера
+ * @param price Цена
+ * @param is_exists Наличие оборудования
+ */
+class PC : public Equipment
+{
+private:
+    std::string m_model;
+    int m_price{0};
+
+public:
+    PC(const std::string &model, int price, bool is_exists)
+        : Equipment(is_exists), m_model(model), m_price(price) {}
+
+    const std::string &get_model() const { return m_model; }
+    int get_price() const { return m_price; }
+
+    virtual void print() const override
+    {
+        std::cout << "PC: " << m_model << ", " << m_price << ", " << (m_is_exists ? 1 : 0) << std::endl;
+    }
+
+    virtual ~PC() override
+    {
+        std::cout << "~PC" << std::endl;
+    }
+};

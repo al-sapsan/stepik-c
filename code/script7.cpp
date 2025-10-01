@@ -1,97 +1,88 @@
 /**********************************************************************
  * @file script7.cpp
- * @brief Airplane and MS21 class implementation (Embedded C++ style)
+ * @brief Art, Painting, Music class implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-09-25
+ * @date 2025-10-01
  **********************************************************************/
 
-#include <iostream>
-#include <string>
+using std::cout;
+using std::endl;
+using std::string;
+// Removed unnecessary includes
+// Only required using declarations are added
 
-/************ Class Prototypes ***********/
-/// < Класс Airplane > ///
+/********** Class Definition **********/
+// == < Art > == //
 /**
- * @brief Класс самолета
- * @param model Модель самолета
- * @param max_speed Максимальная скорость
- * @param length Длина самолета
+ * @brief Класс искусства
+ * @param stars Количество звезд (оценка)
  */
-class Airplane
+class Art
 {
 protected:
-    std::string m_model;
-    unsigned m_max_speed{0};
-    int m_length{0};
+    short m_stars{0};
 
 public:
-    Airplane(const std::string &model, unsigned max_speed, int length);
-    Airplane() = delete;
+    Art(short st = 0) : m_stars(st) {}
 
-    const std::string &get_model() const;
-    unsigned get_max_speed() const;
-    int get_length() const;
+    virtual void set_stars(short vol) { m_stars = vol; }
+    short get_stars() const { return m_stars; }
+    virtual ~Art() = default;
 };
 
-/// < Класс MS21 > ///
+// == < Painting > == //
 /**
- * @brief Класс MS21 (дочерний от Airplane)
- * @param drive_model Модель двигателя
- * @param weight Вес самолета
+ * @brief Класс картины
+ * @param title Название
+ * @param author Автор
  */
-class MS21 : public Airplane
+class Painting : public Art
 {
 private:
-    std::string m_drive_model;
-    double m_weight{0.0};
+    std::string m_title;
+    std::string m_author;
 
 public:
-    MS21(const std::string &model, unsigned max_speed, int length,
-         const std::string &drive_model, double weight);
+    Painting(const std::string &title, const std::string &author)
+        : m_title(title), m_author(author) {}
 
-    void get_info(std::string &drive, double &weight) const;
+    const std::string &get_title() const { return m_title; }
+    const std::string &get_author() const { return m_author; }
+
+    virtual ~Painting() override
+    {
+        std::cout << "~Painting" << std::endl;
+    }
 };
 
-/************ Main Function ***********/
-int main(void)
+// == < Music > == //
+/**
+ * @brief Класс музыки
+ * @param title Название
+ * @param composer Композитор
+ * @param max_stars Максимальное количество звезд
+ */
+class Music : public Art
 {
-    MS21 ms21("MS 21", 1000, 212, "PD-14", 11.3);
+private:
+    std::string m_title;
+    std::string m_composer;
+    short m_max_stars{5};
 
-    __ASSERT_TESTS__
+public:
+    Music(const std::string &title, const std::string &composer)
+        : m_title(title), m_composer(composer) {}
 
-    return 0;
-}
+    const std::string &get_title() const { return m_title; }
+    const std::string &get_composer() const { return m_composer; }
 
-/************ Function Implementations ***********/
-/// < Airplane Implementation > ///
-Airplane::Airplane(const std::string &model, unsigned max_speed, int length)
-    : m_model(model), m_max_speed(max_speed), m_length(length)
-{
-}
+    virtual void set_stars(short vol) override
+    {
+        m_stars = (vol > m_max_stars) ? m_max_stars : vol;
+    }
 
-const std::string &Airplane::get_model() const
-{
-    return m_model;
-}
-
-unsigned Airplane::get_max_speed() const
-{
-    return m_max_speed;
-}
-
-int Airplane::get_length() const
-{
-    return m_length;
-}
-
-/// < MS21 Implementation > ///
-MS21::MS21(const std::string &model, unsigned max_speed, int length,
-           const std::string &drive_model, double weight)
-    : Airplane(model, max_speed, length), m_drive_model(drive_model), m_weight(weight)
-{
-}
-
-void MS21::get_info(std::string &drive, double &weight) const
-{
-    drive = m_drive_model;
-    weight = m_weight;
-}
+    virtual ~Music() override
+    {
+        std::cout << "~Music" << std::endl;
+    }
+};

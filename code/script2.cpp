@@ -1,135 +1,136 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Классы Thing, TV, Book, Store (embedded C++ style)
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-25
+ * @brief Thing, Table, TV, Cart implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-26
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
+#include <iomanip>
 #include <string>
 
-/*** Class Definition ***/
+/********** Class Definition **********/
+
+// == < Thing > == //
 /**
- * @brief Класс Thing: базовый товар
+ * @brief Класс товара
+ * @param name Название товара
+ * @param price Цена товара
  */
 class Thing
 {
 protected:
-    std::string name;
-    int price{0};
+    std::string m_name;
+    int m_price{0};
 
 public:
-    void set_base_info(const std::string &name, int &price)
-    {
-        this->name = name;
-        this->price = price;
-    }
-    void get_base_info(std::string &name, int &price)
-    {
-        name = this->name;
-        price = this->price;
-    }
+    Thing(const std::string &name = "", int price = 0)
+        : m_name(name), m_price(price) {}
+
+    const std::string &get_name() const { return m_name; }
+    int get_price() const { return m_price; }
+    virtual void print() {}
     virtual ~Thing() {}
 };
 
+// == < Table > == //
 /**
- * @brief Класс TV: телевизор
+ * @brief Класс стола
+ * @param color Цвет
+ * @param weight Вес
+ */
+class Table : public Thing
+{
+private:
+    int m_color{0};
+    double m_weight{0.0};
+
+public:
+    Table(const std::string &name, int price, int color, double weight)
+        : Thing(name, price), m_color(color), m_weight(weight) {}
+
+    virtual void print() override
+    {
+        std::cout << "Table: " << m_name << ", " << m_price << ", " << m_color << ", "
+                  << std::fixed << std::setprecision(2) << m_weight << std::endl;
+    }
+};
+
+// == < TV > == //
+/**
+ * @brief Класс телевизора
+ * @param size Размер
  */
 class TV : public Thing
 {
 private:
-    int size{0};
-    double weight{0.0};
+    int m_size{0};
 
 public:
-    TV(const std::string &n, int p, int s, double w)
+    TV(const std::string &name, int price, int size)
+        : Thing(name, price), m_size(size) {}
+
+    virtual void print() override
     {
-        name = n;
-        price = p;
-        size = s;
-        weight = w;
-    }
-    void get_data(std::string &n, int &p, int &s, double &w)
-    {
-        n = name;
-        p = price;
-        s = size;
-        w = weight;
+        std::cout << "TV: " << m_name << ", " << m_price << ", " << m_size << std::endl;
     }
 };
 
+// == < Cart > == //
 /**
- * @brief Класс Book: книга
+ * @brief Класс корзины
  */
-class Book : public Thing
+class Cart
 {
-private:
-    std::string author;
-    int pages{0};
-
-public:
-    Book(const std::string &n, int p, const std::string &a, int pg)
-    {
-        name = n;
-        price = p;
-        author = a;
-        pages = pg;
-    }
-    void get_data(std::string &n, int &p, std::string &a, int &pg)
-    {
-        n = name;
-        p = price;
-        a = author;
-        pg = pages;
-    }
-};
-
-/**
- * @brief Класс Store: магазин
- */
-class Store
-{
-private:
     enum
     {
-        max_total = 100
+        max_total_thing = 100
     };
-    Thing *things[max_total]{nullptr};
-    int total{0};
+    Thing *m_goods[max_total_thing]{nullptr};
+    int m_count{0};
 
 public:
-    ~Store()
-    {
-        for (int i = 0; i < total; ++i)
-        {
-            delete things[i];
-        }
-    }
     void append(Thing *th)
     {
-        if (total < max_total)
+        if (m_count >= max_total_thing)
+            return;
+        m_goods[m_count++] = th;
+    }
+
+    Thing **get_goods() { return m_goods; }
+    int get_count() const { return m_count; }
+
+    void show()
+    {
+        for (int i = 0; i < m_count; ++i)
         {
-            things[total++] = th;
+            if (m_goods[i])
+                m_goods[i]->print();
         }
     }
-    Thing *operator[](int index)
-    {
-        if (index < 0 || index >= total)
-            return nullptr;
-        return things[index];
-    }
-    int get_total() const { return total; }
 };
 
-/*** Main ***/
+/********** Main Function **********/
+
 int main(void)
 {
-    Store st;
-    st.append(new TV("Samsung", 54300, 43, 5.4));
-    st.append(new Book("C++", 2000, "Balakirev", 543));
-    st.append(new TV("Sony", 97000, 80, 7.5));
+    Cart cart;
+    cart.append(new Table("Стол", 12000, 0, 12.70));
+    cart.append(new TV("Panasonic", 54000, 43));
+    cart.append(new TV("Samsung", 83500, 54));
+    cart.append(new Table("Стол 2", 9500, 432, 10.74));
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+    cart.show();
+
+    __ASSERT_TESTS__
+
+    // Освобождение памяти
+    Thing **goods = cart.get_goods();
+    int count = cart.get_count();
+    for (int i = 0; i < count; ++i)
+    {
+        delete goods[i];
+    }
+
+    return 0;
 }

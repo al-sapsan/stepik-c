@@ -1,75 +1,93 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief Классы Animal, Cat, Dog (embedded C++ style)
- * @version 1.0 (Embedded C++ style)
- * @date 2025-09-25
+ * @brief FunctionInterface, LinearFunction, ReluFunction implementation (Embedded C++ style)
+ * @version 1.0
+ * @date 2025-09-26
  **********************************************************************/
 
-/*** Core ***/
 #include <iostream>
-#include <string>
+#include <iomanip>
 
-/*** Class Definition ***/
-class Animal
+/********** Class Definition **********/
+
+// == < FunctionInterface > == //
+/**
+ * @brief Интерфейс функции
+ */
+class FunctionInterface
 {
-protected:
-    std::string name;
-    short old{0};
+public:
+    virtual double func(double arg) { return 0; }
+    virtual double operator()(double arg) { return 0; }
+    virtual ~FunctionInterface() {}
 };
 
-class Cat : public Animal
+// == < LinearFunction > == //
+/**
+ * @brief Линейная функция
+ * @param k Угловой коэффициент
+ * @param b Смещение
+ */
+class LinearFunction : public FunctionInterface
 {
 private:
-    int color{0};
-    double weight{0.0};
+    double m_k{0.0};
+    double m_b{0.0};
 
 public:
-    Cat(const std::string &n, short o, int c, double w)
+    LinearFunction(double k, double b) : m_k(k), m_b(b) {}
+
+    virtual double func(double arg) override
     {
-        name = n;
-        old = o;
-        color = c;
-        weight = w;
+        return m_k * arg + m_b;
     }
-    void get_data(std::string &n, short &o, int &c, double &w)
+    virtual double operator()(double arg) override
     {
-        n = name;
-        o = old;
-        c = color;
-        w = weight;
+        return m_k * arg + m_b;
     }
 };
 
-class Dog : public Animal
+// == < ReluFunction > == //
+/**
+ * @brief Функция ReLU
+ */
+class ReluFunction : public FunctionInterface
 {
-private:
-    int height{0};
-    int speed{0};
-
 public:
-    Dog(const std::string &n, short o, int h, int s)
+    ReluFunction() {}
+
+    virtual double func(double arg) override
     {
-        name = n;
-        old = o;
-        height = h;
-        speed = s;
+        return arg > 0 ? arg : 0;
     }
-    void get_data(std::string &n, short &o, int &h, int &s)
+    virtual double operator()(double arg) override
     {
-        n = name;
-        o = old;
-        h = height;
-        s = speed;
+        return arg > 0 ? arg : 0;
     }
 };
 
-/*** Main ***/
+/********** Main Function **********/
+
 int main(void)
 {
-    Cat cat_1("Zeus", 5, 0, 1.2);
-    Cat cat_2("Poseidon", 7, 122, 0.9);
-    Dog dog_1("Rex", 10, 50, 32);
+    std::vector<std::unique_ptr<FunctionInterface>> funcs;
+    funcs.push_back(std::make_unique<LinearFunction>(0.5, 0.0));
+    funcs.push_back(std::make_unique<LinearFunction>(1.2, -5.4));
+    funcs.push_back(std::make_unique<ReluFunction>());
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+    double x;
+    std::cin >> x;
+
+    std::cout << std::fixed << std::setprecision(2);
+    for (int i = 0; i < 3; ++i)
+    {
+        std::cout << funcs[i]->func(x);
+        if (i < 2)
+            std::cout << " ";
+    }
+    std::cout << std::endl;
+
+    __ASSERT_TESTS__
+
+    return 0;
 }
