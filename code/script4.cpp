@@ -1,78 +1,56 @@
 /**********************************************************************
  * @file script4.cpp
- * @brief Validator, PositiveValidator, RangeValidator implementation (Embedded C++ style)
+ * @brief Vector3D class implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-09-29
+ * @date 2025-10-02
  **********************************************************************/
 
-#include <iostream>
+#include <cmath> // for std::sqrt
 
 /********** Class Definition **********/
-// == < Validator > == //
-/**
- * @brief Базовый валидатор
- */
-class Validator
-{
-public:
-    virtual bool is_valid(int x) { return true; }
-    virtual ~Validator() {}
-};
 
-// == < PositiveValidator > == //
+// == < Vector3D > == //
 /**
- * @brief Валидатор положительных чисел
+ * @brief Класс трехмерного вектора
+ * @param x, y, z Координаты
  */
-class PositiveValidator : public Validator
-{
-public:
-    virtual bool is_valid(int x) override { return x >= 0; }
-};
-
-// == < RangeValidator > == //
-/**
- * @brief Валидатор диапазона
- * @param left Левая граница
- * @param right Правая граница
- */
-class RangeValidator : public Validator
+class Vector3D
 {
 private:
-    int m_left{0};
-    int m_right{0};
+    int m_x{0}, m_y{0}, m_z{0};
 
 public:
-    RangeValidator(int left, int right) : m_left(left), m_right(right) {}
+    Vector3D(int a = 0, int b = 0, int c = 0) : m_x(a), m_y(b), m_z(c) {}
 
-    virtual bool is_valid(int x) override { return x >= m_left && x <= m_right; }
+    void set_data(int a, int b, int c)
+    {
+        m_x = a;
+        m_y = b;
+        m_z = c;
+    }
+
+    int &operator[](int idx)
+    {
+        if (idx == 0)
+            return m_x;
+        if (idx == 1)
+            return m_y;
+        // idx == 2
+        return m_z;
+    }
+
+    const int &operator[](int idx) const
+    {
+        if (idx == 0)
+            return m_x;
+        if (idx == 1)
+            return m_y;
+        // idx == 2
+        return m_z;
+    }
+
+    operator double() const
+    {
+        return std::sqrt(static_cast<double>(m_x * m_x + m_y * m_y + m_z * m_z));
+    }
 };
-
-/********** Main Function **********/
-int main(void)
-{
-    Validator *vs[3]{nullptr};
-
-    vs[0] = new PositiveValidator();
-    vs[1] = new RangeValidator(-5, 5);
-    vs[2] = new RangeValidator(-15, 10);
-
-    int x;
-    std::cin >> x;
-
-    for (int i = 0; i < 3; ++i)
-    {
-        std::cout << (vs[i]->is_valid(x) ? 1 : 0);
-        if (i < 2)
-            std::cout << " ";
-    }
-    std::cout << std::endl;
-
-    __ASSERT_TESTS__
-
-    for (int i = 0; i < 3; ++i)
-    {
-        delete vs[i];
-    }
-
-    return 0;
-}

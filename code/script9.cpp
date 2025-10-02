@@ -1,92 +1,82 @@
 /**********************************************************************
  * @file script9.cpp
- * @brief LimitLength class implementation (Embedded C++ style)
+ * @brief Object, ObjectFly, ObjectOperators, Plane implementation
  * @version 1.0
- * @date 2025-10-01
+ * @date 2025-10-02
  **********************************************************************/
 
-/********** Class Definition **********/
-// == < LimitLength > == //
-/**
- * @brief Класс ограничения длины
- * @param length Текущее значение
- */
-class LimitLength
-{
-    enum
-    {
-        min_length = -10,
-        max_length = 10
-    };
-    int m_length{0};
+#include <iostream>
 
-    static int clamp(int val)
-    {
-        if (val < min_length)
-            return min_length;
-        if (val > max_length)
-            return max_length;
-        return val;
-    }
+/********** Class Definition **********/
+
+class Object
+{
+protected:
+    int m_x{0}, m_y{0};
+    int m_speed{0};
 
 public:
-    LimitLength(int len = 0) : m_length(clamp(len)) {}
+    Object(int x = 0, int y = 0, int speed = 0) : m_x(x), m_y(y), m_speed(speed) {}
+    virtual ~Object() = default;
 
-    int get_length() const { return m_length; }
-
-    // Post-increment
-    int operator++(int)
-    {
-        int old = m_length;
-        m_length = clamp(m_length + 1);
-        return old;
-    }
-
-    // Pre-increment
-    int operator++()
-    {
-        m_length = clamp(m_length + 1);
-        return m_length;
-    }
-
-    // Post-decrement
-    int operator--(int)
-    {
-        int old = m_length;
-        m_length = clamp(m_length - 1);
-        return old;
-    }
-
-    // Pre-decrement
-    int operator--()
-    {
-        m_length = clamp(m_length - 1);
-        return m_length;
-    }
-
-    int operator+=(int val)
-    {
-        m_length = clamp(m_length + val);
-        return m_length;
-    }
-
-    int operator-=(int val)
-    {
-        m_length = clamp(m_length - val);
-        return m_length;
-    }
-
-    int operator*=(int val)
-    {
-        m_length = clamp(m_length * val);
-        return m_length;
-    }
-
-    int operator/=(int val)
-    {
-        if (val == 0)
-            return m_length; // avoid division by zero
-        m_length = clamp(m_length / val);
-        return m_length;
-    }
+    void set_speed(int speed) { m_speed = speed; }
+    int get_speed() const { return m_speed; }
+    int get_x() const { return m_x; }
+    int get_y() const { return m_y; }
 };
+
+// == < ObjectFly > == //
+class ObjectFly : virtual public Object
+{
+protected:
+    int m_z{0};
+    double m_angle{0.0};
+
+public:
+    ObjectFly() : Object(), m_z(0), m_angle(0.0) {}
+    ObjectFly(int z) : Object(), m_z(z), m_angle(0.0) {}
+    ObjectFly(int z, double angle) : Object(), m_z(z), m_angle(angle) {}
+    virtual ~ObjectFly() = default;
+
+    int get_z() const { return m_z; }
+    double get_angle() const { return m_angle; }
+    void set_angle(double angle) { m_angle = angle; }
+};
+
+// == < ObjectOperators > == //
+class ObjectOperators : virtual public Object
+{
+public:
+    ObjectOperators() : Object() {}
+    ObjectOperators(int x, int y) : Object(x, y) {}
+    ObjectOperators(int x, int y, int speed) : Object(x, y, speed) {}
+    virtual ~ObjectOperators() = default;
+
+    void operator+=(int delta) { m_speed += delta; }
+    void operator-=(int delta) { m_speed -= delta; }
+};
+
+// == < Plane > == //
+class Plane : public ObjectOperators, public ObjectFly
+{
+public:
+    Plane() : Object(), ObjectOperators(), ObjectFly() {}
+    Plane(int x, int y, int z)
+        : Object(x, y), ObjectOperators(x, y), ObjectFly(z) {}
+
+    // Inherits set_speed, operator+=, etc.
+    virtual ~Plane() = default;
+};
+
+/********** Main Function **********/
+
+int main(void)
+{
+    Plane pl(20, 43, 100);
+    pl.set_speed(10);
+    pl += 5;
+
+    __ASSERT_TESTS__
+
+    return 0;
+}

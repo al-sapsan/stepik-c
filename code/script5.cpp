@@ -1,102 +1,84 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Dish, FishDish, MeatDish implementation (Embedded C++ style)
+ * @brief Student, Person, IntegerArray implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-09-30
+ * @date 2025-10-02
  **********************************************************************/
 
-#include <iostream>
-#include <string>
+#include <string> // for std::string
 
 /********** Class Definition **********/
-// == < Dish > == //
-/**
- * @brief Класс блюда
- * @param name Наименование
- * @param price Цена
- */
-class Dish
+
+// == < Person > == //
+class Person
 {
 protected:
-    std::string m_name;
-    int m_price{0};
+    std::string m_fio;
+    short m_old{0};
 
 public:
-    Dish(const std::string &name, int price)
-        : m_name(name), m_price(price) {}
-
-    virtual void print_dish()
-    {
-        std::cout << "Dish: " << m_name << "; " << m_price << std::endl;
-    }
-    virtual ~Dish() {}
+    Person(const std::string &fio, short old) : m_fio(fio), m_old(old) {}
+    virtual ~Person() = default;
+    const std::string &get_fio() const { return m_fio; }
+    short get_old() const { return m_old; }
 };
 
-// == < FishDish > == //
-/**
- * @brief Класс рыбного блюда
- * @param weight Вес
- */
-class FishDish : public Dish
+// == < IntegerArray > == //
+class IntegerArray
 {
-private:
-    int m_weight{0};
+public:
+    enum
+    {
+        max_array_size = 100
+    };
+
+protected:
+    int m_data_array[max_array_size]{0};
+    int m_length_array{0};
 
 public:
-    FishDish(const std::string &name, int price, int weight)
-        : Dish(name, price), m_weight(weight) {}
-
-    virtual void print_dish() override
+    IntegerArray() = default;
+    IntegerArray(int *d, int size)
     {
-        std::cout << "FishDish: " << m_name << "; " << m_price << "; " << m_weight << std::endl;
+        m_length_array = (size > max_array_size) ? max_array_size : size;
+        for (int i = 0; i < m_length_array; ++i)
+            m_data_array[i] = d[i];
     }
+    virtual ~IntegerArray() = default;
+
+    int *get_data() { return m_data_array; }
+    int get_length() const { return m_length_array; }
 };
 
-// == < MeatDish > == //
-/**
- * @brief Класс мясного блюда
- * @param fry_type Тип прожарки
- * @param weight Вес
- */
-class MeatDish : public Dish
+// == < Student > == //
+class Student : public Person, public IntegerArray
 {
 private:
-    short m_fry_type{1};
-    int m_weight{0};
+    std::string m_group;
 
 public:
-    MeatDish(const std::string &name, int price, short fry_type, int weight)
-        : Dish(name, price), m_fry_type(fry_type), m_weight(weight) {}
+    Student(const std::string &fio, short old)
+        : Person(fio, old), IntegerArray(), m_group() {}
 
-    virtual void print_dish() override
-    {
-        std::cout << "MeatDish: " << m_name << "; " << m_price << "; " << m_fry_type << "; " << m_weight << std::endl;
-    }
+    Student(const std::string &fio, short old, int *d, int size)
+        : Person(fio, old), IntegerArray(d, size), m_group() {}
+
+    void set_group(const std::string &group) { m_group = group; }
+    const std::string &get_group() const { return m_group; }
+    virtual ~Student() = default;
 };
 
 /********** Main Function **********/
+
 int main(void)
 {
-    FishDish *ptr_fd_1 = new FishDish("Устрицы", 900, 300);
-    MeatDish *ptr_md_1 = new MeatDish("Бекон", 800, 2, 420);
-    FishDish *ptr_fd_2 = new FishDish("Форель", 400, 210);
-
-    Dish *dishes[3];
-    dishes[0] = ptr_fd_1;
-    dishes[1] = ptr_md_1;
-    dishes[2] = ptr_fd_2;
-
-    for (int i = 0; i < 3; ++i)
-    {
-        dishes[i]->print_dish();
-    }
+    int marks[] = {5, 4, 3, 4, 5};
+    Student *ptr_st = new Student("Евстигнеев А.Б.", 23, marks, std::size(marks));
 
     __ASSERT_TESTS__
 
-    for (int i = 0; i < 3; ++i)
-    {
-        delete dishes[i];
-    }
+    delete ptr_st;
+    ptr_st = nullptr;
 
     return 0;
 }

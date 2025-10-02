@@ -1,93 +1,81 @@
 /**********************************************************************
  * @file script1.cpp
- * @brief FunctionInterface, LinearFunction, ReluFunction implementation (Embedded C++ style)
+ * @brief CommonInterface, Thing implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-09-26
+ * @date 2025-10-01
  **********************************************************************/
 
-#include <iostream>
-#include <iomanip>
+#include <iostream> // for std::cout, std::endl
+#include <string>   // for std::string
+
+/********** Global Constants **********/
+enum
+{
+    max_size = 100
+};
 
 /********** Class Definition **********/
-
-// == < FunctionInterface > == //
+// == < CommonInterface > == //
 /**
- * @brief Интерфейс функции
+ * @brief Базовый интерфейс
  */
-class FunctionInterface
+class CommonInterface
 {
 public:
-    virtual double func(double arg) { return 0; }
-    virtual double operator()(double arg) { return 0; }
-    virtual ~FunctionInterface() {}
+    virtual long long get_id() const = 0;
+    virtual void set_id(long long id) = 0;
+    virtual ~CommonInterface() = default;
 };
 
-// == < LinearFunction > == //
+// == < Thing > == //
 /**
- * @brief Линейная функция
- * @param k Угловой коэффициент
- * @param b Смещение
+ * @brief Класс товара
+ * @param id Идентификатор
+ * @param name Название
+ * @param price Цена
  */
-class LinearFunction : public FunctionInterface
+class Thing : public CommonInterface
 {
 private:
-    double m_k{0.0};
-    double m_b{0.0};
+    long long m_id{0};
+    std::string m_name;
+    int m_price{0};
 
 public:
-    LinearFunction(double k, double b) : m_k(k), m_b(b) {}
+    Thing(long long id, const std::string &name, int price)
+        : m_id(id), m_name(name), m_price(price) {}
 
-    virtual double func(double arg) override
-    {
-        return m_k * arg + m_b;
-    }
-    virtual double operator()(double arg) override
-    {
-        return m_k * arg + m_b;
-    }
-};
-
-// == < ReluFunction > == //
-/**
- * @brief Функция ReLU
- */
-class ReluFunction : public FunctionInterface
-{
-public:
-    ReluFunction() {}
-
-    virtual double func(double arg) override
-    {
-        return arg > 0 ? arg : 0;
-    }
-    virtual double operator()(double arg) override
-    {
-        return arg > 0 ? arg : 0;
-    }
+    virtual long long get_id() const override { return m_id; }
+    virtual void set_id(long long id) override { m_id = id; }
+    const std::string &get_name() const { return m_name; }
+    int get_price() const { return m_price; }
+    virtual ~Thing() override = default;
 };
 
 /********** Main Function **********/
-
 int main(void)
 {
-    std::vector<std::unique_ptr<FunctionInterface>> funcs;
-    funcs.push_back(std::make_unique<LinearFunction>(0.5, 0.0));
-    funcs.push_back(std::make_unique<LinearFunction>(1.2, -5.4));
-    funcs.push_back(std::make_unique<ReluFunction>());
+    CommonInterface *lst[max_size]{nullptr};
 
-    double x;
-    std::cin >> x;
+    lst[0] = new Thing(4, "Book C++", 2500);
+    lst[1] = new Thing(1, "Computer HP", 125000);
+    lst[2] = new Thing(10, "Mouse Lg", 4300);
+    lst[3] = new Thing(19, "Monitor Samsung", 9560);
 
-    std::cout << std::fixed << std::setprecision(2);
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < max_size && lst[i] != nullptr; ++i)
     {
-        std::cout << funcs[i]->func(x);
-        if (i < 2)
+        std::cout << lst[i]->get_id();
+        if (i < 3)
             std::cout << " ";
     }
     std::cout << std::endl;
 
     __ASSERT_TESTS__
+
+    for (int i = 0; i < max_size && lst[i] != nullptr; ++i)
+    {
+        delete lst[i];
+    }
 
     return 0;
 }

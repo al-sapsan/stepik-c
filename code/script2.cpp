@@ -1,135 +1,127 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Thing, Table, TV, Cart implementation (Embedded C++ style)
+ * @brief Employee, Lector, Laborant implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-09-26
+ * @date 2025-10-02
  **********************************************************************/
 
 #include <iostream>
-#include <iomanip>
 #include <string>
+
+/********** Global Constants **********/
+
+enum
+{
+    max_persons = 255
+};
 
 /********** Class Definition **********/
 
-// == < Thing > == //
+// == < Employee > == //
 /**
- * @brief Класс товара
- * @param name Название товара
- * @param price Цена товара
+ * @brief Абстрактный класс сотрудника
  */
-class Thing
+class Employee
 {
-protected:
-    std::string m_name;
-    int m_price{0};
-
 public:
-    Thing(const std::string &name = "", int price = 0)
-        : m_name(name), m_price(price) {}
-
-    const std::string &get_name() const { return m_name; }
-    int get_price() const { return m_price; }
-    virtual void print() {}
-    virtual ~Thing() {}
+    virtual const std::string &get_fname() const = 0;
+    virtual const std::string &get_lname() const = 0;
+    virtual short get_old() const = 0;
+    virtual ~Employee() = default;
 };
 
-// == < Table > == //
+// == < Lector > == //
 /**
- * @brief Класс стола
- * @param color Цвет
- * @param weight Вес
+ * @brief Класс лектора
+ * @param first_name Имя
+ * @param last_name Фамилия
+ * @param old Возраст
+ * @param salary Зарплата
  */
-class Table : public Thing
+class Lector : public Employee
 {
 private:
-    int m_color{0};
-    double m_weight{0.0};
+    std::string m_first_name;
+    std::string m_last_name;
+    short m_old{0};
+    int m_salary{0};
 
 public:
-    Table(const std::string &name, int price, int color, double weight)
-        : Thing(name, price), m_color(color), m_weight(weight) {}
+    Lector(const std::string &first_name, const std::string &last_name, short old)
+        : m_first_name(first_name), m_last_name(last_name), m_old(old) {}
 
-    virtual void print() override
+    Lector(const std::string &first_name, const std::string &last_name, short old, int salary)
+        : m_first_name(first_name), m_last_name(last_name), m_old(old), m_salary(salary > 0 ? salary : 0) {}
+
+    virtual const std::string &get_fname() const override { return m_first_name; }
+    virtual const std::string &get_lname() const override { return m_last_name; }
+    virtual short get_old() const override { return m_old; }
+
+    void set_salary(int salary)
     {
-        std::cout << "Table: " << m_name << ", " << m_price << ", " << m_color << ", "
-                  << std::fixed << std::setprecision(2) << m_weight << std::endl;
+        if (salary > 0)
+            m_salary = salary;
     }
+    int get_salary() const { return m_salary; }
+    virtual ~Lector() override = default;
 };
 
-// == < TV > == //
+// == < Laborant > == //
 /**
- * @brief Класс телевизора
- * @param size Размер
+ * @brief Класс лаборанта
+ * @param first_name Имя
+ * @param last_name Фамилия
+ * @param old Возраст
+ * @param job_title Должность
  */
-class TV : public Thing
+class Laborant : public Employee
 {
 private:
-    int m_size{0};
+    std::string m_first_name;
+    std::string m_last_name;
+    short m_old{0};
+    std::string m_job_title;
 
 public:
-    TV(const std::string &name, int price, int size)
-        : Thing(name, price), m_size(size) {}
+    Laborant(const std::string &first_name, const std::string &last_name, short old)
+        : m_first_name(first_name), m_last_name(last_name), m_old(old) {}
 
-    virtual void print() override
-    {
-        std::cout << "TV: " << m_name << ", " << m_price << ", " << m_size << std::endl;
-    }
-};
+    Laborant(const std::string &first_name, const std::string &last_name, short old, const std::string &job_title)
+        : m_first_name(first_name), m_last_name(last_name), m_old(old), m_job_title(job_title) {}
 
-// == < Cart > == //
-/**
- * @brief Класс корзины
- */
-class Cart
-{
-    enum
-    {
-        max_total_thing = 100
-    };
-    Thing *m_goods[max_total_thing]{nullptr};
-    int m_count{0};
+    virtual const std::string &get_fname() const override { return m_first_name; }
+    virtual const std::string &get_lname() const override { return m_last_name; }
+    virtual short get_old() const override { return m_old; }
 
-public:
-    void append(Thing *th)
-    {
-        if (m_count >= max_total_thing)
-            return;
-        m_goods[m_count++] = th;
-    }
-
-    Thing **get_goods() { return m_goods; }
-    int get_count() const { return m_count; }
-
-    void show()
-    {
-        for (int i = 0; i < m_count; ++i)
-        {
-            if (m_goods[i])
-                m_goods[i]->print();
-        }
-    }
+    void set_job_title(const std::string &job_title) { m_job_title = job_title; }
+    const std::string &get_job_title() const { return m_job_title; }
+    virtual ~Laborant() override = default;
 };
 
 /********** Main Function **********/
 
 int main(void)
 {
-    Cart cart;
-    cart.append(new Table("Стол", 12000, 0, 12.70));
-    cart.append(new TV("Panasonic", 54000, 43));
-    cart.append(new TV("Samsung", 83500, 54));
-    cart.append(new Table("Стол 2", 9500, 432, 10.74));
+    Employee *staff[max_persons]{nullptr};
 
-    cart.show();
+    staff[0] = new Lector("Sergey", "Balakirev", 33, 85000);
+    staff[1] = new Laborant("Elena", "Pozdnjakova", 27, "Programmer");
+    staff[2] = new Lector("Olga", "Levkina", 38, 120000);
+
+    for (int i = 0; i < 3; ++i)
+    {
+        std::cout << staff[i]->get_fname();
+        if (i < 2)
+            std::cout << " ";
+    }
+    std::cout << std::endl;
 
     __ASSERT_TESTS__
 
-    // Освобождение памяти
-    Thing **goods = cart.get_goods();
-    int count = cart.get_count();
-    for (int i = 0; i < count; ++i)
+    int staff_count = 3; // Explicit counter
+    for (int i = 0; i < staff_count; ++i)
     {
-        delete goods[i];
+        delete staff[i];
     }
 
     return 0;
