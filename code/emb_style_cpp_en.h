@@ -36,65 +36,65 @@ extern "C"
 
      // 2. Libraries used (grouped by purpose)
      * Example:
-        / ********** Core ********** /
-        #include <stdint.h>
-        #include "stm32f4xx_hal.h"
+        /********** Core **********/
+#include <stdint.h>
+#include "stm32f4xx_hal.h"
 
-        / ********** Drivers ********** /
-        #include "encoder.h"
-        #include "pwm.h"
+/********** Drivers **********/
+#include "encoder.h"
+#include "pwm.h"
 
-        / ********** RTOS ********** /
-        #include "FreeRTOS.h"
-        #include "task.h"
+/********** RTOS **********/
+#include "FreeRTOS.h"
+#include "task.h"
 
-     // 3. Data types
-     * Example:
-        / ********** Typedefs ********** /
-        typedef int16_t i16_t;
-        typedef uint32_t u32_t;
+    // 3. Data types
+    /* Example:
+       /********** Typedefs **********/
+    typedef int16_t i16_t;
+    typedef uint32_t u32_t;
 
-     // 4. Constants
-     * Example:
-        / ********** Constants ********** /
-        constexpr u16_t MAX_BUFFER_SIZE = 128;
-        constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
-        constexpr f32_t PI_CONST = 3.1415926f;
+    // 4. Constants
+    /* Example:
+       /********** Constants **********/
+    constexpr u16_t MAX_BUFFER_SIZE = 128;
+    constexpr u32_t TIMEOUT_MS_DEFAULT = 1000;
+    constexpr f32_t PI_CONST = 3.1415926f;
 
-     // 5. Function prototypes with Doxygen comments
-     * Example:
-        / ********** Function Prototypes ********** /
-        * @brief Initialize PID controller
-        * @param pid Pointer to the structure (must be valid)
-        * @param kp Proportional coefficient [0.0 - 5.0]
-        * @return HAL_StatusTypeDef Initialization status
-        HAL_StatusTypeDef pid_init(pid_controller_t* pid, float kp);
+    // 5. Function prototypes with Doxygen comments
+    /* Example:
+       /********** Function Prototypes **********/
+    *@brief Initialize PID controller
+            *@param pid Pointer to the
+            structure(must be valid) *
+        @param kp Proportional coefficient[0.0 - 5.0] * @ return HAL_StatusTypeDef Initialization status HAL_StatusTypeDef pid_init(pid_controller_t * pid, float kp);
 
-     // 6. Main function
-    * Example:
-        / ********** Main Function ********** /
-        * @brief  Точка входа в программу        *
-        * @return Код завершения (0 — успешно, 1 — ошибка памяти)
+    // 6. Main function
+    /* Example:
+        /********** Main Function **********/
+    *@brief Точка входа в программу *
+            *@ return Код завершения(0 — успешно, 1 — ошибка памяти)
 
-         int main(void){
-            ...
-         }
+                int
+                main(void){
+                    ...}
 
-    // 7. Function implementations
-     * Example:
-        / ********** Function Implementation ********** /
-        void funct() {
-            ...
-        }
+        // 7. Function implementations
+        * Example :
+        /********** Function Implementation **********/
+        void funct()
+    {
+        ...
+    }
     // 8. Section headers use the following notation:
-     * Example common section headers:
-        / ********** Header Text ********** /
-     * Example for the class naming
-       // == < Class Name > == //
+    /* Example common section headers:
+       /********** Header Text **********/
+    /* Example for the class naming
+      // == < Class Name > == //
 
-    * Big example for the class naming
+   /* Big example for the class naming
 
-    /************ Class Prototypes ***********/
+   /************ Class Prototypes ***********/
 
     // == < Class Sensor > == //
     class Sensor
