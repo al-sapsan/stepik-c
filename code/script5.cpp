@@ -1,84 +1,73 @@
 /**********************************************************************
  * @file script5.cpp
- * @brief Student, Person, IntegerArray implementation (Embedded C++ style)
+ * @brief Validator, ValidatorRange class implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-10-02
+ * @date 2025-10-03
  **********************************************************************/
 
-#include <string> // for std::string
+#include <iostream>
+#include <string>
 
 /********** Class Definition **********/
-
-// == < Person > == //
-class Person
+class Validator
 {
 protected:
-    std::string m_fio;
-    short m_old{0};
+    std::string m_msg_ex;
 
 public:
-    Person(const std::string &fio, short old) : m_fio(fio), m_old(old) {}
-    virtual ~Person() = default;
-    const std::string &get_fio() const { return m_fio; }
-    short get_old() const { return m_old; }
+    virtual bool is_valid(int x, bool exception = true) const = 0;
+    virtual ~Validator() = default;
 };
 
-// == < IntegerArray > == //
-class IntegerArray
-{
-public:
-    enum
-    {
-        max_array_size = 100
-    };
-
-protected:
-    int m_data_array[max_array_size]{0};
-    int m_length_array{0};
-
-public:
-    IntegerArray() = default;
-    IntegerArray(int *d, int size)
-    {
-        m_length_array = (size > max_array_size) ? max_array_size : size;
-        for (int i = 0; i < m_length_array; ++i)
-            m_data_array[i] = d[i];
-    }
-    virtual ~IntegerArray() = default;
-
-    int *get_data() { return m_data_array; }
-    int get_length() const { return m_length_array; }
-};
-
-// == < Student > == //
-class Student : public Person, public IntegerArray
+/**
+ * @brief Класс для проверки диапазона целых чисел
+ * @param min_value Минимальное значение
+ * @param max_value Максимальное значение
+ * @param msg_ex Сообщение исключения
+ */
+class ValidatorRange : public Validator
 {
 private:
-    std::string m_group;
+    int m_min_value{0}, m_max_value{0};
 
 public:
-    Student(const std::string &fio, short old)
-        : Person(fio, old), IntegerArray(), m_group() {}
+    ValidatorRange(const std::string &msg_ex, int min_value, int max_value)
+    {
+        m_msg_ex = msg_ex;
+        m_min_value = min_value;
+        m_max_value = max_value;
+    }
 
-    Student(const std::string &fio, short old, int *d, int size)
-        : Person(fio, old), IntegerArray(d, size), m_group() {}
-
-    void set_group(const std::string &group) { m_group = group; }
-    const std::string &get_group() const { return m_group; }
-    virtual ~Student() = default;
+    virtual bool is_valid(int x, bool exception = true) const override
+    {
+        if (x < m_min_value || x > m_max_value)
+        {
+            if (exception)
+                throw m_msg_ex;
+            return false;
+        }
+        return true;
+    }
 };
 
 /********** Main Function **********/
-
 int main(void)
 {
-    int marks[] = {5, 4, 3, 4, 5};
-    Student *ptr_st = new Student("Евстигнеев А.Б.", 23, marks, std::size(marks));
+    ValidatorRange vr("Value is outside the range [0; 15]", 0, 15);
+
+    int x;
+    std::cin >> x;
+
+    try
+    {
+        vr.is_valid(x, true);
+    }
+    catch (const std::string &ex)
+    {
+        std::cout << ex << std::endl;
+    }
 
     __ASSERT_TESTS__
-
-    delete ptr_st;
-    ptr_st = nullptr;
 
     return 0;
 }

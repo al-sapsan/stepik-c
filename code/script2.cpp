@@ -1,128 +1,58 @@
 /**********************************************************************
  * @file script2.cpp
- * @brief Employee, Lector, Laborant implementation (Embedded C++ style)
+ * @brief Point class implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-10-02
+ * @date 2025-10-03
  **********************************************************************/
 
 #include <iostream>
-#include <string>
-
-/********** Global Constants **********/
-
-enum
-{
-    max_persons = 255
-};
+#include <stdexcept>
 
 /********** Class Definition **********/
 
-// == < Employee > == //
-/**
- * @brief Абстрактный класс сотрудника
- */
-class Employee
+class Point
 {
-public:
-    virtual const std::string &get_fname() const = 0;
-    virtual const std::string &get_lname() const = 0;
-    virtual short get_old() const = 0;
-    virtual ~Employee() = default;
-};
-
-// == < Lector > == //
-/**
- * @brief Класс лектора
- * @param first_name Имя
- * @param last_name Фамилия
- * @param old Возраст
- * @param salary Зарплата
- */
-class Lector : public Employee
-{
-private:
-    std::string m_first_name;
-    std::string m_last_name;
-    short m_old{0};
-    int m_salary{0};
-
-public:
-    Lector(const std::string &first_name, const std::string &last_name, short old)
-        : m_first_name(first_name), m_last_name(last_name), m_old(old) {}
-
-    Lector(const std::string &first_name, const std::string &last_name, short old, int salary)
-        : m_first_name(first_name), m_last_name(last_name), m_old(old), m_salary(salary > 0 ? salary : 0) {}
-
-    virtual const std::string &get_fname() const override { return m_first_name; }
-    virtual const std::string &get_lname() const override { return m_last_name; }
-    virtual short get_old() const override { return m_old; }
-
-    void set_salary(int salary)
+    enum
     {
-        if (salary > 0)
-            m_salary = salary;
-    }
-    int get_salary() const { return m_salary; }
-    virtual ~Lector() override = default;
-};
+        min_coord = -10,
+        max_coord = 10
+    };
+    int m_x{0}, m_y{0};
 
-// == < Laborant > == //
-/**
- * @brief Класс лаборанта
- * @param first_name Имя
- * @param last_name Фамилия
- * @param old Возраст
- * @param job_title Должность
- */
-class Laborant : public Employee
-{
-private:
-    std::string m_first_name;
-    std::string m_last_name;
-    short m_old{0};
-    std::string m_job_title;
+    static void check_coord(int x, int y)
+    {
+        if (x < min_coord || x > max_coord || y < min_coord || y > max_coord)
+            throw std::string("Incorrect coordinate values.");
+    }
 
 public:
-    Laborant(const std::string &first_name, const std::string &last_name, short old)
-        : m_first_name(first_name), m_last_name(last_name), m_old(old) {}
+    Point() : m_x(0), m_y(0) {}
 
-    Laborant(const std::string &first_name, const std::string &last_name, short old, const std::string &job_title)
-        : m_first_name(first_name), m_last_name(last_name), m_old(old), m_job_title(job_title) {}
+    Point(int x) : m_x(x), m_y(0)
+    {
+        check_coord(m_x, m_y);
+    }
 
-    virtual const std::string &get_fname() const override { return m_first_name; }
-    virtual const std::string &get_lname() const override { return m_last_name; }
-    virtual short get_old() const override { return m_old; }
-
-    void set_job_title(const std::string &job_title) { m_job_title = job_title; }
-    const std::string &get_job_title() const { return m_job_title; }
-    virtual ~Laborant() override = default;
+    Point(int x, int y) : m_x(x), m_y(y)
+    {
+        check_coord(m_x, m_y);
+    }
 };
 
 /********** Main Function **********/
 
 int main(void)
 {
-    Employee *staff[max_persons]{nullptr};
-
-    staff[0] = new Lector("Sergey", "Balakirev", 33, 85000);
-    staff[1] = new Laborant("Elena", "Pozdnjakova", 27, "Programmer");
-    staff[2] = new Lector("Olga", "Levkina", 38, 120000);
-
-    for (int i = 0; i < 3; ++i)
+    try
     {
-        std::cout << staff[i]->get_fname();
-        if (i < 2)
-            std::cout << " ";
+        Point point(11, -5);
     }
-    std::cout << std::endl;
+    catch (const std::string &ex)
+    {
+        std::cout << ex << std::endl;
+    }
 
     __ASSERT_TESTS__
-
-    int staff_count = 3; // Explicit counter
-    for (int i = 0; i < staff_count; ++i)
-    {
-        delete staff[i];
-    }
 
     return 0;
 }

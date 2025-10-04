@@ -1,106 +1,102 @@
 /**********************************************************************
  * @file script6.cpp
- * @brief GeneralView mixin pattern implementation (Embedded C++ style)
+ * @brief Wallet class implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-10-02
+ * @date 2025-10-04
  **********************************************************************/
 
-#include <string> // for std::string
+#include <iostream>
+#include <stdexcept>
 
-enum request_method
-{
-    method_get = 1,
-    method_post = 2,
-    method_put = 3,
-    method_delete = 4
-};
-
-struct Request
-{
-    request_method method{method_get};
-    std::string url;
-    std::string data;
-};
-
-class RetriveMixin
-{
-    request_method m_method{method_get};
-
-public:
-    RetriveMixin(request_method *ms, int index) { ms[index] = m_method; }
-    virtual ~RetriveMixin() = default;
-    std::string get(const Request &request) { return "GET: " + request.url; }
-};
-
-class CreateMixin
-{
-    request_method m_method{method_post};
-
-public:
-    CreateMixin(request_method *ms, int index) { ms[index] = m_method; }
-    virtual ~CreateMixin() = default;
-    std::string post(const Request &request) { return "POST: " + request.url; }
-};
-
-class UpdateMixin
-{
-    request_method m_method{method_put};
-
-public:
-    UpdateMixin(request_method *ms, int index) { ms[index] = m_method; }
-    virtual ~UpdateMixin() = default;
-    std::string put(const Request &request) { return "PUT: " + request.url; }
-};
-
-// == < GeneralView > == //
+/********** Class Definition **********/
 /**
- * @brief Класс GeneralView (миксины для обработки запросов)
- * @details Поддерживает методы GET и POST, реализует паттерн mixin.
- * @note Использует RetriveMixin и CreateMixin для расширения функционала.
+ * @brief Класс Wallet (кошелек)
+ * @details Хранит количество денег, поддерживает лимит, арифметические операции и проверки.
+ * @note Исключения генерируются при выходе за пределы диапазона.
  */
-class GeneralView : public RetriveMixin, public CreateMixin
+class Wallet
 {
+private:
     enum
     {
-        max_methods = 4
+        wallet_limit = 1000000
     };
-    int m_count_methods{2};
-    request_method m_allowed_methods[max_methods]{method_get, method_post};
+    long m_volume{0};
 
-    bool is_method_exists(request_method method)
+    static void check_bounds(long value, const char *msg)
     {
-        for (int i = 0; i < m_count_methods; ++i)
-            if (m_allowed_methods[i] == method)
-                return true;
-        return false;
+        if (value < 0 || value > wallet_limit)
+            throw std::string(msg);
     }
 
 public:
-    GeneralView()
-        : RetriveMixin(m_allowed_methods, 0), CreateMixin(m_allowed_methods, 1) {}
+    Wallet() : m_volume(0) {}
 
-    std::string render_request(const Request &request)
+    Wallet(long value)
     {
-        if (!is_method_exists(request.method))
-            return "";
-        if (request.method == method_get)
-            return get(request);
-        if (request.method == method_post)
-            return post(request);
-        return "";
+        check_bounds(value, "Value is out of bounds.");
+        m_volume = value;
+    }
+
+    long get_volume() const { return m_volume; }
+
+    // Assignment from long
+    Wallet &operator=(long value)
+    {
+        check_bounds(value, "Volume is out of bounds.");
+        m_volume = value;
+        return *this;
+    }
+
+    // += long
+    Wallet &operator+=(long value)
+    {
+        check_bounds(m_volume + value, "Volume is out of bounds.");
+        m_volume += value;
+        return *this;
+    }
+
+    // -= long
+    Wallet &operator-=(long value)
+    {
+        check_bounds(m_volume - value, "Volume is out of bounds.");
+        m_volume -= value;
+        return *this;
+    }
+
+    // + Wallet
+    Wallet operator+(const Wallet &other) const
+    {
+        check_bounds(m_volume + other.m_volume, "Volume is out of bounds.");
+        return Wallet(m_volume + other.m_volume);
+    }
+
+    // + long (Wallet + long)
+    Wallet operator+(long value) const
+    {
+        check_bounds(m_volume + value, "Volume is out of bounds.");
+        return Wallet(m_volume + value);
+    }
+
+    // friend for long + Wallet
+    friend Wallet operator+(long value, const Wallet &w)
+    {
+        check_bounds(value + w.m_volume, "Volume is out of bounds.");
+        return Wallet(value + w.m_volume);
     }
 };
 
 /********** Main Function **********/
-
 int main(void)
 {
-    GeneralView gw;
-    Request req{
-        method_post,
-        "https://proproprogs.ru/cpp_oop/cpp-oop-mnozhestvennoe-nasledovanie-poryadok-vyzova-konstruktorov-i-destruktorov",
-        "<h1>Множественное наследование</h1>"};
-    std::string res = gw.render_request(req);
+    try
+    {
+        Wallet wl(500);
+    }
+    catch (const std::string &ex)
+    {
+        std::cout << ex << std::endl;
+    }
 
     __ASSERT_TESTS__
 

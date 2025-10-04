@@ -1,64 +1,48 @@
 /**********************************************************************
  * @file script3.cpp
- * @brief BankAccount class implementation (Embedded C++ style)
+ * @brief sum_ar function implementation (Embedded C++ style)
  * @version 1.0
- * @date 2025-10-02
+ * @date 2025-10-03
  **********************************************************************/
 
-#include <string> // for std::string
+#include <iostream>
+#include <stdexcept>
 
-/********** Class Definition **********/
-// == < BankAccount > == //
+/********** Function Definition **********/
 /**
- * @brief Класс банковского счета
- * @param fio Владелец счета
- * @param volume_rub Объем средств в рублях
+ * @brief Суммирует значения элементов массива ar длиной size
+ * @param ar Указатель на массив
+ * @param size Размер массива
+ * @return int Сумма элементов
+ * @throws std::runtime_error если size == 0
  */
-class BankAccount
+int sum_ar(short *ar, size_t size)
 {
-private:
-    std::string m_fio;
-    long m_volume_rub{0};
+    if (size == 0)
+        throw std::runtime_error("Array length is zero.");
+    int sum = 0;
+    for (size_t i = 0; i < size; ++i)
+        sum += ar[i];
+    return sum;
+}
 
-public:
-    BankAccount(const std::string &fio) : m_fio(fio), m_volume_rub(0) {}
-    BankAccount(const std::string &fio, long volume_rub) : m_fio(fio), m_volume_rub(volume_rub) {}
+/********** Main Function **********/
 
-    const std::string &get_fio() const { return m_fio; }
-    long get_volume_rub() const { return m_volume_rub; }
-
-    // Assignment from long
-    BankAccount &operator=(long value)
+int main(void)
+{
+    short arr[] = {-1, 0, 10, 5, 3, 2};
+    int sm = 0;
+    try
     {
-        m_volume_rub = value;
-        return *this;
+        sm = sum_ar(arr, sizeof(arr) / sizeof(arr[0]));
+        std::cout << sm << std::endl;
+    }
+    catch (const std::exception &ex)
+    {
+        std::cout << ex.what() << std::endl;
     }
 
-    // += long
-    BankAccount &operator+=(long value)
-    {
-        m_volume_rub += value;
-        return *this;
-    }
+    __ASSERT_TESTS__
 
-    // -= long
-    BankAccount &operator-=(long value)
-    {
-        m_volume_rub -= value;
-        return *this;
-    }
-
-    // += BankAccount
-    BankAccount &operator+=(const BankAccount &other)
-    {
-        m_volume_rub += other.m_volume_rub;
-        return *this;
-    }
-
-    // -= BankAccount
-    BankAccount &operator-=(const BankAccount &other)
-    {
-        m_volume_rub -= other.m_volume_rub;
-        return *this;
-    }
-};
+    return 0;
+}
