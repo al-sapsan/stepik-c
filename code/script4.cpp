@@ -1,63 +1,144 @@
-/**********************************************************************
+/************************************************************************
  * @file script4.cpp
- * @brief ArrayInt class implementation (Embedded C++ style)
- * @version 1.0
- * @date 2025-10-03
- **********************************************************************/
+ * @brief Класс Box3D с обработкой ошибок диапазона и операций
+ * @version 1.0 (Embedded C++ bare-metal/RTOS)
+ * @date 2025-10-06
+ *
+ * @warning Не использовать без проверки диапазона!
+ * @note Класс протестирован для платформ: ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
+ *************************************************************************/
 
-#include <cstddef> // for size_t
-#include <stdexcept>
+#include <iostream>
+#include <exception>
 
-/********** Class Definition **********/
+/********** Exception Classes **********/
+
+// == < Class BoxError > == //
 /**
- * @brief Класс для хранения массива целых чисел
- * @param data Массив целых чисел
- * @param size Размер массива
+ * @brief Базовый класс исключения для ошибок работы с Box3D
  */
-class ArrayInt
+class BoxError : public std::exception
 {
-private:
-    int *m_data{nullptr};
-    size_t m_size{0};
+protected:
+    std::string m_msg;
 
 public:
-    ArrayInt() = default;
+    explicit BoxError(const std::string &msg) : m_msg(msg) {}
+    virtual ~BoxError() {}
+    const char *what() const noexcept override { return m_msg.c_str(); }
+};
 
-    ArrayInt(int *d, size_t length)
-        : m_data(nullptr), m_size(0)
+// == < Class BoxLimitError > == //
+/**
+ * @brief Исключение: габариты вне диапазона
+ */
+class BoxLimitError : public BoxError
+{
+public:
+    explicit BoxLimitError(const std::string &msg) : BoxError(msg) {}
+};
+
+// == < Class BoxCalcError > == //
+/**
+ * @brief Исключение: ошибка вычисления габаритов
+ */
+class BoxCalcError : public BoxError
+{
+public:
+    explicit BoxCalcError(const std::string &msg) : BoxError(msg) {}
+};
+
+/************ Class Definition ***********/
+
+// == < Class Box3D > == //
+/**
+ * @brief Класс для работы с трехмерными габаритами
+ */
+class Box3D
+{
+public:
+    enum
     {
-        set_data(d, length);
+        limit_dim = 100
+    };
+
+private:
+    short m_a{0}, m_b{0}, m_c{0};
+
+    static bool is_valid(short a, short b, short c)
+    {
+        return (a >= 0 && a <= limit_dim) && (b >= 0 && b <= limit_dim) && (c >= 0 && c <= limit_dim);
     }
 
-    void set_data(int *d, size_t length)
+public:
+    Box3D() = default;
+    Box3D(short a, short b, short c)
     {
-        if (m_data)
-            delete[] m_data;
-        m_size = length;
-        m_data = (length > 0) ? new int[length] : nullptr;
-        for (size_t i = 0; i < length; ++i)
-            m_data[i] = d[i];
+        if (!is_valid(a, b, c))
+            throw BoxLimitError("Exceeding the size range.");
+        m_a = a;
+        m_b = b;
+        m_c = c;
     }
 
-    int *get_data() { return m_data; }
-    size_t get_size() const { return m_size; }
-
-    int &operator[](size_t index)
+    void get_dims(short &a, short &b, short &c)
     {
-        if (index >= m_size)
-            throw std::runtime_error("Incorrect index.");
-        return m_data[index];
+        a = m_a;
+        b = m_b;
+        c = m_c;
     }
 
-    const int &operator[](size_t index) const
+    void set_dims(short a, short b, short c)
     {
-        if (index >= m_size)
-            throw std::runtime_error("Incorrect index.");
-        return m_data[index];
+        if (!is_valid(a, b, c))
+            throw BoxLimitError("Exceeding the size range.");
+        m_a = a;
+        m_b = b;
+        m_c = c;
     }
 
-    ~ArrayInt()
+    Box3D operator+(const Box3D &other) const
     {
-        delete[] m_data;
+        short na = m_a + other.m_a;
+        short nb = m_b + other.m_b;
+        short nc = m_c + other.m_c;
+        if (!is_valid(na, nb, nc))
+            throw BoxCalcError("Calculation: Exceeding the size range.");
+        return Box3D(na, nb, nc);
+    }
+
+    Box3D operator-(const Box3D &other) const
+    {
+        short na = m_a - other.m_a;
+        short nb = m_b - other.m_b;
+        short nc = m_c - other.m_c;
+        if (!is_valid(na, nb, nc))
+            throw BoxCalcError("Calculation: Exceeding the size range.");
+        return Box3D(na, nb, nc);
     }
 };
+
+/********** Main Function **********/
+
+int main()
+{
+    try
+    {
+        Box3D box(5, -1, 10);
+    }
+    catch (const BoxLimitError &ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+    catch (const BoxCalcError &ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+    catch (const BoxError &ex)
+    {
+        std::cout << ex.what() << std::endl;
+    }
+
+    __ASSERT_TESTS__ // макроопределение для тестирования
+        return 0;
+}

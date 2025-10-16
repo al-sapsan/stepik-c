@@ -29,6 +29,7 @@ class ColorRGBValueError : public ColorRGBError
 {
 public:
     ColorRGBValueError() noexcept : ColorRGBError("Valid values must be in the range [0; 255]") {}
+    ColorRGBValueError(const std::string &error) noexcept : ColorRGBError(error) {}
 };
 
 /// @brief Исключение: некорректный индекс компоненты
@@ -36,6 +37,7 @@ class ColorRGBIndexError : public ColorRGBError
 {
 public:
     ColorRGBIndexError() noexcept : ColorRGBError("Index must be in range [0; 2]") {}
+    ColorRGBIndexError(const std::string &error) noexcept : ColorRGBError(error) {}
 };
 
 /************ Class Definition ***********/
@@ -107,21 +109,57 @@ public:
         }
     }
 
-    // Оператор [] для записи (возвращает ссылку)
-    short &operator[](int indx)
+    // Вспомогательный класс для проверки присваивания
+    class Proxy
     {
-        validate_index(indx);
-        switch (indx)
+    private:
+        ColorRGB &m_color;
+        int m_index;
+
+    public:
+        Proxy(ColorRGB &color, int index) : m_color(color), m_index(index) {}
+
+        // Оператор присваивания с проверкой значения
+        Proxy &operator=(short value)
         {
-        case 0:
-            return r;
-        case 1:
-            return g;
-        case 2:
-            return b;
-        default:
-            return r; // никогда не выполнится из-за проверки
+            m_color.validate_value(value); // проверяем значение
+            switch (m_index)
+            {
+            case 0:
+                m_color.r = value;
+                break;
+            case 1:
+                m_color.g = value;
+                break;
+            case 2:
+                m_color.b = value;
+                break;
+            }
+            return *this;
         }
+
+        // Неявное преобразование к short для чтения
+        operator short() const
+        {
+            switch (m_index)
+            {
+            case 0:
+                return m_color.r;
+            case 1:
+                return m_color.g;
+            case 2:
+                return m_color.b;
+            default:
+                return 0;
+            }
+        }
+    };
+
+    // Оператор [] для записи с проверкой значения
+    Proxy operator[](int indx)
+    {
+        validate_index(indx); // проверяем индекс
+        return Proxy(*this, indx);
     }
 };
 

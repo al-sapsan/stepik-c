@@ -1,94 +1,38 @@
-/**********************************************************************
+/************************************************************************
  * @file script7.cpp
- * @brief Vector3D class implementation (Embedded C++ style)
- * @version 1.0
- * @date 2025-10-04
- **********************************************************************/
+ * @brief Template function hypot for embedded C++ style
+ * @version 1.0 (Embedded C++ bare-metal/RTOS)
+ * @date 2025-10-06
+ *
+ * @warning Ensure all input values are validated!
+ * @note Tested on ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
+ *************************************************************************/
 
 #include <iostream>
-#include <string>
+#include <cmath>
 
-/********** Class Definition **********/
-class Vector3D
+/********** Template Function **********/
+
+/**
+ * @brief Вычисляет длину гипотенузы по двум катетам
+ * @tparam T Тип значения
+ * @param a Первый катет
+ * @param b Второй катет
+ * @return Длина гипотенузы (double)
+ */
+template <typename T>
+double hypot(T a, T b)
 {
-private:
-    enum
-    {
-        min_coord = -100,
-        max_coord = 100
-    };
-    int m_x{0}, m_y{0}, m_z{0};
-
-    static bool is_valid(int v) { return v >= min_coord && v <= max_coord; }
-
-public:
-    Vector3D() = default;
-
-    Vector3D(int x, int y, int z)
-    {
-        if (!is_valid(x) || !is_valid(y) || !is_valid(z))
-            throw -2;
-        m_x = x;
-        m_y = y;
-        m_z = z;
-    }
-
-    void get_coords(int &x, int &y, int &z) const
-    {
-        x = m_x;
-        y = m_y;
-        z = m_z;
-    }
-
-    void set_coords(int x, int y, int z)
-    {
-        if (!is_valid(x) || !is_valid(y) || !is_valid(z))
-            throw -1;
-        m_x = x;
-        m_y = y;
-        m_z = z;
-    }
-
-    int &operator[](int idx)
-    {
-        if (idx == 0)
-            return m_x;
-        if (idx == 1)
-            return m_y;
-        if (idx == 2)
-            return m_z;
-        throw "Incorrect index.";
-    }
-
-    const int &operator[](int idx) const
-    {
-        if (idx == 0)
-            return m_x;
-        if (idx == 1)
-            return m_y;
-        if (idx == 2)
-            return m_z;
-        throw "Incorrect index.";
-    }
-};
+    return std::sqrt(static_cast<double>(a) * static_cast<double>(a) + static_cast<double>(b) * static_cast<double>(b));
+}
 
 /********** Main Function **********/
-int main(void)
+
+int main()
 {
-    try
-    {
-        Vector3D v3(10, 1000, -500);
-    }
-    catch (int ex)
-    {
-        std::cout << ex << std::endl;
-    }
-    catch (const char *msg)
-    {
-        std::cout << msg << std::endl;
-    }
+    double h1 = hypot(1, 0.5);
+    double h2 = hypot(6.3, 0.8);
 
-    __ASSERT_TESTS__
-
-    return 0;
+    __ASSERT_TESTS__ // макроопределение для тестирования
+        return 0;
 }

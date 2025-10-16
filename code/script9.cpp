@@ -1,82 +1,85 @@
-/**********************************************************************
+/************************************************************************
  * @file script9.cpp
- * @brief Object, ObjectFly, ObjectOperators, Plane implementation
- * @version 1.0
- * @date 2025-10-02
- **********************************************************************/
+ * @brief Complex class and calc_data template for embedded C++ style
+ * @version 1.0 (Embedded C++ bare-metal/RTOS)
+ * @date 2025-10-06
+ *
+ * @warning Ensure all input values are validated!
+ * @note Tested on ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
+ *************************************************************************/
 
 #include <iostream>
 
-/********** Class Definition **********/
-
-class Object
+enum ar_operation
 {
-protected:
-    int m_x{0}, m_y{0};
-    int m_speed{0};
-
-public:
-    Object(int x = 0, int y = 0, int speed = 0) : m_x(x), m_y(y), m_speed(speed) {}
-    virtual ~Object() = default;
-
-    void set_speed(int speed) { m_speed = speed; }
-    int get_speed() const { return m_speed; }
-    int get_x() const { return m_x; }
-    int get_y() const { return m_y; }
+    ar_sum = 1, // сложение
+    ar_sub = 2, // вычитание
+    ar_mul = 3  // умножение
 };
 
-// == < ObjectFly > == //
-class ObjectFly : virtual public Object
-{
-protected:
-    int m_z{0};
-    double m_angle{0.0};
+/************ Class Definition ***********/
 
-public:
-    ObjectFly() : Object(), m_z(0), m_angle(0.0) {}
-    ObjectFly(int z) : Object(), m_z(z), m_angle(0.0) {}
-    ObjectFly(int z, double angle) : Object(), m_z(z), m_angle(angle) {}
-    virtual ~ObjectFly() = default;
-
-    int get_z() const { return m_z; }
-    double get_angle() const { return m_angle; }
-    void set_angle(double angle) { m_angle = angle; }
-};
-
-// == < ObjectOperators > == //
-class ObjectOperators : virtual public Object
+class Complex
 {
 public:
-    ObjectOperators() : Object() {}
-    ObjectOperators(int x, int y) : Object(x, y) {}
-    ObjectOperators(int x, int y, int speed) : Object(x, y, speed) {}
-    virtual ~ObjectOperators() = default;
+    Complex() = default;
+    Complex(int real) : m_re(real), m_im(0) {}
+    Complex(int real, int imag) : m_re(real), m_im(imag) {}
 
-    void operator+=(int delta) { m_speed += delta; }
-    void operator-=(int delta) { m_speed -= delta; }
+    int real() const { return m_re; }
+    int imag() const { return m_im; }
+    void set_value(int real, int imag)
+    {
+        m_re = real;
+        m_im = imag;
+    }
+
+    Complex operator+(const Complex &other) const
+    {
+        return Complex(m_re + other.m_re, m_im + other.m_im);
+    }
+    Complex operator-(const Complex &other) const
+    {
+        return Complex(m_re - other.m_re, m_im - other.m_im);
+    }
+    Complex operator*(const Complex &other) const
+    {
+        int re = m_re * other.m_re - m_im * other.m_im;
+        int im = m_re * other.m_im + other.m_re * m_im;
+        return Complex(re, im);
+    }
+
+private:
+    int m_re{0}, m_im{0};
 };
 
-// == < Plane > == //
-class Plane : public ObjectOperators, public ObjectFly
+/********** Template Function **********/
+
+template <typename T>
+T calc_data(T a, T b, ar_operation type = ar_sum)
 {
-public:
-    Plane() : Object(), ObjectOperators(), ObjectFly() {}
-    Plane(int x, int y, int z)
-        : Object(x, y), ObjectOperators(x, y), ObjectFly(z) {}
-
-    // Inherits set_speed, operator+=, etc.
-    virtual ~Plane() = default;
-};
+    switch (type)
+    {
+    case ar_sum:
+        return a + b;
+    case ar_sub:
+        return a - b;
+    case ar_mul:
+        return a * b;
+    default:
+        return a + b;
+    }
+}
 
 /********** Main Function **********/
 
-int main(void)
+int main()
 {
-    Plane pl(20, 43, 100);
-    pl.set_speed(10);
-    pl += 5;
+    Complex cmp_1(-5, 23), cmp_2(14, 7);
+    Complex res_1 = calc_data(cmp_1, cmp_2, ar_sub);
+    double res_2 = calc_data(0.5, 10.4, ar_sum);
+    int res_3 = calc_data(5, -11, ar_mul);
 
-    __ASSERT_TESTS__
-
-    return 0;
+    __ASSERT_TESTS__ // макроопределение для тестирования
+        return 0;
 }
