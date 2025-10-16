@@ -1,38 +1,77 @@
 /************************************************************************
  * @file script7.cpp
- * @brief Template function hypot for embedded C++ style
- * @version 1.0 (Embedded C++ bare-metal/RTOS)
- * @date 2025-10-06
- *
- * @warning Ensure all input values are validated!
- * @note Tested on ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
- *************************************************************************/
+ * @brief Шаблонный класс Triangle и исключение LengthValueError
+ * @version 1.0
+ * @date 2025-10-16
+ ************************************************************************/
 
 #include <iostream>
-#include <cmath>
-
-/********** Template Function **********/
+#include <exception>
 
 /**
- * @brief Вычисляет длину гипотенузы по двум катетам
- * @tparam T Тип значения
- * @param a Первый катет
- * @param b Второй катет
- * @return Длина гипотенузы (double)
+ * @brief Исключение для неверных длин сторон треугольника
  */
-template <typename T>
-double hypot(T a, T b)
+class LengthValueError : public std::exception
 {
-    return std::sqrt(static_cast<double>(a) * static_cast<double>(a) + static_cast<double>(b) * static_cast<double>(b));
-}
+public:
+    const char *what() const noexcept override
+    {
+        return "Length must be a positive number.";
+    }
+};
 
-/********** Main Function **********/
+/**
+ * @brief Шаблонный класс Triangle
+ * @tparam T Тип длины стороны (по умолчанию short)
+ */
+template <typename T = short>
+class Triangle
+{
+private:
+    T a{0}, b{0}, c{0};
+    static void validate(T a_, T b_, T c_)
+    {
+        if (a_ < 0 || b_ < 0 || c_ < 0)
+            throw LengthValueError();
+    }
+
+public:
+    Triangle() = default;
+    Triangle(T a_, T b_, T c_)
+    {
+        validate(a_, b_, c_);
+        a = a_;
+        b = b_;
+        c = c_;
+    }
+
+    void get_abc(T &a_, T &b_, T &c_) const
+    {
+        a_ = a;
+        b_ = b;
+        c_ = c;
+    }
+
+    void set_abc(T a_, T b_, T c_)
+    {
+        validate(a_, b_, c_);
+        a = a_;
+        b = b_;
+        c = c_;
+    }
+};
 
 int main()
 {
-    double h1 = hypot(1, 0.5);
-    double h2 = hypot(6.3, 0.8);
+    try
+    {
+        Triangle<int> tr(7, -4, 10);
+    }
+    catch (const LengthValueError &e)
+    {
+        std::cout << e.what();
+    }
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+    __ASSERT_TESTS__
+    return 0;
 }

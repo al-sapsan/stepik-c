@@ -1,48 +1,57 @@
 /************************************************************************
  * @file script8.cpp
- * @brief Template function ar_sum_positive for embedded C++ style
- * @version 1.0 (Embedded C++ bare-metal/RTOS)
- * @date 2025-10-06
- *
- * @warning Ensure all input values are validated!
- * @note Tested on ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
- *************************************************************************/
+ * @brief Шаблонные структуры Point и класс Line
+ * @version 1.0
+ * @date 2025-10-16
+ ************************************************************************/
 
 #include <iostream>
 
-/********** Template Function **********/
+/**
+ * @brief Точка в 2D пространстве
+ * @tparam T Тип координат
+ */
+template <typename T>
+struct Point
+{
+    T x{0};
+    T y{0};
+    Point() = default;
+    Point(T x_, T y_) : x(x_), y(y_) {}
+};
 
 /**
- * @brief Вычисляет сумму положительных элементов массива
- * @tparam AR Тип массива
- * @param arr Массив
- * @param len Длина массива
- * @return Сумма положительных элементов
+ * @brief Отрезок, заданный двумя точками sp и ep
+ * @tparam D Тип координат
  */
-template <typename AR>
-AR ar_sum_positive(const AR *arr, size_t len)
+template <typename D>
+class Line
 {
-    AR sum = 0;
-    for (size_t i = 0; i < len; ++i)
-    {
-        if (arr[i] > 0)
-            sum += arr[i];
-    }
-    return sum;
-}
+private:
+    Point<D> sp;
+    Point<D> ep;
 
-/********** Main Function **********/
+public:
+    Line() = default;
+    Line(const Point<D> &sp_, const Point<D> &ep_) : sp(sp_), ep(ep_) {}
+    Line(D x0, D y0, D x1, D y1) : sp(x0, y0), ep(x1, y1) {}
+
+    Point<D> get_sp() const { return sp; }
+    Point<D> get_ep() const { return ep; }
+
+    void set_coords(const Point<D> &sp_, const Point<D> &ep_)
+    {
+        sp = sp_;
+        ep = ep_;
+    }
+};
 
 int main()
 {
-    float d1[] = {0.1f, 2.4f, 1.5f, -0.3f, 1.0f, -11.5f};
-    double d2[] = {-4.3, 0.8, 15.3, -0.01, -1.2, -6.5};
-    int d3[] = {6, 4, -1, -3, 0, 10, 8, -1, 2};
+    Point<unsigned> sp(1, 2);
+    Point<unsigned> ep(11, 54);
+    Line<unsigned> line(sp, ep);
 
-    float s1 = ar_sum_positive(d1, sizeof(d1) / sizeof(d1[0]));
-    double s2 = ar_sum_positive(d2, sizeof(d2) / sizeof(d2[0]));
-    int s3 = ar_sum_positive(d3, sizeof(d3) / sizeof(d3[0]));
-
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+    __ASSERT_TESTS__
+    return 0;
 }

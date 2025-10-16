@@ -1,115 +1,65 @@
 /************************************************************************
  * @file script2.cpp
- * @brief Классы VectorError, VectorErrorNegativeCoord, Vector для работы с векторами
- * @version 1.0 (Embedded C++ bare-metal/RTOS)
- * @date 2025-10-06
- *
- * @warning Не использовать без проверки координат!
- * @note Классы протестированы для платформ: ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
- *************************************************************************/
+ * @brief Функция sum_coords — сумма координат объектов (шаблон)
+ * @date 2025-10-16
+ ************************************************************************/
 
 #include <iostream>
-#include <string>
 
-/********** Exception Classes **********/
-
-// == < Class VectorError > == //
-/**
- * @brief Базовый класс исключения для ошибок работы с вектором
- */
-class VectorError : public std::exception
+class Point
 {
-protected:
-    std::string m_msg;
+    double x{0}, y{0};
 
 public:
-    VectorError(const std::string &error) noexcept : m_msg(error) {}
-    virtual ~VectorError() {}
-    const char *what() const noexcept override { return m_msg.c_str(); }
+    Point(double x = 0, double y = 0) : x(x), y(y) {}
+    void get_coords(double &x, double &y) const
+    {
+        x = this->x;
+        y = this->y;
+    }
 };
 
-// == < Class VectorErrorNegativeCoord > == //
-/**
- * @brief Исключение: отрицательное значение координаты вектора
- */
-class VectorErrorNegativeCoord : public VectorError
-{
-public:
-    VectorErrorNegativeCoord() noexcept : VectorError("Negative coordinate value.") {}
-    VectorErrorNegativeCoord(const std::string &error) noexcept : VectorError(error) {}
-};
-
-/************ Class Definition ***********/
-
-// == < Class Vector > == //
-/**
- * @brief Класс для работы с векторами
- */
 class Vector
 {
-    int m_x{0}; ///< Координата x
-    int m_y{0}; ///< Координата y
+    int x{0}, y{0};
+
 public:
-    /**
-     * @brief Конструктор по умолчанию
-     */
-    Vector() noexcept = default;
-
-    /**
-     * @brief Конструктор с координатами
-     * @param x Координата x
-     * @param y Координата y
-     * @throws VectorErrorNegativeCoord если хотя бы одна координата отрицательна
-     */
-    Vector(int x, int y)
+    Vector(int x = 0, int y = 0) : x(x), y(y) {}
+    void get_coords(int &x, int &y) const
     {
-        if (x < 0 || y < 0)
-            throw VectorErrorNegativeCoord("Constructor: Negative coordinate value.");
-        m_x = x;
-        m_y = y;
-    }
-
-    /**
-     * @brief Получить координату x
-     */
-    int get_x() const { return m_x; }
-
-    /**
-     * @brief Получить координату y
-     */
-    int get_y() const { return m_y; }
-
-    /**
-     * @brief Установить координаты x и y
-     * @param x Координата x
-     * @param y Координата y
-     * @throws VectorErrorNegativeCoord если хотя бы одна координата отрицательна
-     */
-    void set_xy(int x, int y)
-    {
-        if (x < 0 || y < 0)
-            throw VectorErrorNegativeCoord();
-        m_x = x;
-        m_y = y;
+        x = this->x;
+        y = this->y;
     }
 };
 
-/********** Main Function **********/
+/**
+ * @brief Шаблонная функция для суммирования координат
+ * @tparam Obj Тип объекта (должен иметь метод get_coords)
+ * @tparam CoordT Тип координат (по умолчанию double)
+ * @param obj Константная ссылка на объект
+ * @return Сумма координат в типе CoordT
+ */
+template <typename Obj, typename CoordT = double>
+CoordT sum_coords(const Obj &obj)
+{
+    CoordT a{};
+    CoordT b{};
+    obj.get_coords(a, b);
+    return a + b;
+}
 
 int main()
 {
-    int x, y;
-    std::cin >> x >> y;
-    try
-    {
-        Vector v(x, y);
-        std::cout << v.get_x() << " " << v.get_y() << std::endl;
-    }
-    catch (const VectorError &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
+    Point p(10.5, -4.7);
+    Vector v(132, 55);
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
+    double sm1 = sum_coords<Point, double>(p);
+    int sm2 = sum_coords<Vector, int>(v);
+
+    (void)sm1;
+    (void)sm2;
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+
         return 0;
 }

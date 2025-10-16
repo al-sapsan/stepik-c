@@ -1,62 +1,50 @@
 /************************************************************************
  * @file script1.cpp
- * @brief Класс ArrayException для обработки ошибок массива
- * @version 1.0 (Embedded C++ bare-metal/RTOS)
- * @date 2025-10-06
- *
- *************************************************************************/
+ * @brief Вычисление площади треугольника по формуле Герона (шаблонная функция)
+ * @version 1.0 (Embedded C++)
+ * @date 2025-10-16
+ ************************************************************************/
 
 #include <iostream>
-#include <string>
+#include <type_traits>
+#include <cmath>
 
-/********** Exception Classes **********/
-
-// == < Class ArrayException > == //
 /**
- * @brief Класс исключения для ошибок работы с массивом
+ * @brief Вычисляет площадь треугольника по формуле Герона
+ * @tparam A Тип стороны a
+ * @tparam B Тип стороны b
+ * @tparam C Тип стороны c
+ * @param a Длина стороны a
+ * @param b Длина стороны b
+ * @param c Длина стороны c
+ * @return Площадь треугольника в общем типе аргументов
  */
-class ArrayException
+template <typename A, typename B, typename C>
+double tr_square(A a, B b, C c)
 {
-protected:
-    std::string m_msg; ///< Сообщение об ошибке
-public:
-    /**
-     * @brief Конструктор с сообщением
-     * @param msg Сообщение об ошибке
-     */
-    explicit ArrayException(const std::string &msg) noexcept : m_msg(msg) {}
-
-    /**
-     * @brief Конструктор копирования
-     * @param other Другой объект ArrayException
-     */
-    ArrayException(const ArrayException &other) noexcept : m_msg(other.m_msg) {}
-
-    /**
-     * @brief Виртуальный деструктор
-     */
-    virtual ~ArrayException() noexcept {}
-
-    /**
-     * @brief Cообщение об ошибке
-     * @return C-строка с сообщением
-     */
-    const char *what() const noexcept { return m_msg.c_str(); }
-};
-
-/********** Main Function **********/
+    // Вычисляем в двойной точности, чтобы избежать целочисленного усечения
+    const double ca = static_cast<double>(a);
+    const double cb = static_cast<double>(b);
+    const double cc = static_cast<double>(c);
+    const double p = (ca + cb + cc) / 2.0;
+    const double prod = p * (p - ca) * (p - cb) * (p - cc);
+    if (prod <= 0.0)
+        return 0.0;
+    return std::sqrt(prod);
+}
 
 int main()
 {
-    try
-    {
-        throw ArrayException("Main exception");
-    }
-    catch (const ArrayException &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
+    // вызовы функции tr_square с требуемыми наборами аргументов
+    double res_1 = tr_square(10, 6, 8);
+    double res_2 = tr_square(5.3, 2.7, 7);
+    double res_3 = tr_square(90, 'a', 55.4);
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
+    (void)res_1;
+    (void)res_2;
+    (void)res_3;
+
+    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+
         return 0;
 }

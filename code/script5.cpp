@@ -1,150 +1,51 @@
 /************************************************************************
  * @file script5.cpp
- * @brief Main file for embedded C++ task implementation
- * @version 1.0 (Embedded C++ bare-metal/RTOS)
- * @date 2025-10-06
- *
- * @warning Ensure all input values are validated!
- * @note Tested on ARM Cortex-M, RISC-V, Xtensa (ESP32), RP2040
- *************************************************************************/
+ * @brief Шаблонная функция ar_sort с пользовательской функцией сравнения
+ * @version 1.0
+ * @date 2025-10-16
+ ************************************************************************/
+
 #include <iostream>
-#include <exception>
+#include <cstddef>
+#include <cstdlib>
 
-/********** Exception Classes **********/
-
-/// @brief Базовый класс исключения для ошибок ColorRGB
-class ColorRGBError : public std::exception
+/**
+ * @brief Сортирует массив по возрастанию с помощью пользовательской функции сравнения
+ * @tparam T Тип элементов массива
+ * @param arr Массив элементов
+ * @param len Длина массива
+ * @param cmp Указатель на функцию сравнения (bool(T, T))
+ */
+template <typename T>
+void ar_sort(T *arr, size_t len, bool (*cmp)(T, T))
 {
-protected:
-    std::string m_msg;
-
-public:
-    ColorRGBError(const std::string &error) noexcept : m_msg(error) {}
-    virtual ~ColorRGBError() {}
-    const char *what() const noexcept override { return m_msg.c_str(); }
-};
-
-/// @brief Исключение: некорректное значение цветовой компоненты
-class ColorRGBValueError : public ColorRGBError
-{
-public:
-    ColorRGBValueError() noexcept : ColorRGBError("Valid values must be in the range [0; 255]") {}
-};
-
-/// @brief Исключение: некорректный индекс компоненты
-class ColorRGBIndexError : public ColorRGBError
-{
-public:
-    ColorRGBIndexError() noexcept : ColorRGBError("Index must be in range [0; 2]") {}
-};
-
-/************ Class Definition ***********/
-
-/// @brief Класс для работы с цветом RGB
-class ColorRGB
-{
-private:
-    short r{0}, g{0}, b{0};
-
-    // Вспомогательный метод для проверки значений
-    void validate_value(short value) const
+    // Сортировка пузырьком (bubble sort)
+    for (size_t i = 0; i < len; ++i)
     {
-        if (value < 0 || value > 255)
+        for (size_t j = 1; j < len - i; ++j)
         {
-            throw ColorRGBValueError();
+            if (cmp(arr[j], arr[j - 1]))
+            {
+                T tmp = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = tmp;
+            }
         }
     }
-
-    // Вспомогательный метод для проверки индекса
-    void validate_index(int indx) const
-    {
-        if (indx < 0 || indx > 2)
-        {
-            throw ColorRGBIndexError();
-        }
-    }
-
-public:
-    // Конструктор по умолчанию
-    ColorRGB() noexcept = default;
-
-    // Конструктор с параметрами
-    ColorRGB(short r, short g, short b)
-    {
-        validate_value(r);
-        validate_value(g);
-        validate_value(b);
-        this->r = r;
-        this->g = g;
-        this->b = b;
-    }
-
-    // Метод установки значений
-    void set_rgb(short r, short g, short b)
-    {
-        validate_value(r);
-        validate_value(g);
-        validate_value(b);
-        this->r = r;
-        this->g = g;
-        this->b = b;
-    }
-
-    // Оператор [] для чтения
-    short operator[](int indx) const
-    {
-        validate_index(indx);
-        switch (indx)
-        {
-        case 0:
-            return r;
-        case 1:
-            return g;
-        case 2:
-            return b;
-        default:
-            return 0; // никогда не выполнится из-за проверки
-        }
-    }
-
-    // Оператор [] для записи (возвращает ссылку)
-    short &operator[](int indx)
-    {
-        validate_index(indx);
-        switch (indx)
-        {
-        case 0:
-            return r;
-        case 1:
-            return g;
-        case 2:
-            return b;
-        default:
-            return r; // никогда не выполнится из-за проверки
-        }
-    }
-};
-
-/********** Main Function **********/
+}
 
 int main()
 {
-    try
+    int data[] = {5, -3, 10, 0, 33, 7, -12};
+    // Лямбда для сравнения по модулю
+    auto abs_less = [](int a, int b)
+    { return std::abs(a) < std::abs(b); };
+    // Обертка для передачи лямбды как указателя на функцию
+    struct AbsLessWrap
     {
-        ColorRGB yellow(255, 201, -14); // Здесь должно возникнуть исключение
-    }
-    catch (const ColorRGBIndexError &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
-    catch (const ColorRGBValueError &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
-    catch (const ColorRGBError &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
+        static bool fn(int a, int b) { return std::abs(a) < std::abs(b); }
+    };
+    ar_sort<int>(data, sizeof(data) / sizeof(data[0]), AbsLessWrap::fn);
 
     __ASSERT_TESTS__ // макроопределение для тестирования
         return 0;
