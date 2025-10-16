@@ -1,50 +1,60 @@
 /************************************************************************
  * @file script1.cpp
- * @brief Вычисление площади треугольника по формуле Герона (шаблонная функция)
- * @version 1.0 (Embedded C++)
+ * @brief Шаблонная реализация стека (Object<T>, Stack<T>)
+ * @version 1.0
  * @date 2025-10-16
  ************************************************************************/
 
+#include <memory>
 #include <iostream>
-#include <type_traits>
-#include <cmath>
 
 /**
- * @brief Вычисляет площадь треугольника по формуле Герона
- * @tparam A Тип стороны a
- * @tparam B Тип стороны b
- * @tparam C Тип стороны c
- * @param a Длина стороны a
- * @param b Длина стороны b
- * @param c Длина стороны c
- * @return Площадь треугольника в общем типе аргументов
+ * @brief Узел стека, хранящий значение типа T
+ * @tparam T Тип данных в узле
  */
-template <typename A, typename B, typename C>
-double tr_square(A a, B b, C c)
+template <typename T>
+class Object
 {
-    // Вычисляем в двойной точности, чтобы избежать целочисленного усечения
-    const double ca = static_cast<double>(a);
-    const double cb = static_cast<double>(b);
-    const double cc = static_cast<double>(c);
-    const double p = (ca + cb + cc) / 2.0;
-    const double prod = p * (p - ca) * (p - cb) * (p - cc);
-    if (prod <= 0.0)
-        return 0.0;
-    return std::sqrt(prod);
-}
+    T data{0};
+    std::shared_ptr<Object<T>> next{nullptr};
 
-int main()
+public:
+    explicit Object(const T &d) : data(d), next(nullptr) {}
+
+    T get_data() const { return data; }
+    std::shared_ptr<Object<T>> &get_next() { return next; }
+};
+
+template <typename T>
+using shared_obj_ptr_t = std::shared_ptr<Object<T>>;
+
+/**
+ * @brief Стек на основе умных указателей
+ * @tparam T Тип данных в стеке
+ */
+template <typename T>
+class Stack
 {
-    // вызовы функции tr_square с требуемыми наборами аргументов
-    double res_1 = tr_square(10, 6, 8);
-    double res_2 = tr_square(5.3, 2.7, 7);
-    double res_3 = tr_square(90, 'a', 55.4);
+    shared_obj_ptr_t<T> top{nullptr};
 
-    (void)res_1;
-    (void)res_2;
-    (void)res_3;
+public:
+    shared_obj_ptr_t<T> get_top() { return top; }
 
-    __ASSERT_TESTS__ // макроопределение для тестирования (не убирать и должно идти непосредственно перед return 0)
+    void push(const T &data)
+    {
+        auto node = std::make_shared<Object<T>>(data);
+        node->get_next() = top;
+        top = node;
+    }
 
-        return 0;
-}
+    shared_obj_ptr_t<T> pop()
+    {
+        if (!top)
+            return nullptr;
+        auto ptr = top;
+        top = top->get_next();
+        return ptr;
+    }
+};
+
+// No main() as per task instructions

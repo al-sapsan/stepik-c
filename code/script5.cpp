@@ -1,52 +1,80 @@
 /************************************************************************
  * @file script5.cpp
- * @brief Шаблонная функция ar_sort с пользовательской функцией сравнения
+ * @brief Шаблонный валидатор и проверка попадания в диапазон
  * @version 1.0
  * @date 2025-10-16
  ************************************************************************/
 
 #include <iostream>
-#include <cstddef>
-#include <cstdlib>
+#include <string>
 
 /**
- * @brief Сортирует массив по возрастанию с помощью пользовательской функции сравнения
- * @tparam T Тип элементов массива
- * @param arr Массив элементов
- * @param len Длина массива
- * @param cmp Указатель на функцию сравнения (bool(T, T))
+ * @brief Базовый шаблонный класс валидатора
+ * @tparam T Тип проверяемого значения
  */
 template <typename T>
-void ar_sort(T *arr, size_t len, bool (*cmp)(T, T))
+class Validator
 {
-    // Сортировка пузырьком (bubble sort)
-    for (size_t i = 0; i < len; ++i)
+protected:
+    std::string msg_ex; ///< сообщение исключения
+public:
+    Validator() = default;
+    explicit Validator(const std::string &msg) : msg_ex(msg) {}
+    virtual bool is_valid(T x, bool exception = true) const = 0;
+    virtual ~Validator() {}
+};
+
+/**
+ * @brief Валидатор диапазона [min_value; max_value]
+ * @tparam T Тип проверяемого значения
+ */
+template <typename T>
+class ValidatorRange : public Validator<T>
+{
+private:
+    T min_value{0};
+    T max_value{0};
+
+public:
+    ValidatorRange() = default;
+    ValidatorRange(const std::string &msg, T minv, T maxv)
+        : Validator<T>(msg), min_value(minv), max_value(maxv) {}
+
+    bool is_valid(T x, bool exception = true) const override
     {
-        for (size_t j = 1; j < len - i; ++j)
+        if (x >= min_value && x <= max_value)
+            return true;
+        if (!exception)
+            return false;
+        throw this->msg_ex;
+    }
+};
+
+int main(void)
+{
+    ValidatorRange<double> vr("Value is outside the range [-4.5; 2.5]", -4.5, 2.5);
+
+    try
+    {
+        double x;
+        if (!(std::cin >> x))
         {
-            if (cmp(arr[j], arr[j - 1]))
-            {
-                T tmp = arr[j - 1];
-                arr[j - 1] = arr[j];
-                arr[j] = tmp;
-            }
+            // no input - nothing to do
+        }
+        else
+        {
+            vr.is_valid(x); // may throw
         }
     }
-}
-
-int main()
-{
-    int data[] = {5, -3, 10, 0, 33, 7, -12};
-    // Лямбда для сравнения по модулю
-    auto abs_less = [](int a, int b)
-    { return std::abs(a) < std::abs(b); };
-    // Обертка для передачи лямбды как указателя на функцию
-    struct AbsLessWrap
+    catch (const std::string &ex)
     {
-        static bool fn(int a, int b) { return std::abs(a) < std::abs(b); }
-    };
-    ar_sort<int>(data, sizeof(data) / sizeof(data[0]), AbsLessWrap::fn);
+        std::cout << ex;
+    }
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+#ifndef __ASSERT_TESTS__
+#define __ASSERT_TESTS__
+#endif
+
+    __ASSERT_TESTS__
+    return 0;
 }

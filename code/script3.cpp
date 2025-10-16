@@ -1,123 +1,87 @@
 /************************************************************************
  * @file script3.cpp
- * @brief Классы Window и Rect и шаблон get_square
+ * @brief Шаблонный класс Thing и его специализация для char*
+ * @version 1.0
  * @date 2025-10-16
  ************************************************************************/
 
 #include <iostream>
-#include <exception>
-#include <string>
-
-// ********** Exception Classes **********/
+#include <cstring>
 
 /**
- * @brief Класс исключения ValueError
- *
- * Используется при передаче невалидных (нуль или отрицательных) размеров в конструкторах.
+ * @brief Шаблонный класс для представления объекта с уникальным ID
+ * @tparam T1 Тип ID
+ * @tparam T2 Тип имени
  */
-class ValueError : public std::exception
+template <typename T1, typename T2>
+class Thing
 {
-    std::string m_msg;
+    static T1 acc_uid;
+    T1 uid{0};
+    T2 name;
+    int price{0};
+    double weight{0.0};
 
 public:
-    /**
-     * @brief Конструктор исключения
-     * @param msg Сообщение об ошибке
-     */
-    explicit ValueError(const std::string &msg) noexcept : m_msg(msg) {}
-
-    /**
-     * @brief Возвращает сообщение об ошибке
-     */
-    const char *what() const noexcept override { return m_msg.c_str(); }
-};
-
-// ************ Class Definition ***********/
-
-/**
- * @brief Класс Window — прямоугольное окно с целочисленными размерами
- *
- * Поля width и height имеют тип int. Конструктор генерирует ValueError,
- * если переданы нулевые или отрицательные значения.
- */
-class Window
-{
-    int m_width{0};
-    int m_height{0};
-
-public:
-    Window(int width, int height)
+    Thing(T2 name, int price, double weight) : name(name), price(price), weight(weight)
     {
-        if (width <= 0 || height <= 0)
-            throw ValueError("The value must be positive");
-        m_width = width;
-        m_height = height;
+        uid = acc_uid++;
     }
-    /**
-     * @brief Получить размеры окна
-     * @param width Ссылка для записи ширины
-     * @param height Ссылка для записи высоты
-     */
-    void get_data(int &width, int &height) const
+
+    T1 get_uid() const { return uid; }
+    T2 get_name() const { return name; }
+    void get_data(int &price, double &weight)
     {
-        width = m_width;
-        height = m_height;
+        price = this->price;
+        weight = this->weight;
     }
 };
 
+// Инициализация статического члена для основного шаблона
+template <typename T1, typename T2>
+T1 Thing<T1, T2>::acc_uid = 0;
+
 /**
- * @brief Класс Rect — прямоугольник с вещественными размерами
- *
- * Поля width и height имеют тип double. Конструктор генерирует ValueError,
- * если переданы нулевые или отрицательные значения.
+ * @brief Специализация класса Thing для работы с char*
+ * @tparam T1 Тип ID
  */
-class Rect
+template <typename T1>
+class Thing<T1, char *>
 {
-    double m_width{0};
-    double m_height{0};
+    static T1 acc_uid;
+    T1 uid{0};
+    char name[100]{0};
+    int price{0};
+    double weight{0.0};
 
 public:
-    Rect(double width, double height)
+    Thing(char *n, int p, double w) : price(p), weight(w)
     {
-        if (width <= 0.0 || height <= 0.0)
-            throw ValueError("The value must be positive");
-        m_width = width;
-        m_height = height;
+        strncpy(name, n, 99);
+        name[99] = '\0';
+        uid = acc_uid++;
     }
-    /**
-     * @brief Получить размеры прямоугольника
-     * @param width Ссылка для записи ширины
-     * @param height Ссылка для записи высоты
-     */
-    void get_data(double &width, double &height) const
+
+    T1 get_uid() const { return uid; }
+    const char *get_name() const { return name; }
+    void get_data(int &p, double &w)
     {
-        width = m_width;
-        height = m_height;
+        p = price;
+        w = weight;
     }
 };
 
-// Template get_square
-template <typename Obj, typename ValT = int>
-ValT get_square(const Obj &obj)
-{
-    ValT w{};
-    ValT h{};
-    obj.get_data(w, h);
-    return static_cast<ValT>(w * h);
-}
+// Инициализация статического члена для специализации
+template <typename T1>
+T1 Thing<T1, char *>::acc_uid = 0;
 
 int main()
 {
-    try
-    {
-        Window w(100, -5);
-        auto res_sq = get_square<Window, int>(w);
-        (void)res_sq;
-    }
-    catch (const ValueError &ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
+    Thing<int, char *> th("Templates in C++", 2000, 0.13);
+
+#ifndef __ASSERT_TESTS__
+#define __ASSERT_TESTS__
+#endif
 
     __ASSERT_TESTS__
     return 0;

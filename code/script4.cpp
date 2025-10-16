@@ -1,46 +1,89 @@
 /************************************************************************
  * @file script4.cpp
- * @brief Шаблонная функция ar_sum с фильтрующей функцией
+ * @brief Шаблонные классы Array и Student для учета оценок
  * @version 1.0
  * @date 2025-10-16
  ************************************************************************/
 
 #include <iostream>
+#include <string>
+#include <iterator>
+
+class Person
+{
+protected:
+    std::string fio;
+    short old{0};
+
+public:
+    Person(const std::string &fio, short old) : fio(fio), old(old) {}
+    virtual ~Person() {}
+    const std::string &get_fio() const { return fio; }
+    short get_old() const { return old; }
+};
 
 /**
- * @brief Суммирует элементы массива, удовлетворяющие фильтрующей функции
+ * @brief Шаблонный класс для хранения массива элементов
  * @tparam T Тип элементов массива
- * @param arr Массив элементов
- * @param len Длина массива
- * @param filter Указатель на фильтрующую функцию (bool(T))
- * @return Сумма элементов, для которых filter возвращает true
  */
 template <typename T>
-T ar_sum(const T *arr, size_t len, bool (*filter)(T))
+class Array
 {
-    T sum{};
-    for (size_t i = 0; i < len; ++i)
+public:
+    enum
     {
-        if (filter(arr[i]))
-            sum += arr[i];
+        max_array_size = 100
+    };
+
+protected:
+    T data_array[max_array_size]{0}; ///< массив элементов типа T
+    int length_array{0};             ///< длина массива
+public:
+    Array() = default;
+    Array(T *d, int size)
+    {
+        length_array = (size > max_array_size) ? max_array_size : size;
+        for (int i = 0; i < length_array; ++i)
+            data_array[i] = d[i];
     }
-    return sum;
-}
+    virtual ~Array() {}
+
+    T *get_data() { return data_array; }
+    int get_length() const { return length_array; }
+};
+
+/**
+ * @brief Шаблонный класс студента с оценками
+ * @tparam T Тип оценок
+ */
+template <typename T>
+class Student : public Person, public Array<T>
+{
+private:
+    std::string group;
+
+public:
+    Student(const std::string &fio, short old)
+        : Person(fio, old), Array<T>() {}
+
+    Student(const std::string &fio, short old, T *marks, int size)
+        : Person(fio, old), Array<T>(marks, size) {}
+
+    void set_group(const std::string &g) { group = g; }
+    const std::string &get_group() const { return group; }
+};
 
 int main()
 {
-    double data[] = {-1, 2.5, -3, -4, 5.1, 6};
-    auto positive = [](double x)
-    { return x > 0; };
-    // Лямбда не может быть передана напрямую как указатель на функцию, поэтому используем явную функцию-обертку
-    struct PosWrap
-    {
-        static bool fn(double x) { return x > 0; }
-    };
-    double res = ar_sum<double>(data, sizeof(data) / sizeof(data[0]), PosWrap::fn);
+    short marks[] = {3, 3, 4, 2};
+    Student<short> *ptr_st = new Student<short>("Bechterev S. A.", 52, marks, std::size(marks));
 
-    (void)res;
+#ifndef __ASSERT_TESTS__
+#define __ASSERT_TESTS__
+#endif
 
-    __ASSERT_TESTS__ // макроопределение для тестирования
-        return 0;
+    __ASSERT_TESTS__
+
+    delete ptr_st;
+    return 0;
 }
